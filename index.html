@@ -778,6 +778,15 @@ table.t.ctable td { padding: 10px 12px; }
 /* 2차 기능 화면 */
 .auth-or { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 13px; margin: 14px 0 10px; }
 .auth-or::before, .auth-or::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+.social-list { display: grid; gap: 8px; }
+.passkey-btn + .social-list { margin-top: 8px; }
+.social-btn { width: 100%; justify-content: center; font-weight: 700; border: 1px solid transparent; }
+.social-btn.sb-google { background: #fff; color: #1f1f1f; border-color: #747775; }
+.social-btn.sb-naver { background: #03C75A; color: #fff; }
+.social-btn.sb-kakao { background: #FEE500; color: rgba(0,0,0,.85); }
+.social-btn.off { opacity: .55; }
+.social-btn small { font-weight: 500; }
+.auth-small { font-size: 12px; margin: 8px 0 0; }
 .passkey-btn { width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
 .link-btn { background: none; border: 0; padding: 0; color: var(--ok); font-weight: 600; cursor: pointer; text-align: left; font-size: inherit; }
 .link-btn:hover { text-decoration: underline; }
@@ -5959,6 +5968,7 @@ function doAction(el) {
     case 'logout': cloudLogout(); return;
     case 'authView': ui.auth = id; cloud.msg = ''; break;
     case 'passkeyLogin': passkeyLogin(); return;
+    case 'socialLogin': socialLogin(id); return;
     case 'passkeyAdd': passkeyAdd(); return;
     case 'passkeyDel': if (ui.armed !== 'pkDel:' + id) { ui.armed = 'pkDel:' + id; keepArm = true; break; } ui.armed = null; passkeyDel(id); break;
     case 'useLocal':
@@ -6811,6 +6821,7 @@ function enterCloud(user) {
 function startCloud(cfg) {
   if (!window.supabase || !window.supabase.createClient) { store = load(); site.notice = '로그인 기능을 불러오지 못했습니다. 이 브라우저에만 저장합니다.'; afterLoad(); save(); return; }
   cloud.recovery = /type=recovery/.test(location.hash);
+  var oerr = oauthReturnError(); if (oerr) { cloud.msg = oerr; cloud.msgKind = 'err'; }
   ui.booting = false; ui.auth = 'loading'; render();
   var slow = setTimeout(function () { if (ui.auth === 'loading') { ui.auth = 'login'; cloud.msg = '서버 응답이 늦습니다. 인터넷 연결을 확인하고 로그인해 보세요'; cloud.msgKind = 'err'; render(); } }, 10000);
   cloud.client = window.supabase.createClient(cfg.url, cfg.anonKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, storageKey: 'fc-planner-auth', experimental: { passkey: true } } });
@@ -6900,6 +6911,52 @@ function passkeySection() {
     (cloud.pkErr ? '<div class="notice" role="alert">' + esc(cloud.pkErr) + '</div>' : '') + rows +
     '<p class="muted" style="margin:8px 0 0">등록하면 로그인 화면에서 "패스키로 로그인"을 눌러 지문·얼굴·기기 잠금으로 들어옵니다. 비밀번호 로그인도 그대로 쓸 수 있습니다. 기기를 잃어버리면 그 패스키를 여기서 지우세요.</p></section>';
 }
+// ----- 간편 로그인·가입 (구글·네이버·카카오) -----
+// 구글·카카오 = Supabase 기본 제공자, 네이버 = 사용자 지정 OAuth 제공자(식별자 custom:naver).
+// 서버(Supabase 대시보드)에서 켠 제공자만 바로 이동하고, 꺼져 있으면 안내 문구를 보여 준다.
+var SOCIAL = [['google', 'Google', 'google'], ['naver', '네이버', 'custom:naver'], ['kakao', '카카오', 'kakao']];
+function socialLoadSettings() {
+  var cfg = getCloudConfig(); if (!cfg || cloud.extLoading || cloud.ext) return;
+  cloud.extLoading = true;
+  fetch(cfg.url + '/auth/v1/settings', { headers: { apikey: cfg.anonKey } }).then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (j) { cloud.extLoading = false; cloud.ext = (j && j.external) || {}; cloud.extOk = !!j; if (ui.auth === 'login' || ui.auth === 'signup') render(); })
+    .catch(function () { cloud.extLoading = false; cloud.ext = {}; cloud.extOk = false; });
+}
+// true = 켜짐, false = 꺼짐 확인, null = 모름(설정을 못 읽음 → 눌렀을 때 그냥 시도)
+function socialOn(key, prov) {
+  var e = cloud.ext; if (!cloud.extOk || !e) return null;
+  if (e[prov] === true || e[key] === true || e['custom:' + key] === true) return true;
+  if (key === 'naver' && !Object.keys(e).some(function (k) { return /^custom:/.test(k); })) return null; // 사용자 지정 제공자를 목록에 안 보여 주는 서버면 모름
+  return false;
+}
+function socialBtns(isSignup) {
+  socialLoadSettings();
+  return '<div class="social-list">' + SOCIAL.map(function (t) {
+    var on = socialOn(t[0], t[2]);
+    return '<button class="btn social-btn sb-' + t[0] + (on === false ? ' off' : '') + '" data-act="socialLogin" data-id="' + t[0] + '" type="button"' + (cloud.busy ? ' disabled' : '') + '>' + t[1] + (isSignup ? '로 가입하기' : '로 로그인') + (on === false ? ' <small>(준비 중)</small>' : '') + '</button>';
+  }).join('') + '</div>' + (isSignup ? '<p class="muted auth-small">구글·네이버·카카오로 가입하면 그 계정의 이름과 이메일로 FC 계정이 만들어지고, 다음부터 같은 버튼으로 로그인합니다.</p>' : '');
+}
+function socialLogin(key) {
+  var t = SOCIAL.filter(function (x) { return x[0] === key; })[0]; if (!t || !cloud.client) return;
+  if (socialOn(t[0], t[2]) === false) { cloud.msg = t[1] + ' 로그인이 서버에서 아직 켜지지 않았습니다. 관리자가 Supabase 설정에서 켜야 합니다'; cloud.msgKind = 'err'; render(); return; }
+  if (location.protocol === 'file:') { cloud.msg = t[1] + ' 로그인은 웹사이트 주소(https)에서만 됩니다. 컴퓨터에 저장된 파일로 열었을 때는 이메일로 로그인하세요'; cloud.msgKind = 'err'; render(); return; }
+  cloud.busy = true; cloud.msg = ''; render();
+  var opts = { redirectTo: location.origin + location.pathname };
+  if (key === 'kakao') opts.scopes = 'profile_nickname account_email';
+  cloud.client.auth.signInWithOAuth({ provider: t[2], options: opts }).then(function (r) {
+    if (r && r.error) { cloud.busy = false; cloud.msg = koAuthError(r.error); cloud.msgKind = 'err'; render(); }
+    // 성공하면 브라우저가 구글·네이버·카카오 화면으로 넘어갔다가 이 주소로 돌아온다
+  }).catch(function (e) { cloud.busy = false; cloud.msg = koAuthError(e); cloud.msgKind = 'err'; render(); });
+}
+function oauthReturnError() {
+  var h = location.hash + '&' + location.search; if (!/error_description=|[#&?]error=/.test(h)) return '';
+  var m = (h.match(/error_description=([^&]*)/) || [])[1] || (h.match(/error=([^&]*)/) || [])[1] || '';
+  try { m = decodeURIComponent(m.replace(/\+/g, ' ')); } catch (e) {}
+  try { history.replaceState(null, '', location.pathname); } catch (e) {}
+  if (/email/i.test(m)) return '간편 로그인에서 이메일을 받지 못했습니다. 그 계정의 이메일 제공에 동의했는지 확인하거나 이메일로 가입하세요';
+  if (/access_denied|cancel/i.test(m)) return '간편 로그인을 취소했습니다';
+  return '간편 로그인에 실패했습니다: ' + m;
+}
 function renderAuth() {
   var v = ui.auth, msg = cloud.msg ? '<div class="' + (cloud.msgKind === 'ok' ? 'info' : 'notice') + '" role="alert">' + esc(cloud.msg) + '</div>' : '';
   var body = '';
@@ -6916,13 +6973,15 @@ function renderAuth() {
       '<form id="loginForm" class="auth-form">' + authField('authEmail', '이메일', 'email', 'name@example.com', 'username', cloud.email) +
       authField('authPw', '비밀번호', 'password', '', 'current-password') +
       '<button class="btn primary" type="submit"' + (cloud.busy ? ' disabled' : '') + '>' + (cloud.busy ? '로그인 중…' : '로그인') + '</button></form>' +
-      (passkeyOk() ? '<div class="auth-or"><span>또는</span></div><button class="btn passkey-btn" data-act="passkeyLogin" type="button"' + (cloud.busy ? ' disabled' : '') + '><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M2 21v-1a6 6 0 0 1 9.5-4.9"/><circle cx="18" cy="13" r="2.5"/><path d="M18 15.5V21l1.5-1.2L18 18.5"/></svg>패스키로 로그인</button>' : '') +
+      (passkeyOk() ? '<div class="auth-or"><span>또는</span></div><button class="btn passkey-btn" data-act="passkeyLogin" type="button"' + (cloud.busy ? ' disabled' : '') + '><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M2 21v-1a6 6 0 0 1 9.5-4.9"/><circle cx="18" cy="13" r="2.5"/><path d="M18 15.5V21l1.5-1.2L18 18.5"/></svg>패스키로 로그인</button>' : '<div class="auth-or"><span>또는</span></div>') +
+      socialBtns(false) +
       '<div class="row between auth-links"><button class="btn ghost sm" data-act="authView" data-id="signup" type="button">처음이신가요? 가입하기</button><button class="btn ghost sm" data-act="authView" data-id="reset" type="button">비밀번호 찾기</button></div>';
   } else if (v === 'signup') {
     body = '<h1>가입하기</h1><p class="muted">관리자가 계정을 만들어 준 경우에는 가입 없이 바로 로그인하세요.</p>' + msg +
       '<form id="signupForm" class="auth-form">' + authField('suName', '이름', 'text', '예: 홍길동', 'name') + authField('authEmail', '이메일', 'email', 'name@example.com', 'username', cloud.email) +
       authField('authPw', '비밀번호 (8자 이상)', 'password', '', 'new-password') +
       '<button class="btn primary" type="submit"' + (cloud.busy ? ' disabled' : '') + '>' + (cloud.busy ? '가입 중…' : '가입하기') + '</button></form>' +
+      '<div class="auth-or"><span>또는 간편 가입</span></div>' + socialBtns(true) +
       '<button class="btn ghost sm" data-act="authView" data-id="login" type="button">로그인으로 돌아가기</button>';
   } else if (v === 'reset') {
     body = '<h1>비밀번호 찾기</h1><p class="muted">가입한 이메일로 비밀번호를 새로 정하는 링크를 보내 드립니다.</p>' + msg +
