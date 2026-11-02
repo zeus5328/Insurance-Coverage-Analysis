@@ -966,6 +966,8 @@ input[type=time] { background: var(--surface); border: 1px solid var(--line); bo
 .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; }
 .bars { flex: 1; width: 100%; display: flex; align-items: flex-end; justify-content: center; gap: 3px; }
 .bars .b { width: 14px; border-radius: 3px 3px 0 0; min-height: 2px; }
+.bar-col { min-width: 0; }
+@media (max-width: 600px) { .bar-chart { gap: 6px; } .bars { gap: 2px; } .bars .b { width: 8px; } }
 .b-comm { background: var(--ok); } .b-past { background: var(--ink-3); opacity: .55; } .bar-col.cur .bar-lab { font-weight: 700; color: var(--ink); }
 .comm-rates td input { width: 84px; min-width: 64px; text-align: right; } .comm-rates td:first-child { white-space: nowrap; }
 .comm-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 12px; } @media (max-width: 900px) { .comm-grid { grid-template-columns: 1fr 1fr; } }
