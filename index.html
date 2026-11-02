@@ -1012,6 +1012,8 @@ td.cell-bad input { border-color: #dc2626; background: #fef2f2; }
 .warn-box { border-color: #f59e0b; }
 .dict-test { display: grid; grid-template-columns: minmax(260px, 420px) 1fr; gap: 12px; align-items: end; padding: 12px; background: var(--bg-2, #f6f7f9); border-radius: var(--r-sm); }
 .dict-test-out { padding-bottom: 8px; }
+.merge-list { margin: 0; padding: 0; list-style: none; display: flex; gap: 6px 10px; flex-wrap: wrap; }
+.merge-list li { padding: 4px 10px; border: 1px solid var(--line); border-radius: 999px; font-size: 12.5px; }
 @media (max-width: 700px) { .dict-test { grid-template-columns: 1fr; } }
 
 /* 상품 관리 목록 */
@@ -2296,7 +2298,7 @@ function renderSettings() {
     body = '<div class="kpis">' + stat('고객', store.customers.length + '<small>명</small>') + stat('계약', nPol + '<small>건</small>') + stat('상담 기록', nNote + '<small>건</small>') +
       stat('일정 · 할 일', s.events.length + ' · ' + s.tasks.length) + stat('직원 · 보험사 연락처', s.contacts.staff.length + ' · ' + s.contacts.insurers.length) + stat('자료 크기', kb + '<small>KB</small>') + '</div>' +
       '<div class="' + (lbDays == null || lbDays > 30 ? 'notice warn-box' : 'info') + '">' + (lb ? '마지막 백업: <b>' + esc(lb) + '</b> (' + (lbDays === 0 ? '오늘' : lbDays + '일 전') + ')' + (lbDays > 30 ? ' — 한 달이 넘었습니다. 백업 파일을 새로 받아 두세요.' : '') : '아직 이 기기에서 백업 파일을 받은 적이 없습니다. 아래 "백업 파일 내보내기"로 받아 두세요.') + '</div>' +
-      renderFilesSection() +
+      localMergePanel() + renderFilesSection() +
       '<section class="panel"><h2>백업 (내 컴퓨터로)</h2><div class="info">' + (site.on ? '서버·사이트 저장과 별도로, 전체 자료를 내 컴퓨터에 파일로 받아 둘 수 있습니다.' : '모든 고객·계약·설정은 이 브라우저에만 저장됩니다. 브라우저 기록을 지우거나 다른 컴퓨터로 옮기면 사라지므로 백업 파일로 내보내 두세요.') + ' 백업 파일에는 고객 개인정보가 들어 있으니 안전한 곳에 보관하세요.</div>' +
       '<div class="row"><button class="btn primary" data-act="exportJson">백업 파일 내보내기</button><label class="btn" for="importFile">백업 파일 불러오기</label><input type="file" id="importFile" accept=".json,application/json" hidden>' +
       '<button class="btn" data-act="addSample" title="누를 때마다 이름·나이·직업·계약이 다른 예시 고객이 만들어집니다">예시 고객 추가 (무작위)</button><span class="spacer"></span>' +
@@ -3972,6 +3974,7 @@ function doAction(el) {
     case 'doPrint': doPrint(); return;
     case 'pdf': if (ui.printModal) { ui.printMsg = 'pdf'; render(); } proposalPdf(); return;
     case 'moveLocal': moveLocalExtra(); break;
+    case 'mergeLocal': applyLocalMerge(); return;
     case 'skipLocal': site.localExtra = null; break;
     case 'logout': cloudLogout(); return;
     case 'authView': ui.auth = id; cloud.msg = ''; break;
@@ -4425,6 +4428,44 @@ function checkLocalExtra() {
   store.customers.forEach(function (c) { have[c.id] = 1; });
   var extra = local.customers.filter(function (c) { return !have[c.id] && !c.sample; });
   if (extra.length) site.localExtra = extra;
+}
+// 로그인 없이(이 브라우저에만) 쓰던 자료를 로그인한 계정으로 합치기 — 고객·연락처·일정·할 일·가구·상품·FC 정보
+function localMergePlan() {
+  var L = loadLocalOnly(); if (!L) return null;
+  var S = store.settings, LS = L.settings, P = { cust: [], staff: [], ins: [], ev: [], tk: [], hh: [], prod: [], fc: [] };
+  var haveC = {}; store.customers.forEach(function (c) { haveC[c.id] = 1; });
+  P.cust = L.customers.filter(function (c) { return !c.sample && !haveC[c.id]; });
+  var key = function (arr, fn) { var m = {}; arr.forEach(function (x) { m[fn(x)] = 1; }); return m; };
+  var kStaff = function (x) { return norm(x.name) + '|' + phoneDigits(x.phone); };
+  var hs = key(S.contacts.staff, kStaff); P.staff = (LS.contacts.staff || []).filter(function (x) { return x.name && !hs[kStaff(x)]; });
+  var hi = key(S.contacts.insurers, function (x) { return norm(x.name); }); P.ins = (LS.contacts.insurers || []).filter(function (x) { return x.name && !hi[norm(x.name)]; });
+  var kEv = function (e) { return evKey(e) + '|' + (e.time || ''); }; var he = key(S.events, kEv); P.ev = (LS.events || []).filter(function (e) { return !he[kEv(e)]; });
+  var kTk = function (t) { return norm(t.title) + '|' + (t.due || ''); }; var ht = key(S.tasks, kTk); P.tk = (LS.tasks || []).filter(function (t) { return !ht[kTk(t)]; });
+  var hh = key(S.households, function (h) { return h.id; }); P.hh = (LS.households || []).filter(function (h) { return !hh[h.id]; });
+  var kPr = function (x) { return norm(x.insurer) + '|' + norm(x.name); }; var hp = key(S.products, kPr); P.prod = (LS.products || []).filter(function (x) { return !x.preset && !hp[kPr(x)]; });
+  ['name', 'role', 'phone', 'email', 'org', 'branch'].forEach(function (k) { if (!S.fc[k] && LS.fc && LS.fc[k]) P.fc.push(k); });
+  P.L = L; P.total = P.cust.length + P.staff.length + P.ins.length + P.ev.length + P.tk.length + P.hh.length + P.prod.length + P.fc.length;
+  return P;
+}
+function applyLocalMerge() {
+  var P = localMergePlan(); if (!P || !P.total) { toast('옮길 자료가 없습니다'); return; }
+  var S = store.settings, LS = P.L.settings;
+  P.cust.forEach(function (c) { store.customers.push(c); });
+  P.staff.forEach(function (x) { S.contacts.staff.push(x); }); P.ins.forEach(function (x) { S.contacts.insurers.push(x); });
+  P.ev.forEach(function (x) { S.events.push(x); }); P.tk.forEach(function (x) { S.tasks.push(x); });
+  P.hh.forEach(function (x) { S.households.push(x); }); P.prod.forEach(function (x) { S.products.push(x); });
+  P.fc.forEach(function (k) { S.fc[k] = LS.fc[k]; });
+  site.localExtra = null; save(); render();
+  toast('고객 ' + P.cust.length + '명 · 연락처 ' + (P.staff.length + P.ins.length) + '건 · 일정/할 일 ' + (P.ev.length + P.tk.length) + '건을 내 계정으로 옮겼습니다');
+}
+function localMergePanel() {
+  if (!cloud.on) return '';
+  var P = localMergePlan(); if (!P || !P.total) return '';
+  var it = function (label, n) { return n ? '<li>' + label + ' <b>' + n + '</b></li>' : ''; };
+  return '<section class="panel"><h2>이 브라우저에만 저장된 자료</h2><div class="info">로그인 없이 쓰던 자료가 이 브라우저에 남아 있습니다. 아래 버튼을 누르면 서버의 내 계정에 <b>더해집니다</b>(이미 계정에 있는 고객·연락처·일정은 겹치지 않게 건너뜀). 다른 FC의 자료면 옮기지 마세요.</div>' +
+    '<ul class="merge-list">' + it('고객', P.cust.length) + it('직원 연락처', P.staff.length) + it('보험사 연락처', P.ins.length) + it('일정', P.ev.length) + it('할 일', P.tk.length) + it('가구', P.hh.length) + it('내가 만든 상품', P.prod.length) + (P.fc.length ? '<li>FC 정보 빈 칸 ' + P.fc.length + '개</li>' : '') + '</ul>' +
+    (P.cust.length ? '<p class="muted" style="margin:0">고객: ' + esc(P.cust.slice(0, 8).map(function (c) { return c.name || '이름 없음'; }).join(', ')) + (P.cust.length > 8 ? ' 외 ' + (P.cust.length - 8) + '명' : '') + '</p>' : '') +
+    '<div class="row"><button class="btn primary" data-act="mergeLocal">내 계정으로 옮기기</button></div></section>';
 }
 function moveLocalExtra() {
   var extra = site.localExtra || [];
