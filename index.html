@@ -457,6 +457,13 @@ table.t tr.unmapped td { background: var(--accent-soft); }
 .doc th, .doc td { border-bottom: 1px solid #D8DCE5; padding: 6px 8px; text-align: left; }
 .doc th { background: #F1F3F7; font-weight: 600; }
 .doc td.r, .doc th.r { text-align: right; }
+.doc-card { break-inside: avoid; page-break-inside: avoid; }
+.doc-card-row { display: flex; gap: 18px; align-items: center; padding: 14px; border: 1px solid #D8DCE5; border-radius: 10px; }
+.doc-card-img { width: 300px; max-width: 48%; height: auto; border-radius: 6px; border: 1px solid #E3E6EE; background: #fff; }
+.doc-card-txt { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: #1D2433; }
+.doc-card-txt b { font-size: 15px; } .doc-card-txt .muted { color: #4A5468; margin-top: 4px; }
+.chk-line { display: flex; gap: 6px; align-items: center; font-size: 13px; cursor: pointer; }
+@media (max-width: 600px) { .doc-card-row { flex-direction: column; align-items: flex-start; } .doc-card-img { max-width: 100%; } }
 .doc .fine { font-size: 11.5px; color: #4A5468; border-top: 1px solid #D8DCE5; padding-top: 12px; }
 .doc .callout { background: #FBE6D6; color: #8A3E0B; border-radius: 8px; padding: 10px 12px; font-size: 12.5px; }
 .doc .pill { font-size: 11px; }
@@ -830,6 +837,66 @@ input[type=time] { background: var(--surface); border: 1px solid var(--line); bo
 .dn-btn.on { background: var(--ok-soft); border-color: var(--ok); color: var(--ok); font-weight: 600; }
 .dn-table tfoot td { border-top: 2px solid var(--line); }
 .dn-all { font-size: 12px; margin-top: 2px; }
+.cc-addr { min-width: 200px; } .cc-memo { min-width: 140px; max-width: 260px; color: var(--ink-2); }
+.cal-view { margin-right: 4px; } .cal-view .seg-btn { padding: 5px 12px; }
+.cal-grid.week .cal-cell { min-height: 260px; }
+.cal-grid.week .cal-item { white-space: normal; }
+.cal-none { font-size: 11px; color: var(--ink-3); }
+.wk-wd { display: none; font-weight: 500; color: var(--ink-3); } .cal-cell.today .wk-wd { color: inherit; }
+.gd-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
+.gd-steps li { display: flex; gap: 10px; padding: 12px; border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--surface); }
+.gd-steps p { margin: 4px 0 0; font-size: 13px; color: var(--ink-2); line-height: 1.55; }
+.gd-n { flex: none; width: 26px; height: 26px; border-radius: 999px; background: var(--ok-soft); color: var(--ok); font-weight: 700; display: grid; place-items: center; font-size: 13px; }
+.gd-table td { vertical-align: top; line-height: 1.55; } .gd-table td:first-child { white-space: nowrap; }
+.gd-list { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; line-height: 1.6; color: var(--ink); }
+.gd-six { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
+.gd-card { display: flex; flex-direction: column; gap: 4px; padding: 12px; border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--surface-2); font-size: 13px; color: var(--ink-2); }
+.gd-card b { color: var(--ink); font-size: 14px; }
+.gd-check { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 6px 16px; }
+.gd-check label { display: flex; gap: 8px; align-items: flex-start; line-height: 1.5; cursor: pointer; }
+.gd-check input { margin-top: 3px; accent-color: var(--ok); }
+.who-checks { display: flex; gap: 8px; flex-wrap: wrap; }
+.who-seg .seg-btn b { margin-left: 2px; }
+.tgl { position: relative; display: inline-flex; align-items: center; gap: 8px; padding: 5px 12px 5px 6px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--ink-2); font-size: 13px; cursor: pointer; user-select: none; white-space: nowrap; }
+.tgl.on { color: var(--ink); border-color: var(--ok); }
+.tgl input { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; }
+.tgl-sw { position: relative; width: 34px; height: 20px; border-radius: 999px; background: var(--line); transition: background .15s; flex: none; }
+.tgl-sw::after { content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.25); transition: left .15s; }
+.tgl input:checked + .tgl-sw { background: var(--ok); }
+.tgl input:checked + .tgl-sw::after { left: 16px; }
+.tgl input:focus-visible + .tgl-sw { outline: 2px solid var(--ok); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .tgl-sw, .tgl-sw::after { transition: none; } }
+.drv-table td { vertical-align: top; } .drv-table td div + div { margin-top: 2px; }
+.drv-detail td { background: var(--surface-2); }
+.drv-checks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+.chip-btn { cursor: pointer; font: inherit; }
+.nt-list { display: flex; flex-direction: column; gap: 10px; }
+.nt-card { border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--surface); padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; cursor: default; }
+.nt-card.pin { border-color: var(--ink-3); background: var(--surface-2); }
+.nt-card.imp { border-left: 4px solid var(--accent); }
+.nt-head { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.nt-title { font-size: 15px; } .nt-card.unread .nt-title { color: var(--ink); }
+.nt-new { font-size: 11px; color: #fff; background: var(--accent); border-radius: 999px; padding: 1px 7px; }
+.nt-body { margin: 0; line-height: 1.6; color: var(--ink-2); white-space: normal; }
+.nt-foot { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 12.5px; }
+.k-anniv { background: #E6F4F1; color: #136C5E; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .k-anniv { background: rgba(45,180,160,.18); color: #8FE0D2; } }
+:root[data-theme="dark"] .k-anniv { background: rgba(45,180,160,.18); color: #8FE0D2; }
+.an-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
+.an-month { display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--surface); color: var(--ink); text-align: left; cursor: pointer; font: inherit; min-height: 128px; }
+.an-month:hover { background: var(--surface-2); }
+.an-month.on { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+.an-month.cur .an-mh b { color: var(--accent); }
+.an-mh { display: flex; align-items: baseline; gap: 6px; } .an-mh b { font-size: 16px; } .an-mh small { font-size: 11px; color: var(--accent); }
+.an-cnt { display: flex; gap: 4px; flex-wrap: wrap; }
+.an-names { display: flex; flex-direction: column; gap: 1px; font-size: 12px; color: var(--ink-2); }
+.an-names i { font-style: normal; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.who-e { background: var(--surface-2); color: var(--ink-2); }
+.wed-miss { display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border: 1px dashed var(--line); border-radius: var(--r-sm); }
+.k-gift { background: #FDECEF; color: #B4233C; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .k-gift { background: rgba(244,63,94,.18); color: #F7A1B1; } }
+:root[data-theme="dark"] .k-gift { background: rgba(244,63,94,.18); color: #F7A1B1; }
+.gift-table td.muted { max-width: 240px; }
 .edu-list { display: flex; flex-direction: column; gap: 8px; }
 .edu-card { border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--surface); }
 .edu-card.open { border-color: var(--ok); }
@@ -839,6 +906,10 @@ input[type=time] { background: var(--surface); border: 1px solid var(--line); bo
 .edu-count { white-space: nowrap; margin-left: auto; } .edu-count b { font-size: 16px; color: var(--ok); }
 .edu-head .chev { color: var(--ink-3); }
 .edu-body { display: flex; flex-direction: column; gap: 10px; padding: 0 14px 14px; }
+.edu-card.past { opacity: .75; } .edu-card.past.open { opacity: 1; }
+.edu-actions { gap: 6px; flex-wrap: wrap; align-items: center; } .edu-memo { font-size: 12.5px; max-width: 40%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.edu-list .org-month { padding: 8px 2px 2px; border-bottom: 0; }
+.edu-count { color: var(--ink-2); font-size: 12.5px; }
 .edu-names { margin: 0; font-size: 13px; color: var(--ink-2); line-height: 1.6; }
 .org-sep { width: 1px; align-self: stretch; background: var(--line); margin: 0 4px; }
 .org-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
@@ -849,7 +920,7 @@ input[type=time] { background: var(--surface); border: 1px solid var(--line); bo
 .k-follow { background: var(--ok-soft); color: var(--ok); } .k-bd { background: #FCE4EC; color: #B0285A; }
 .k-sang { background: #FFF1D6; color: #8A5A00; } .k-sbd { background: #F3E5F5; color: #7B1FA2; } .k-renew { background: var(--accent-soft); color: var(--accent-ink); }
 .k-pay { background: #E2F4EA; color: #1F7A4A; } .k-consent { background: var(--danger-soft); color: var(--danger); }
-.legend-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.legend-chips { display: flex; flex-wrap: wrap; gap: 4px; } .legend-chips { align-items: center; } .legend-chips .kchip { white-space: nowrap; } .legend-chips .cal-view { margin-right: 6px; }
 .cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
 .cal-head { padding: 6px; font-size: 11.5px; font-weight: 700; color: var(--ink-3); text-align: center; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--surface-2); }
 .cal-cell { min-height: 96px; padding: 4px 5px; border: 0; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); background: var(--surface); text-align: left; display: flex; flex-direction: column; gap: 2px; cursor: pointer; min-width: 0; color: var(--ink); }
@@ -1226,6 +1297,9 @@ tr.row-dbl:hover td .muted, .ctable tbody tr.crow:hover td .muted { color: var(-
   .panel > .row.between > .row:has(.mini-search) { flex: 1 1 auto; min-width: 0; flex-wrap: nowrap; gap: 6px; }
   .panel > .row.between .mini-search { flex: 1 1 auto !important; min-width: 0 !important; width: 0 !important; max-width: none !important; }
   .panel > .row.between > .row:has(.mini-search) > .btn { flex: none; }
+  .panel > .row.between > .ins-tools:has(.mini-search) { flex: 1 1 260px; min-width: 0; flex-wrap: nowrap; justify-content: flex-end; }
+  .panel > .row.between > .ins-tools .mini-search { flex: 1 1 auto !important; width: 0 !important; min-width: 96px !important; max-width: 260px !important; }
+  .panel > .row.between > .ins-tools > .btn, .panel > .row.between > .ins-tools > label.btn { flex: none; padding-inline: 10px; }
   .auto-table thead { display: none; }
   .auto-table, .auto-table tbody { display: block; }
   .auto-table tr { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; padding: 12px 4px; border-bottom: 1px solid var(--line); }
@@ -1279,6 +1353,16 @@ button.cal-btn { padding: 0; color: var(--ink-2); cursor: pointer; }
 .dp.sheet { left: 0 !important; right: 0; bottom: 0; top: auto !important; width: auto; border-radius: 16px 16px 0 0; padding: 14px 14px calc(14px + env(safe-area-inset-bottom, 0px)); box-shadow: 0 -10px 30px rgba(0,0,0,.25); }
 .dp.sheet .dp-d { height: 44px; font-size: 16px; } .dp.sheet .dp-d.tp-t { height: 40px; font-size: 14px; }
 .dp.sheet .dp-foot .qchip { padding: 7px 12px; font-size: 13px; }
+@media (max-width: 600px) {
+  .an-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .an-month { min-height: 0; } .an-names { display: none; }
+  .cal-grid.week { grid-template-columns: 1fr; }
+  .cal-grid.week .cal-head { display: none; }
+  .cal-grid.week .cal-cell { min-height: 0; padding: 8px 10px; }
+  .cal-grid.week .wk-wd { display: inline; }
+  .cal-grid.week .cal-item { font-size: 12.5px; height: auto; padding: 3px 6px; line-height: 1.4; }
+  .cal-grid.week .cal-cell { gap: 4px; }
+  .gd-table td:first-child { white-space: normal; }
+}
 @media print {
   :root, :root[data-theme="dark"], :root:not([data-theme="light"]) { --bg: #F3F4F7; --surface: #FCFCFD; --surface-2: #ECEEF3; --line: #D8DCE5; --ink: #172238; --ink-2: #4A5468; --ink-3: #7A8396; --accent: #D9671E; --accent-soft: #FBE6D6; --accent-ink: #8A3E0B; --ok: #2A63C9; --ok-soft: #E2EBFA; --muted: #5B6B8C; --muted-soft: #E6E9F0; --danger: #B42318; --danger-soft: #FCE5E3; color-scheme: light; }
   body { background: #fff; }
@@ -1766,6 +1850,16 @@ function generateDemoData() {
   seedPresetProducts(S); if (S.contacts.insurers.length < 5) mergeAssocInsurers(S);
   if (!S.fc.name) { S.fc.name = '체험 FC'; S.fc.org = S.fc.org || 'ABA금융서비스'; S.fc.branch = S.fc.branch || br[2]; S.fc.demo = true; }
   save();
+  S.gifts = (S.gifts || []).filter(function (g) { return !g.sample; });
+  S.annivs = (S.annivs || []).filter(function (g) { return !g.sample; });
+  S.contacts.friends = (S.contacts.friends || []).filter(function (g) { return !g.sample; });
+  [['지인', '소개해 준 분'], ['거래처', '단골 식당 사장님']].forEach(function (x, k) { var dd3 = new Date(now.getTime() + R(4 + k * 12, 14 + k * 12) * 864e5); S.contacts.friends.push({ id: uid(), sample: true, name: (k ? '박' : '이') + (k ? '사장' : '선생') + ' (예시)', rel: x[0], phone: '', bdCal: 'solar', bdYear: 1970 + R(0, 20), bdMonth: dd3.getMonth() + 1, bdDay: dd3.getDate(), bdLeap: false, memo: x[1] }); });
+  S.notices = (S.notices || []).filter(function (g) { return !g.sample; });
+  S.notices.push({ id: uid(), sample: true, date: dayISO(-1), title: '이번 달 시상 기준 안내 (예시)', body: '이번 달 시상은 월초 보험료 기준으로 집계합니다.\n세부 기준은 지점 회의 자료를 확인하세요. (예시 공지)', cat: '시상·이벤트', imp: true, pin: true, until: dayISO(28), read: false });
+  S.notices.push({ id: uid(), sample: true, date: dayISO(-3), title: '신상품 교육 일정 (예시)', body: '지점 일정의 교육에 참석 여부를 체크해 주세요. (예시 공지)', cat: '교육', imp: false, pin: false, until: '', read: true });
+  (S.contacts.staff.filter(function (x) { return x.sample; }).slice(0, 2)).forEach(function (st, k) { var dd2 = new Date(now.getTime() + R(5 + k * 10, 25 + k * 10) * 864e5); dd2.setFullYear(dd2.getFullYear() - R(3, 15)); S.annivs.push({ id: uid(), sample: true, who: 's', cid: '', sid: st.id, name: '', type: k ? '결혼기념일' : '입사일', date: isoDate(dd2), memo: '예시' }); });
+  [[0, '결혼기념일', 8, 12], [1, '개업일', 3, 5], [2, '첫 계약일', 2, 20]].forEach(function (x) { var dd = new Date(now.getTime() + R(x[3], x[3] + 25) * 864e5); dd.setFullYear(dd.getFullYear() - x[2] - R(0, 6)); S.annivs.push({ id: uid(), sample: true, who: 'c', cid: custs[x[0]].id, sid: '', name: '', type: x[1], date: isoDate(dd), memo: '예시' }); });
+  [[0, '생일', '케이크 쿠폰', 25000, '모바일 쿠폰'], [1, '명절(설·추석)', '과일 세트', 50000, '택배'], [2, '소개 감사', '커피 쿠폰', 10000, '모바일 쿠폰'], [3, '계약 감사', '보온병', 20000, '직접 전달']].forEach(function (x) { S.gifts.push({ id: uid(), sample: true, cid: custs[x[0]].id, date: dayISO(-R(5, 200)), occ: x[1], item: x[2] + ' (예시)', amount: x[3], how: x[4], memo: '' }); });
   S.events.push({ id: uid(), org: true, sample: true, date: dayISO(R(10, 20)), time: '18:30', type: '회식', title: '지점 회식 (예시)', place: '예시식당', memo: '', grp: '', done: false });
   S.events.forEach(function (e) { if (e.sample && e.org && (e.type === '교육' || e.type === '회식')) { e.att = {}; S.contacts.staff.forEach(function (x, k) { if (x.sample && k % 2 === 0) e.att[x.id] = true; }); } }); // 예시 교육 참석
   return made;
@@ -1777,6 +1871,10 @@ function removeDemoData() {
   S.contacts.staff = S.contacts.staff.filter(function (x) { return !x.sample; });
   S.events = S.events.filter(function (e) { return !e.sample && !ids[e.cid]; });
   S.tasks = S.tasks.filter(function (t) { return !t.sample && !ids[t.cid]; });
+  S.gifts = (S.gifts || []).filter(function (g) { return !g.sample && !ids[g.cid]; });
+  S.annivs = (S.annivs || []).filter(function (g) { return !g.sample && !ids[g.cid]; });
+  S.notices = (S.notices || []).filter(function (g) { return !g.sample; });
+  S.contacts.friends = (S.contacts.friends || []).filter(function (g) { return !g.sample; });
   if (S.fc.demo) { S.fc = { name: '', phone: '', org: '', branch: '' }; }
   ui.cid = null; save(); return n;
 }
@@ -1949,13 +2047,13 @@ function render() {
 // ===== 화면 이동 (주소 # 으로 기억 → 뒤로가기 동작) =====
 var STEPS = [['info', '고객 정보'], ['policies', '계약 입력'], ['analysis', '보장분석'], ['plan', '정리·설계'], ['proposal', '제안서']];
 var SETTING_SUBS = [['display', '화면 설정'], ['me', '내 정보'], ['rules', '분석 기준'], ['dict', '담보 사전'], ['products', '상품 관리'], ['data', '자료 관리']];
-var WORK_SUBS = [['home', '오늘'], ['calendar', '일정'], ['tasks', '할일'], ['birthday', '기념일'], ['stats', '실적'], ['comm', '수수료']];
-var OFFICE_SUBS = [['schedule', '지점 일정'], ['edu', '교육·행사'], ['staff', '직원 연락처'], ['branch', '지점·사업단']];
-var LIST_SUBS = [['list', '리스트'], ['contacts', '연락처'], ['family', '가족·가구'], ['notes', '상담 기록'], ['props', '제안 기록'], ['care', '관리 필요']];
-var INS_SUBS = [['all', '장기보험'], ['auto', '자동차보험'], ['fire', '화재보험'], ['insurer', '보험사 연락처']];
+var WORK_SUBS = [['home', '오늘'], ['calendar', '일정'], ['tasks', '할 일'], ['birthday', '생일'], ['anniv', '기념일'], ['gifts', '선물'], ['stats', '실적'], ['comm', '수수료']];
+var OFFICE_SUBS = [['notice', '공지'], ['schedule', '지점 일정'], ['staff', '직원 연락처'], ['sbd', '직원 생일'], ['branch', '지점·사업단']];
+var LIST_SUBS = [['list', '고객목록'], ['contacts', '연락처'], ['family', '가족·가구'], ['notes', '상담 기록'], ['props', '제안 기록'], ['care', '관리 필요']];
+var INS_SUBS = [['all', '장기보험'], ['auto', '자동차보험'], ['fire', '화재보험'], ['drv', '운전자보험'], ['insurer', '보험사 연락처'], ['guide', '보험가이드']];
 function routeHash() {
   if (ui.view === 'work') return '#work-' + (ui.wsub || 'home');
-  if (ui.view === 'office') return '#office-' + (ui.osub || 'schedule');
+  if (ui.view === 'office') return '#office-' + (ui.osub || 'notice');
   if (ui.view === 'settings') return '#settings-' + (ui.sub || 'display');
   if (ui.view === 'insurance') return '#ins-' + (ui.isub || 'all');
   if (ui.view === 'customer' && ui.cid) return '#c-' + ui.cid + '-' + (ui.tab || 'info');
@@ -1987,18 +2085,18 @@ function applyHash() {
     ui.view = 'settings'; ui.sub = m[1] || 'display';
   } else if ((h === '' || h === '#') && store.settings.params.startView === 'list') {
     ui.view = 'list'; ui.lsub = 'list';
-  } else if ((m = h.match(/^#work(?:-(home|calendar|birthday|tasks|stats|comm|staff|branch))?$/)) || h === '#cust-todo' || h === '' || h === '#') {
-    ui.view = 'work'; ui.wsub = (m && m[1]) || 'home';
+  } else if ((m = h.match(/^#work(?:-(home|calendar|birthday|anniv|gifts|tasks|stats|comm|staff|branch))?$/)) || h === '#cust-gifts' || h === '#cust-todo' || h === '' || h === '#') {
+    ui.view = 'work'; ui.wsub = (m && m[1]) || (h === '#cust-gifts' ? 'gifts' : 'home');
     if (ui.wsub === 'staff' || ui.wsub === 'branch') { ui.view = 'office'; ui.osub = ui.wsub; ui.wsub = 'home'; } // 예전 주소
-  } else if ((m = h.match(/^#office(?:-(schedule|edu|dine|staff|branch))?$/))) {
-    ui.view = 'office'; ui.osub = m[1] || 'schedule';
+  } else if ((m = h.match(/^#office(?:-(notice|schedule|edu|dine|staff|sbd|branch))?$/))) {
+    ui.view = 'office'; ui.osub = m[1] === 'edu' || m[1] === 'dine' ? 'schedule' : (m[1] || 'notice');
   } else if ((m = h.match(/^#cust-(notes|props|family|care|contacts)$/))) {
     ui.view = 'list'; ui.lsub = m[1];
   } else if ((m = h.match(/^#contacts(?:-(staff|insurer|cust))?$/))) { // 예전 연락처 메뉴 주소
     if (m[1] === 'insurer') { ui.view = 'insurance'; ui.isub = 'insurer'; }
     else if (m[1] === 'cust') { ui.view = 'list'; ui.lsub = 'contacts'; }
     else { ui.view = 'office'; ui.osub = 'staff'; }
-  } else if ((m = h.match(/^#ins(?:-(all|byins|byowner|auto|fire|products|insurer))?$/))) {
+  } else if ((m = h.match(/^#ins(?:-(all|byins|byowner|auto|fire|drv|products|insurer|guide))?$/))) {
     ui.view = 'insurance'; ui.isub = m[1] || 'all';
     if (ui.isub === 'products') { ui.view = 'settings'; ui.sub = 'products'; ui.isub = 'all'; } // 예전 주소
   } else {
@@ -2033,7 +2131,7 @@ function custStatus(c, an) {
 function subbarHtml() {
   var subs, cur, act, label;
   if (ui.view === 'work') { subs = WORK_SUBS; cur = ui.wsub || 'home'; act = 'goWork'; label = '업무 메뉴'; }
-  else if (ui.view === 'office') { subs = OFFICE_SUBS; cur = ui.osub || 'schedule'; act = 'goOffice'; label = '지점 메뉴'; }
+  else if (ui.view === 'office') { subs = OFFICE_SUBS; cur = ui.osub || 'notice'; act = 'goOffice'; label = '지점 메뉴'; }
   else if (ui.view === 'list') { subs = LIST_SUBS; cur = ui.lsub || 'list'; act = 'goList'; label = '고객 메뉴'; }
   else if (ui.view === 'settings') { subs = SETTING_SUBS; cur = ui.sub || 'display'; act = 'goSettings'; label = '설정 메뉴'; }
   else if (ui.view === 'insurance') { subs = INS_SUBS; cur = (ui.isub === 'byins' || ui.isub === 'byowner') ? 'all' : (ui.isub || 'all'); act = 'goIns'; label = '보험 메뉴'; }
@@ -2048,7 +2146,7 @@ function renderTop() {
     '<nav class="topnav"><button class="navbtn' + (ui.view === 'work' ? ' on' : '') + '" data-act="goWork" data-id="' + (ui.wsub || 'home') + '">업무</button>' +
     '<button class="navbtn' + (ui.view === 'list' || ui.view === 'customer' ? ' on' : '') + '" data-act="home">고객</button>' +
     '<button class="navbtn' + (ui.view === 'insurance' ? ' on' : '') + '" data-act="goIns" data-id="' + (ui.isub || 'all') + '">보험</button>' +
-    '<button class="navbtn' + (ui.view === 'office' ? ' on' : '') + '" data-act="goOffice" data-id="' + (ui.osub || 'schedule') + '">지점</button>' +
+    '<button class="navbtn' + (ui.view === 'office' ? ' on' : '') + '" data-act="goOffice" data-id="' + (ui.osub || 'notice') + '">지점</button>' +
     '<button class="navbtn' + (ui.view === 'settings' ? ' on' : '') + '" data-act="settings">설정</button></nav>' +
     '<div class="spacer"></div>' +
     (LOGIN_OFF ? '<span class="test-badge" title="로그인 기능이 꺼져 있습니다. 자료는 이 브라우저에만 저장됩니다."><span class="tb-long">로그인 꺼짐 · </span>테스트</span>' : '') +
@@ -2121,9 +2219,9 @@ function renderList() {
   var todos = store.customers.length ? kpi('', '전체 고객', store.customers.length, '') + kpi('map', '매핑 필요', cnt.map, 'warn') + kpi('empty', '계약 미입력', cnt.empty, '') +
     kpi('short', '부족 담보 있음', cnt.short, 'warn') + (cnt.consent || ui.filter === 'consent' ? kpi('consent', '동의 확인 필요', cnt.consent, 'warn') : '') : '';
   return '<section class="list-page">' +
-    '<div class="list-head"><h1>고객 <span class="muted num">' + store.customers.length + '명</span></h1>' +
+    '<div class="list-head"><h1>고객목록 <span class="muted num">' + store.customers.length + '명</span></h1>' +
     '<div class="list-tools"><input type="search" id="q" placeholder="이름·전화번호 검색" value="' + attr(ui.q) + '" aria-label="고객 이름·전화번호 검색">' +
-      '<button class="btn primary" data-act="addCustomer">+ 신규 고객</button></div></div>' +
+      '<button class="btn primary" data-act="addCustomer" title="신규 고객 등록">+ 추가</button></div></div>' +
     (todos ? '<div class="kpis" role="group" aria-label="처리할 일로 걸러 보기">' + todos + '</div>' : '') +
     '<div id="clistWrap">' + renderListTable() + '</div>' +
     '<p class="muted list-foot">' + (cloud.on ? '고객 자료는 입력할 때마다 서버의 내 계정에 저장됩니다. 다른 FC에게는 보이지 않습니다.' : site.on ? '고객 자료는 이 사이트에 저장됩니다.' : '고객 자료는 이 브라우저에 저장됩니다. 설정 → 자료 관리에서 백업 파일을 주기적으로 내보내 두세요.') + '</p>' +
@@ -2352,7 +2450,11 @@ function bdNumText(x) {
   var p2 = function (n) { return (n < 10 ? '0' : '') + n; };
   return (num(x.bdYear) ? x.bdYear + '.' : '') + p2(num(x.bdMonth)) + '.' + p2(num(x.bdDay));
 }
-function staffBdCell(x) {
+var FRIEND_RELS = ['지인', '친구', '가족·친척', '거래처', '기타'];
+function friendList() { var C = store.settings.contacts; return C.friends = C.friends || []; }
+function friendsWithBd() { return friendList().filter(function (x) { x.bdCal = x.bdCal || 'solar'; return hasBirthday(x); }); }
+function staffBdCell(x, sc) {
+  sc = sc || 'staff';
   var cal = x.bdCal || 'solar';
   var nb = hasBirthday(x) ? nextBirthday(x) : null, age = '';
   if (num(x.bdYear) && num(x.bdMonth)) {
@@ -2360,9 +2462,9 @@ function staffBdCell(x) {
     if (sb) age = '만 ' + ageOf(sb) + '세';
   }
   var seg = '<span class="seg bd-seg" role="group" aria-label="양력·음력">' + [['solar', '양력'], ['lunar', '음력']].map(function (o) {
-    return '<button type="button" class="seg-btn' + (cal === o[0] ? ' on' : '') + '" data-act="staffBdCal" data-id="' + attr(x.id) + '" data-v="' + o[0] + '" aria-pressed="' + (cal === o[0]) + '">' + o[1] + '</button>'; }).join('') + '</span>';
-  return '<div class="bd-row">' + seg + f('staff', 'bdText', bdNumText(x), { id: x.id, ph: '19800315', inputmode: 'numeric', aria: '생일 (숫자 8자리, 연도 없이 0315도 가능)' }) +
-    (cal === 'lunar' ? '<label class="check">' + f('staff', 'bdLeap', !!x.bdLeap, { id: x.id, type: 'check' }) + ' 윤달</label>' : '') + '</div>' +
+    return '<button type="button" class="seg-btn' + (cal === o[0] ? ' on' : '') + '" data-act="staffBdCal" data-pid="' + sc + '" data-id="' + attr(x.id) + '" data-v="' + o[0] + '" aria-pressed="' + (cal === o[0]) + '">' + o[1] + '</button>'; }).join('') + '</span>';
+  return '<div class="bd-row">' + seg + f(sc, 'bdText', bdNumText(x), { id: x.id, ph: '19800315', inputmode: 'numeric', aria: '생일 (숫자 8자리, 연도 없이 0315도 가능)' }) +
+    (cal === 'lunar' ? '<label class="check">' + f(sc, 'bdLeap', !!x.bdLeap, { id: x.id, type: 'check' }) + ' 윤달</label>' : '') + '</div>' +
     '<span class="field-hint">' + (nb ? [cal === 'lunar' ? '양력 ' + Number(nb.date.slice(5, 7)) + '월 ' + Number(nb.date.slice(8, 10)) + '일' : '', dLabel(nb.days), age].filter(Boolean).join(' · ') : '숫자만: 19800315 · 연도 없이 0315') + '</span>';
 }
 function staffWithBd() { return store.settings.contacts.staff.filter(function (x) { x.bdCal = x.bdCal || 'solar'; return hasBirthday(x); }); }
@@ -2420,7 +2522,7 @@ function renderPolicies(c) {
   var anyOpen = c.policies.some(polOpen);
   return '<section class="panel"><div class="row between"><h2>기존 계약 ' + c.policies.length + '건</h2><div class="row">' +
     (c.policies.length > 1 ? '<button class="btn ghost sm" data-act="allPol" data-id="' + (anyOpen ? '0' : '1') + '">' + (anyOpen ? '모두 접기' : '모두 펼치기') + '</button>' : '') +
-    '<button class="btn primary" data-act="addPolicy">+ 계약 추가</button></div></div>' +
+    '<button class="btn primary" data-act="addPolicy" title="계약 추가">+ 추가</button></div></div>' +
     '<div class="info">담보명은 증권에 적힌 그대로 입력하세요. 아는 담보명은 표준담보로 자동 연결되고, 처음 보는 담보만 <b>표준담보</b>를 한 번 골라 주면 다음부터 자동으로 연결됩니다.' +
     '<div class="info-links">고객 가입내역 확인: <a href="https://www.credit4u.or.kr" target="_blank" rel="noopener noreferrer">내보험다보여</a> (보장 내역·실손 중복) · <a href="https://cont.insure.or.kr" target="_blank" rel="noopener noreferrer">내보험찾아줌</a> (계약 상태·숨은 보험금) — 고객 본인 인증으로 조회합니다.</div></div>' +
     (cards || '<div class="empty"><strong>입력된 계약이 없습니다</strong><span>증권을 보며 계약을 하나씩 추가하세요.</span></div>') + '</section>' + custNonLifePanel(c);
@@ -2649,6 +2751,7 @@ function renderProposal(c, an) {
     (res.removed.length ? '<p class="callout" style="margin:10px 0 0">해지검토 계약은 해지 시 해지환급금이 납입보험료보다 적을 수 있고, 새 계약은 건강 상태에 따라 가입이 거절되거나 조건이 붙을 수 있으며 면책·감액 기간이 새로 적용됩니다. 새 계약 성립 후 기존 계약 해지 여부를 결정하시기 바랍니다. 기존 계약이 부당하게 소멸된 경우 소멸일부터 6개월 안에 기존 계약의 부활을 청구하고 새 계약을 취소할 수 있습니다(보험업법 제97조).</p>' : '') + '</section>' +
     switchTable(c, res) +
     '<section><h2>3. 신규 설계</h2>' + (addRows ? '<table class="num"><thead><tr><th>담보</th><th class="r">보장금액</th><th class="r">월보험료</th><th>상품·메모</th></tr></thead><tbody>' + addRows + '</tbody></table>' : '<p>추가 설계 없음</p>') + '</section>' +
+    (fc.card && fc.cardOnDoc !== false ? '<section class="doc-card"><h2>담당 FC</h2><div class="doc-card-row"><img class="doc-card-img" src="' + attr(fc.card) + '" alt="담당 FC 명함"><div class="doc-card-txt">' + (fc.name ? '<b>' + esc((fc.role || 'FC') + ' ' + fc.name) + '</b>' : '') + '<span>' + esc([[fc.org, fc.branch, fc.unit].filter(Boolean).join(' '), fc.phone, fc.email].filter(Boolean).join(' · ')) + '</span>' + (fcOffice(fc) ? '<span>' + esc(fcOffice(fc)) + '</span>' : '') + '<span class="muted">궁금한 점은 언제든 연락 주세요.</span></div></div></section>' : '') +
     '<p class="fine">본 자료는 고객님의 기존 보험 계약을 바탕으로 작성한 상담 참고 자료이며, 보험 가입·해지를 확정하는 문서가 아닙니다. 권장 금액은 상담 기준표에 따른 참고값입니다. 실제 보장 내용은 각 보험사의 약관이 우선하며, 최종 가입·해지 결정은 고객님 본인이 하십니다. 기존 계약을 해지하고 새 계약에 가입하는 경우 보험업법에 따른 비교 안내를 받으실 수 있습니다.</p>' +
     '</article>';
 }
@@ -2670,6 +2773,7 @@ function renderSettings() {
       (function () { var card = s.fc.card, armed = ui.armed === 'fcCardDel';
         return '<div class="fc-card"><div class="fc-card-body">' + (card ? '<img class="fc-card-img" src="' + attr(card) + '" alt="내 명함">' : '<label class="fc-card-empty" for="fcCardFile"><b>명함 이미지</b><span>눌러서 사진이나 스캔 파일을 고르세요</span></label>') + '</div>' +
           '<div class="fc-card-side"><b>명함 이미지</b><span class="muted">JPG·PNG 사진이나 스캔 파일. 휴대폰에서는 바로 촬영할 수도 있습니다. 큰 사진은 자동으로 줄여 저장합니다.' + (s.fc.cardAt ? ' (' + esc(s.fc.cardAt) + ' 등록)' : '') + '</span>' +
+          (card ? '<label class="chk-line"><input type="checkbox" data-act="fcCardDoc"' + (s.fc.cardOnDoc !== false ? ' checked' : '') + '> 제안서 마지막에 명함 넣기</label>' : '') +
           '<div class="row" style="gap:6px"><label class="btn' + (card ? '' : ' primary') + '" for="fcCardFile">' + (card ? '명함 바꾸기' : '명함 올리기') + '</label><input type="file" id="fcCardFile" accept="image/*" data-kind="fccard" hidden>' +
           (card ? '<button class="btn danger' + (armed ? ' armed' : '') + '" data-act="fcCardDel">' + (armed ? '한 번 더 누르면 삭제' : '삭제') + '</button>' : '') + '</div></div></div>'; })() + '</section>';
   } else if (sub === 'display') {
@@ -2683,7 +2787,7 @@ function renderSettings() {
       '<section class="panel"><h2>글자 크기 <span class="muted">이 기기에만 적용됩니다</span></h2><div class="opt-row">' +
       opt('setZoom', 's', zk, '작게', '한 화면에 많이') + opt('setZoom', 'm', zk, '보통', '기본') + opt('setZoom', 'l', zk, '크게', '읽기 편하게') + opt('setZoom', 'xl', zk, '아주 크게', '태블릿·발표용') + '</div>' +
       '<p class="muted" style="margin:0">맥에서는 ⌘ + / ⌘ − 로도 바꿀 수 있습니다. 여기서 고른 크기는 이 브라우저에 기억됩니다.</p></section>' +
-      '<section class="panel"><h2>첫 화면</h2><div class="opt-row">' + opt('setStart', 'work', sv, '업무 · 오늘', '오늘 일정·할 일·연락할 고객') + opt('setStart', 'list', sv, '고객 · 리스트', '고객 목록부터') + '</div>' +
+      '<section class="panel"><h2>첫 화면</h2><div class="opt-row">' + opt('setStart', 'work', sv, '업무 · 오늘', '오늘 일정·할 일·연락할 고객') + opt('setStart', 'list', sv, '고객 · 고객목록', '고객 목록부터') + '</div>' +
       '<p class="muted" style="margin:0">프로그램을 열 때 처음 보이는 화면입니다. 왼쪽 위 "보장설계 매니저"를 누르면 언제든 오늘 업무로 갑니다.</p></section>';
   } else if (sub === 'rules') {
     var benchRows = STANDARDS.map(function (st) {
@@ -3125,6 +3229,9 @@ document.addEventListener('mousedown', function (e) {
   if (o) { e.preventDefault(); if (insInp) { if (o.dataset.bi != null) pickBranch(insInp, Number(o.dataset.bi)); else pickInsurer(insInp, o.dataset.name); } }
 });
 document.addEventListener('input', function (e) {
+  if (e.target && e.target.id === 'drvq') { ui.drvq = e.target.value; var dp2 = e.target.selectionStart; render(); var d2 = document.getElementById('drvq'); if (d2) { d2.focus(); try { d2.setSelectionRange(dp2, dp2); } catch (er) {} } return; }
+  if (e.target && e.target.id === 'ntq') { ui.ntq = e.target.value; var np = e.target.selectionStart; render(); var n2 = document.getElementById('ntq'); if (n2) { n2.focus(); try { n2.setSelectionRange(np, np); } catch (er) {} } return; }
+  if (e.target && e.target.id === 'gfq') { ui.gfq = e.target.value; var gp = e.target.selectionStart; render(); var g2 = document.getElementById('gfq'); if (g2) { g2.focus(); try { g2.setSelectionRange(gp, gp); } catch (er) {} } return; }
   if (e.target && e.target.id === 'cmq') { ui.cmq = e.target.value; var pos = e.target.selectionStart; render(); var q2 = document.getElementById('cmq'); if (q2) { q2.focus(); try { q2.setSelectionRange(pos, pos); } catch (er) {} } return; }
   var t = e.target; if (!t.dataset || (t.dataset.kind !== 'insurer' && t.dataset.kind !== 'branch')) return;
   t.dataset.typed = '1'; var pop = document.querySelector('.ins-pop'); if (!pop) { openInsPop(t); pop = document.querySelector('.ins-pop'); }
@@ -3444,7 +3551,7 @@ function staffPanel() {
     '<button class="btn primary sm" data-act="addStaff">+ 추가</button></div></div>' +
     (S.length ? '<div class="todos">' + chip('', '전체') + STAFF_ROLES.map(function (r) { return chip(r, r); }).join('') + (cnt['기타'] ? chip('기타', '기타') : '') + '</div>' : '') +
     '<div id="sqWrap">' + staffTable() + '</div>' +
-    '<p class="muted" style="margin:0">줄을 두 번 클릭하면 상세 창이 열려 고치거나 지울 수 있습니다. 사업단·지사 칸을 누르면 지점·사업단 목록이 열리고, 고르면 이름과 사무실 번호가 들어갑니다. 지점 칸에는 일산지점처럼 소속 지점을 적으세요. 생일(양력·음력)을 넣으면 업무 → 일정·기념일에 표시됩니다.</p></section>';
+    '<p class="muted" style="margin:0">줄을 두 번 클릭하면 상세 창이 열려 고치거나 지울 수 있습니다. 사업단·지사 칸을 누르면 지점·사업단 목록이 열리고, 고르면 이름과 사무실 번호가 들어갑니다. 지점 칸에는 일산지점처럼 소속 지점을 적으세요. 생일(양력·음력)을 넣으면 업무 → 일정 달력과 지점 → 직원 생일에 표시됩니다.</p></section>';
 }
 function insContractCount() { var m = {}; allPols().forEach(function (x) { var ct = insContactOf(x.p.insurer); if (ct) m[ct.id] = (m[ct.id] || 0) + 1; }); return m; }
 function insurerTable() {
@@ -3484,21 +3591,68 @@ function insurerPanel() {
 function renderCustContacts() {
   var q = norm(ui.cq), qd = String(ui.cq || '').replace(/\D/g, '');
   var list = store.customers.slice().sort(function (a, b) { return (!!a.sample - !!b.sample) || byName(a, b); }).filter(function (c) { return !q || norm(c.name).indexOf(q) >= 0 || (qd.length >= 3 && phoneDigits(c.phone).indexOf(qd) >= 0); });
-  if (!store.customers.length) return '<div class="empty"><strong>아직 등록한 고객이 없습니다</strong><span>고객 → 리스트에서 "+ 신규 고객"으로 등록하세요.</span></div>';
+  if (!store.customers.length) return '<div class="empty"><strong>아직 등록한 고객이 없습니다</strong><span>고객 → 고객목록에서 "+ 신규 고객"으로 등록하세요.</span></div>';
   if (!list.length) return '<div class="empty"><strong>검색 결과가 없습니다</strong><span>이름이나 전화번호 일부(3자리 이상)로 찾아 보세요.</span></div>';
   var rows = list.map(function (c) {
-    var a = c.birth ? ageOf(c.birth) : null, ph = String(c.phone || '').replace(/[^\d+]/g, '');
-    return '<tr><td style="min-width:110px">' + f('custc', 'name', c.name, { id: c.id, ph: '이름', aria: '이름' }) + '</td>' +
-      '<td style="min-width:84px">' + f('custc', 'gender', c.gender, { id: c.id, type: 'select', options: [['', '성별'], ['남', '남'], ['여', '여']], aria: '성별' }) + '</td>' +
-      '<td class="num" style="min-width:60px">' + (a != null ? a + '세' : '<span class="muted">–</span>') + '</td>' +
-      '<td style="min-width:240px"><div class="tel-cell">' + f('custc', 'phone', c.phone, { id: c.id, ph: '010-0000-0000', inputmode: 'tel', kind: 'phone', aria: '휴대폰' }) + telLink(c.phone) + smsLink(c.phone) + '</div></td>' +
-      '<td style="min-width:240px">' + f('custc', 'address', c.address, { id: c.id, ph: '예: 고양시 일산동구 정발산로 24', aria: '주소' }) + '</td>' +
-      '<td style="min-width:150px">' + f('custc', 'contactMemo', c.contactMemo, { id: c.id, ph: '메모 (연락 가능 시간 등)', aria: '메모' }) + '</td>' +
+    var a = c.birth ? ageOf(c.birth) : null;
+    return '<tr class="row-dbl" data-dbl="cust:' + c.id + '" tabindex="0" title="두 번 누르면 수정"><td><b>' + esc(c.name || '이름 없음') + '</b></td><td>' + (c.gender ? esc(c.gender) : '<span class="muted">–</span>') + '</td>' +
+      '<td class="num">' + (a != null ? a + '세' : '<span class="muted">–</span>') + '</td>' +
+      '<td style="white-space:nowrap">' + (c.phone ? '<span class="num">' + esc(c.phone) + '</span> ' + telLink(c.phone) + smsLink(c.phone) : '<span class="muted">–</span>') + '</td>' +
+      '<td class="cc-addr">' + (c.address ? esc(c.address) : '<span class="muted">–</span>') + '</td>' +
+      '<td class="cc-memo">' + (c.contactMemo ? esc(c.contactMemo) : '<span class="muted">–</span>') + '</td>' +
       '<td><button class="btn ghost sm" data-act="tabTo" data-id="' + c.id + '">고객 보기</button></td></tr>';
   }).join('');
   return '<div class="tablewrap"><table class="t ctab"><thead><tr><th>이름</th><th>성별</th><th>나이</th><th>휴대폰</th><th>주소</th><th>메모</th><th></th></tr></thead><tbody>' + rows + '</tbody></table></div>';
 }
 
+// ===== 업무 → 선물: 고객 선물 지급 내역 =====
+// settings.gifts = [{ id, cid, date, occ, item, amount(원), how, memo }]
+var GIFT_OCC = ['생일', '결혼기념일', '기념일(개업·입사 등)', '명절(설·추석)', '연말·새해', '계약 감사', '소개 감사', '축하(결혼·출산·개업)', '위로(병문안·조문)', '기타'];
+var GIFT_HOW = ['모바일 쿠폰', '택배', '직접 전달', '기타'];
+function giftList() { var g = store.settings.gifts = store.settings.gifts || []; return g; }
+function giftPanel() {
+  var G = giftList(), t = today(), Y = t.slice(0, 4), M = t.slice(0, 7);
+  var yr = ui.gfY || Y, occ = ui.gfO || '', q = norm(ui.gfq || '');
+  var years = {}; G.forEach(function (g) { if (g.date) years[g.date.slice(0, 4)] = 1; }); years[Y] = 1;
+  var list = G.filter(function (g) { var c = custById(g.cid); return (yr === 'all' || String(g.date || '').slice(0, 4) === yr) && (!occ || g.occ === occ) && (!q || norm([c ? c.name : '', g.item, g.memo, g.occ].join(' ')).indexOf(q) >= 0); })
+    .sort(function (a, b) { return String(b.date || '').localeCompare(String(a.date || '')); });
+  var yG = G.filter(function (g) { return String(g.date || '').slice(0, 4) === Y; }), sum = function (arr) { return arr.reduce(function (t2, g) { return t2 + num(g.amount); }, 0); };
+  var mG = yG.filter(function (g) { return String(g.date || '').slice(0, 7) === M; }), people = {}; yG.forEach(function (g) { if (g.cid) people[g.cid] = 1; });
+  var kp = function (k, v, unit) { return '<div class="kpi" style="cursor:default"><span class="k">' + k + '</span><span class="v num">' + v + (unit ? '<small>' + unit + '</small>' : '') + '</span></div>'; };
+  var kpis = '<div class="kpis">' + kp(Y + '년 선물', yG.length, '건') + kp(Y + '년 금액', fmtWon(sum(yG))) + kp('이번 달 금액', fmtWon(sum(mG))) + kp(Y + '년 받은 고객', Object.keys(people).length, '명') + '</div>';
+  // 다가오는 생일 중 올해 선물 기록이 없는 고객
+  // 다가오는 생일·기념일(고객) 중 올해 같은 계기의 선물 기록이 없는 것
+  var occOf = function (it) { if (it.kind === 'birthday') return '생일'; var an = annivList().filter(function (a) { return a.id === it.aid; })[0]; return an && an.type === '결혼기념일' ? '결혼기념일' : '기념일(개업·입사 등)'; };
+  var soon = workItems(t, isoDate(new Date(Date.now() + 30 * 864e5))).filter(function (it) { if (!((it.kind === 'birthday' || it.kind === 'anniv') && it.cid)) return false; var oc = occOf(it); it._occ = oc; return !yG.some(function (g) { return g.cid === it.cid && g.occ === oc; }); });
+  var nB = soon.filter(function (it) { return it.kind === 'birthday'; }).length;
+  var remind = soon.length ? '<section class="panel"><div class="row between"><h2>30일 안 생일 · 기념일 · 선물 기록 없음 <span class="muted num">' + soon.length + '</span></h2><span class="muted">생일 ' + nB + ' · 기념일 ' + (soon.length - nB) + '</span></div>' + foldList(soon, 8, 'gfSoonMore', function (it) {
+    var c = custById(it.cid), d = daysUntil(it.date);
+    return '<li><span class="wdate num">' + it.date.slice(5).replace('-', '.') + '</span><span class="kchip ' + (it.kind === 'anniv' ? 'k-anniv' : 'k-bd') + '">' + dLabel(d) + '</span><span class="what">' + esc(it.label) + '</span>' + (c ? custLink(c, 'info') : '') + '<button class="btn sm tel" data-act="giftNew" data-id="' + it.cid + '" data-k="' + attr(it._occ) + '">선물 기록</button></li>'; }, 'wlist') + '</section>' : '';
+  var chips = '<div class="todos">' + Object.keys(years).sort().reverse().map(function (y) { return '<button class="todo' + (yr === y ? ' on' : '') + '" data-act="gfY" data-id="' + y + '">' + y + '년</button>'; }).join('') + '<button class="todo' + (yr === 'all' ? ' on' : '') + '" data-act="gfY" data-id="all">전체</button>' +
+    '<span class="org-sep"></span>' + [''].concat(GIFT_OCC).map(function (o) { return '<button class="todo' + (occ === o ? ' on' : '') + '" data-act="gfO" data-id="' + o + '">' + (o || '모든 계기') + '</button>'; }).join('') + '</div>';
+  var rows = list.map(function (g) {
+    var c = custById(g.cid), over = g.occ === '계약 감사' && num(g.amount) > 30000;
+    return '<tr class="row-dbl" data-dbl="gift:' + g.id + '" tabindex="0" title="두 번 누르면 수정"><td class="num" data-l="날짜">' + esc(String(g.date || '').replace(/-/g, '.')) + '</td><td data-l="고객">' + (c ? custLink(c, 'info') : '<span class="muted">고객 없음</span>') + '</td>' +
+      '<td data-l="계기"><span class="kchip k-gift">' + esc(g.occ || '기타') + '</span></td><td data-l="선물"><b>' + esc(g.item || '–') + '</b></td><td class="r num" data-l="금액">' + (num(g.amount) ? fmtWon(g.amount) : '–') + (over ? ' <span class="chip warn" title="보험계약 관련 금품은 최초 1년 보험료의 10%와 3만원 중 적은 금액까지만 허용">한도 확인</span>' : '') + '</td>' +
+      '<td data-l="방법">' + esc(g.how || '') + '</td><td class="muted" data-l="메모">' + esc(g.memo || '') + '</td></tr>';
+  }).join('');
+  var byCust = {}; list.forEach(function (g) { var o = byCust[g.cid] = byCust[g.cid] || { n: 0, a: 0 }; o.n++; o.a += num(g.amount); });
+  var top = Object.keys(byCust).sort(function (a, b) { return byCust[b].a - byCust[a].a; }).slice(0, 8);
+  var table = list.length ? '<div class="tablewrap"><table class="t ctab gift-table"><thead><tr><th>날짜</th><th>고객</th><th>계기</th><th>선물</th><th class="r">금액</th><th>방법</th><th>메모</th></tr></thead><tbody>' + rows + '</tbody><tfoot><tr><td colspan="4"><b>합계 ' + list.length + '건</b></td><td class="r num"><b>' + fmtWon(sum(list)) + '</b></td><td colspan="2"></td></tr></tfoot></table></div>'
+    : '<div class="empty"><strong>' + (G.length ? '조건에 맞는 선물 내역이 없습니다' : '아직 기록한 선물이 없습니다') + '</strong><span>"+ 추가"로 고객에게 보낸 선물을 기록하세요. 생일·명절 선물이 겹치지 않게 챙길 수 있습니다.</span></div>';
+  var custBox = top.length ? '<section class="panel"><h2>고객별 합계 <span class="muted">' + (yr === 'all' ? '전체' : yr + '년') + (occ ? ' · ' + esc(occ) : '') + '</span></h2><ul class="wlist">' + top.map(function (cid) { var c = custById(cid); return '<li><span class="what">' + (c ? custLink(c, 'info') : '고객 없음') + '</span><span class="num">' + byCust[cid].n + '건</span><b class="num">' + fmtWon(byCust[cid].a) + '</b></li>'; }).join('') + '</ul></section>' : '';
+  return kpis + remind + '<section class="panel"><div class="row between"><h2>선물 지급 내역</h2><div class="row" style="gap:6px"><input type="search" id="gfq" class="mini-search" placeholder="고객·선물 검색" value="' + attr(ui.gfq || '') + '" aria-label="선물 검색"><button class="btn primary sm" data-act="giftNew">+ 추가</button></div></div>' + chips + table +
+    '<p class="muted" style="margin:0">줄을 두 번 누르면 고칠 수 있습니다. 보험계약과 관련해 주는 금품은 <b>최초 1년 보험료의 10%와 3만원 중 적은 금액</b>까지만 허용됩니다(보험업법 제98조·시행령 제46조). "계약 감사" 선물이 3만원을 넘으면 표시됩니다.</p></section>' + custBox;
+}
+function giftModalBody(g) {
+  var A = function (k, v, o) { o = o || {}; o.id = g.id; return f('gift', k, v, o); };
+  return '<div class="grid-form dm-grid">' + lbl('날짜', A('date', g.date, { type: 'date' })) + lbl('고객', A('cid', g.cid, { type: 'select', options: [['', '고객 선택']].concat(custOptions().slice(1)) })) +
+    '<div class="field span2"><span>계기</span><span class="seg seg-f">' + GIFT_OCC.map(function (o) { return '<button type="button" class="seg-btn' + (g.occ === o ? ' on' : '') + '" data-act="giftSet" data-id="' + g.id + '" data-k="occ" data-v="' + attr(o) + '">' + o + '</button>'; }).join('') + '</span></div>' +
+    lbl('선물', A('item', g.item, { ph: '예: 스타벅스 쿠폰, 과일 세트' })) + lbl('금액 (원)' + (num(g.amount) ? ' <b class="lbl-val">' + fmtWon(g.amount) + '</b>' : ''), A('amount', g.amount ? fmtWon(g.amount).replace('원', '') : '', { ph: '예: 3만 또는 30000', inputmode: 'numeric' })) +
+    '<div class="field span2"><span>방법</span><span class="seg seg-f">' + GIFT_HOW.map(function (o) { return '<button type="button" class="seg-btn' + (g.how === o ? ' on' : '') + '" data-act="giftSet" data-id="' + g.id + '" data-k="how" data-v="' + attr(o) + '">' + o + '</button>'; }).join('') + '</span></div>' +
+    lbl('메모', A('memo', g.memo, { type: 'textarea', ph: '예: 배송지 회사, 감사 문자 받음' }), 'span2') + '</div>' +
+    (g.occ === '계약 감사' && num(g.amount) > 30000 ? '<div class="notice" style="margin-top:10px">계약 관련 금품은 최초 1년 보험료의 10%와 3만원 중 적은 금액까지만 허용됩니다. 금액을 확인하세요.</div>' : '');
+}
 // ===== 보험 (전체 계약 · 상품 관리) =====
 // ----- 전체 계약 도우미 -----
 function insContactOf(name) {
@@ -3696,6 +3850,126 @@ function autoChecks(a) {
   return out;
 }
 function autoTone(a) { var ch = autoChecks(a); return ch.some(function (x) { return x[0] === 'bad'; }) ? 'bad' : ch.some(function (x) { return x[0] === 'warn'; }) ? 'warn' : 'ok'; }
+// ----- 자동차·화재 공용: 보험사별 / 계약자별 묶어 보기 -----
+function polViewTabs(kind) {
+  var v = ui[kind + 'V'] || 'all';
+  return '<div class="seg long-tabs" role="tablist" aria-label="' + (kind === 'auto' ? '자동차보험' : '화재보험') + ' 보기">' + [['all', '전체 계약'], ['ins', '보험사별 계약'], ['own', '계약자별 계약']].map(function (t) { return '<button class="seg-btn' + (v === t[0] ? ' on' : '') + '" role="tab" aria-selected="' + (v === t[0]) + '" data-act="pvTab" data-pid="' + kind + '" data-id="' + t[0] + '">' + t[1] + '</button>'; }).join('') + '</div>';
+}
+function annualPrem(kind, a) { return kind === 'fire' ? (a.cycle === '월납' ? num(a.premium) * 12 : num(a.premium)) : num(a.premium); }
+function polGroupPanel(kind, by) {
+  var list = kind === 'auto' ? allAutos() : allFires(), tone = kind === 'auto' ? autoTone : fireTone, unit = kind === 'auto' ? '대' : '건', what = kind === 'auto' ? '차량' : '물건';
+  if (!list.length) return '<section class="panel"><div class="empty"><strong>아직 입력한 ' + (kind === 'auto' ? '자동차보험' : '화재보험') + '이 없습니다</strong><span>"전체 계약"에서 "+ 입력"으로 넣으면 ' + (by === 'ins' ? '보험사별' : '계약자별') + '로 모아 보여 줍니다.</span></div></section>';
+  var g = {}, tot = 0;
+  list.forEach(function (x) {
+    var key = by === 'ins' ? (String(x.a.insurer || '').trim() || '보험사 미입력') : x.c.id, pr = annualPrem(kind, x.a), d = daysUntil(x.a.end);
+    var o = g[key] = g[key] || { key: key, c: x.c, cnt: 0, prem: 0, cust: {}, ins: {}, soon: 0, late: 0, chk: 0, next: '' };
+    o.cnt++; o.prem += pr; tot += pr; o.cust[x.c.id] = 1;
+    var nm = String(x.a.insurer || '').trim(); if (nm) o.ins[nm] = (o.ins[nm] || 0) + pr + 0.001;
+    if (d != null && d < 0) o.late++; else if (d != null && d <= 30) o.soon++;
+    if (tone(x.a) !== 'ok') o.chk++;
+    if (x.a.end && (d == null || d >= 0) && (!o.next || x.a.end < o.next)) o.next = x.a.end;
+  });
+  var arr = Object.keys(g).map(function (k) { return g[k]; }).sort(function (a, b) { return b.prem - a.prem || b.cnt - a.cnt; });
+  var bar = function (o) { var pct = tot ? Math.round(o.prem / tot * 1000) / 10 : 0; return '<td data-l="비중"><div class="sharebar"><i style="width:' + pct + '%"></i></div><span class="num muted">' + pct + '%</span></td>'; };
+  var flags = function (o) { return '<td class="r num" data-l="30일 안 만기">' + (o.soon ? '<span class="chip warn">' + o.soon + '건</span>' : '–') + '</td><td class="r num" data-l="만기 지남">' + (o.late ? '<span class="chip warn">' + o.late + '건</span>' : '–') + '</td><td class="r num" data-l="점검 필요">' + (o.chk ? '<span class="chip warn">' + o.chk + '건</span>' : '–') + '</td>'; };
+  var premH = kind === 'fire' ? '연 환산 보험료' : '연 보험료';
+  var head = by === 'ins' ? '<th>보험사</th><th class="r">' + what + '</th><th class="r">고객</th><th class="r">' + premH + '</th><th style="min-width:160px">비중</th>'
+    : '<th>계약자</th><th class="r">' + what + '</th><th class="r">' + premH + '</th><th style="min-width:160px">비중</th><th>대표 보험사</th><th>가장 빠른 만기</th>';
+  var rows = arr.map(function (o) {
+    var go2 = '<td><button class="btn ghost sm" data-act="pvGo" data-pid="' + kind + '" data-id="' + attr(by === 'ins' ? (o.key === '보험사 미입력' ? '' : o.key) : (o.c.name || '')) + '">계약 보기</button></td>';
+    if (by === 'ins') return '<tr><td data-l="보험사"><b>' + esc(o.key) + '</b></td><td class="r num" data-l="' + what + '">' + o.cnt + unit + '</td><td class="r num" data-l="고객">' + Object.keys(o.cust).length + '명</td><td class="r num" data-l="' + premH + '">' + fmtWon(o.prem) + '</td>' + bar(o) + flags(o) + go2 + '</tr>';
+    var insN = Object.keys(o.ins).sort(function (a, b) { return o.ins[b] - o.ins[a]; }), nd = o.next ? daysUntil(o.next) : null;
+    return '<tr><td data-l="계약자">' + custLink(o.c, 'info') + (o.c.birth ? ' <small class="muted">' + ageOf(o.c.birth) + '세</small>' : '') + '</td><td class="r num" data-l="' + what + '">' + o.cnt + unit + '</td><td class="r num" data-l="' + premH + '"><b>' + fmtWon(o.prem) + '</b></td>' + bar(o) +
+      '<td data-l="대표 보험사" title="' + attr(insN.join(', ')) + '">' + (insN.length ? esc(insN[0]) + (insN.length > 1 ? ' <small class="muted">외 ' + (insN.length - 1) + '곳</small>' : '') : '<span class="muted">–</span>') + '</td>' +
+      '<td class="num" data-l="가장 빠른 만기">' + (o.next ? esc(o.next.replace(/-/g, '.')) + ' <span class="chip' + (nd != null && nd <= 30 ? ' warn' : '') + '">' + dLabel(nd) + '</span>' : '<span class="muted">–</span>') + '</td>' + flags(o) + go2 + '</tr>';
+  }).join('');
+  var none = by === 'own' ? store.customers.filter(function (c) { return !g[c.id]; }).length : 0;
+  return '<section class="panel"><div class="row between"><h2>' + (by === 'ins' ? '보험사별 계약 ' + arr.length + '곳' : '계약자별 계약 ' + arr.length + '명') + '</h2><span class="muted">' + premH + '가 많은 순</span></div>' +
+    '<div class="tablewrap"><table class="t ctab pv-table"><thead><tr>' + head + '<th class="r">30일 안 만기</th><th class="r">만기 지남</th><th class="r">점검 필요</th><th></th></tr></thead><tbody>' + rows + '</tbody>' +
+    '<tfoot><tr><td><b>합계</b></td><td class="r num">' + list.length + unit + '</td>' + (by === 'ins' ? '<td></td>' : '') + '<td class="r num"><b>' + fmtWon(tot) + '</b></td><td colspan="' + (by === 'ins' ? 5 : 7) + '"></td></tr></tfoot></table></div>' +
+    '<p class="muted" style="margin:0">"계약 보기"를 누르면 전체 계약에서 ' + (by === 'ins' ? '그 보험사' : '그 고객') + ' 계약만 보여 줍니다.' + (kind === 'fire' ? ' 월납 보험료는 12개월로 환산해 더했습니다.' : '') + (none ? ' 이 보험이 없는 고객 ' + none + '명은 목록에 없습니다.' : '') + '</p></section>';
+}
+// ===== 보험 → 운전자보험: 고객별 운전자 담보(형사·행정 책임) 점검 =====
+// 장기 계약의 담보 중 표준담보 DRV_SETTLE(교통사고처리지원금)·DRV_LAWYER(변호사선임비)·DRV_FINE(벌금)을 모아 본다.
+// 기준 금액은 설정 → 분석 기준의 기준표(예시값)를 쓰고, 법령 수치(스쿨존 벌금 상한 3천만원)만 고정으로 쓴다.
+var DRV_LAW_FINE = 3000; // 만원: 특가법 제5조의13 어린이보호구역 어린이 상해 벌금 상한
+function drvInfo(c) {
+  var st = store.settings, bk = bandOf(ageOf(c.birth)), cur = { DRV_SETTLE: 0, DRV_LAWYER: 0, DRV_FINE: 0 }, pols = [];
+  c.policies.forEach(function (p) {
+    var hit = false;
+    (p.coverages || []).forEach(function (cov) { var m = mapCoverage(cov, st); if (m.code && cur[m.code] != null) { hit = true; cur[m.code] = Math.max(cur[m.code], num(cov.amount)); } });
+    if (hit) pols.push(p);
+  });
+  var rec = function (code) { return num((((st.bench[code] || {})[bk]) || [0, 0, 0])[1]); };
+  var ck = [], add = function (lv, t) { ck.push([lv, t]); };
+  if (c.drives && !pols.length) add('bad', '운전하는데 운전자보험 담보가 없음 — 형사합의금·벌금·변호사비 미보장');
+  if (!c.drives && pols.length) add('info', '"운전함" 표시가 없는데 운전자 담보 보유 — 운전 여부 확인(고객 정보)');
+  if (pols.length) {
+    if (!cur.DRV_SETTLE) add('bad', '교통사고처리지원금(형사합의금) 없음');
+    else if (rec('DRV_SETTLE') && cur.DRV_SETTLE < rec('DRV_SETTLE')) add('warn', '교통사고처리지원금 ' + fmtMan(cur.DRV_SETTLE) + ' — 기준 ' + fmtMan(rec('DRV_SETTLE')) + ' 미만');
+    if (!cur.DRV_FINE) add('bad', '벌금 담보 없음');
+    else if (cur.DRV_FINE < DRV_LAW_FINE) add('warn', '벌금 ' + fmtMan(cur.DRV_FINE) + ' — 스쿨존 어린이 상해 벌금은 최대 3천만원(특가법 제5조의13), 약관의 스쿨존 한도 확인');
+    if (!cur.DRV_LAWYER) add('warn', '변호사선임비 없음');
+    else if (rec('DRV_LAWYER') && cur.DRV_LAWYER < rec('DRV_LAWYER')) add('warn', '변호사선임비 ' + fmtMan(cur.DRV_LAWYER) + ' — 기준 ' + fmtMan(rec('DRV_LAWYER')) + ' 미만');
+    if (pols.length > 1) add('warn', '운전자 담보 ' + pols.length + '건 중복 — 실제 손해 한도로 나눠 지급(비례보상)되는 담보가 많아 보험료 낭비 가능');
+    pols.forEach(function (p) {
+      if (p.start && p.start < '2020-04-01') add('info', (p.insurer || '') + ' ' + (p.product || '') + ': 2020.4 민식이법 이전 가입 — 스쿨존 벌금 한도·교통사고처리지원금 기준(6주 미만 등) 약관 확인');
+      if (p.start && p.start >= '2026-01-01') add('info', (p.insurer || '') + ' ' + (p.product || '') + ': 2026년 개정 상품일 수 있음 — 변호사선임비 자기부담(50%)·심급별 한도 약관 확인');
+    });
+  }
+  var tone = ck.some(function (x) { return x[0] === 'bad'; }) ? 'bad' : ck.some(function (x) { return x[0] === 'warn'; }) ? 'warn' : 'ok';
+  return { cur: cur, pols: pols, checks: ck, tone: tone, rec: rec };
+}
+function drvPanel() {
+  var F = ui.drvF || '', q = norm(ui.drvq || '');
+  var all = store.customers.map(function (c) { return { c: c, i: drvInfo(c) }; }).filter(function (o) { return o.c.drives || o.i.pols.length; });
+  var nDrive = store.customers.filter(function (c) { return c.drives; }).length, nHave = all.filter(function (o) { return o.i.pols.length; }).length;
+  var nNone = all.filter(function (o) { return o.c.drives && !o.i.pols.length; }).length, nChk = all.filter(function (o) { return o.i.pols.length && o.i.tone !== 'ok'; }).length, nDup = all.filter(function (o) { return o.i.pols.length > 1; }).length;
+  var rows = all.filter(function (o) {
+    if (q && norm([o.c.name, o.i.pols.map(function (p) { return p.insurer + ' ' + p.product; }).join(' ')].join(' ')).indexOf(q) < 0) return false;
+    if (F === 'none') return o.c.drives && !o.i.pols.length; if (F === 'chk') return o.i.pols.length && o.i.tone !== 'ok'; if (F === 'dup') return o.i.pols.length > 1; if (F === 'have') return o.i.pols.length;
+    return true;
+  }).sort(function (a, b) { var r = { bad: 0, warn: 1, ok: 2 }; return r[a.i.tone] - r[b.i.tone] || byName(a.c, b.c); });
+  var k = function (key, label, v, tone) { var on = key && F === key; return '<button class="kpi' + (on ? ' on' : '') + (tone && v ? ' ' + tone : '') + '"' + (key ? ' data-act="drvF" data-id="' + (on ? '' : key) + '"' : ' style="cursor:default"') + '><span class="k">' + label + '</span><span class="v num">' + v + '<small>명</small></span></button>'; };
+  var kpis = '<div class="kpis">' + k('', '운전하는 고객', nDrive) + k('have', '운전자보험 있음', nHave) + k('none', '운전하는데 미가입', nNone, 'warn') + k('chk', '담보 점검 필요', nChk, 'warn') + k('dup', '중복 가입', nDup, 'warn') + '</div>';
+  var cell = function (o, code) { var v = o.i.cur[code], r = o.i.rec(code), low = code === 'DRV_FINE' ? v < DRV_LAW_FINE : (r && v < r); return '<td class="r num" data-l="' + (code === 'DRV_SETTLE' ? '처리지원금' : code === 'DRV_LAWYER' ? '변호사비' : '벌금') + '">' + (v ? '<span class="' + (low ? 'warn-txt' : '') + '">' + fmtMan(v) + '</span>' : '<span class="muted">–</span>') + '</td>'; };
+  var table = rows.length ? '<div class="tablewrap"><table class="t ctab drv-table"><thead><tr><th>고객</th><th>운전</th><th>운전자보험</th><th class="r">교통사고처리지원금</th><th class="r">변호사선임비</th><th class="r">벌금</th><th>점검</th><th></th></tr></thead><tbody>' + rows.map(function (o) {
+    var c = o.c, i = o.i, open = ui.drvOpen === c.id, nb = i.checks.filter(function (x) { return x[0] !== 'info'; }).length;
+    var polTxt = i.pols.length ? i.pols.map(function (p) { return '<div>' + esc((p.insurer || '') + ' ' + (p.product || '')) + (p.start ? ' <small class="muted">' + esc(p.start.slice(0, 7).replace('-', '.')) + ' 가입</small>' : '') + '</div>'; }).join('') : '<span class="muted">없음</span>';
+    return '<tr><td data-l="고객">' + custLink(c, 'policies') + (c.birth ? ' <small class="muted">' + ageOf(c.birth) + '세</small>' : '') + '</td><td data-l="운전">' + (c.drives ? '<span class="chip ok-chip">운전함</span>' : '<span class="chip">안 함</span>') + '</td>' +
+      '<td data-l="운전자보험">' + polTxt + '</td>' + cell(o, 'DRV_SETTLE') + cell(o, 'DRV_LAWYER') + cell(o, 'DRV_FINE') +
+      '<td data-l="점검">' + (i.tone === 'ok' ? '<span class="chip ok-chip">양호</span>' : '<button class="chip ' + (i.tone === 'bad' ? 'warn' : 'warn') + ' chip-btn" data-act="drvOpen" data-id="' + c.id + '">' + (i.tone === 'bad' ? '부족' : '확인') + ' ' + (nb || i.checks.length) + (open ? ' ▴' : ' ▾') + '</button>') +
+      (i.checks.some(function (x) { return x[0] === 'info'; }) && i.tone === 'ok' ? ' <button class="link-btn" data-act="drvOpen" data-id="' + c.id + '">참고</button>' : '') + '</td>' +
+      '<td><button class="btn ghost sm" data-act="goCust" data-id="' + c.id + '" data-pid="policies">계약 보기</button></td></tr>' +
+      (open ? '<tr class="drv-detail"><td colspan="8"><ul class="drv-checks">' + i.checks.map(function (x) { return '<li class="ck-' + x[0] + '"><span class="chip ' + (x[0] === 'info' ? '' : 'warn') + '">' + (x[0] === 'bad' ? '부족' : x[0] === 'warn' ? '확인' : '참고') + '</span> ' + esc(x[1]) + '</li>'; }).join('') + '</ul></td></tr>' : '');
+  }).join('') + '</tbody></table></div>'
+    : '<div class="empty"><strong>' + (all.length ? '조건에 맞는 고객이 없습니다' : '운전하는 고객이나 운전자보험 계약이 없습니다') + '</strong><span>고객 정보에서 "운전함"을 체크하고, 계약 입력에서 운전자보험 담보(교통사고처리지원금·변호사선임비용·벌금)를 넣으면 여기서 점검합니다.</span></div>';
+  return kpis + '<section class="panel"><div class="row between"><h2>고객별 운전자 담보 ' + rows.length + '명</h2><div class="ins-tools"><input type="search" id="drvq" class="mini-search" placeholder="고객·보험사 검색" value="' + attr(ui.drvq || '') + '" aria-label="운전자보험 검색"></div></div>' +
+    '<div id="drvWrap">' + table + '</div><p class="muted" style="margin:0">금액은 계약 입력의 담보(표준담보: 교통사고처리지원금·운전자 변호사선임비·운전자 벌금) 중 가장 큰 값입니다. 주황 글씨는 설정 → 분석 기준의 기준값(예시값) 미만이거나, 벌금이 스쿨존 상한(3천만원)보다 낮은 경우입니다. 새 운전자보험은 고객 → 계약 입력에서 추가합니다.</p></section>' + drvGuide();
+}
+function drvGuide() {
+  var open = ui.drvGuide;
+  var r = function (a, b, c) { return '<tr><td><b>' + a + '</b></td><td>' + b + '</td><td class="muted">' + (c || '') + '</td></tr>'; };
+  var src = [['교통사고 12대 중과실 (로톡)', 'https://www.lawtalk.co.kr/posts/142825'], ['민식이법 처벌 기준 (로톡)', 'https://www.lawtalk.co.kr/posts/53589'], ['운전자보험 변호사비 자기부담 50% (헤럴드경제, 2025.12)', 'https://www.heraldk.com/article/2025121618265956881'],
+    ['운전자보험 변호사선임비용 개정 (KB Think)', 'https://kbthink.com/insurance/trend/driver-legal-fees.html'], ['운전자보험과 자동차보험 법률비용 특약 (보험연구원, 2020)', 'https://kiri.or.kr/PDF/%EC%A3%BC%EA%B0%84%EB%B3%B4%ED%97%98%EB%8F%99%ED%96%A5/20200622/trend20200622_2.pdf'], ['국가법령정보센터', 'https://www.law.go.kr']];
+  return '<section class="panel"><div class="row between"><h2>운전자보험 상담 안내</h2><button class="btn ghost sm" data-act="toggleBox" data-id="drvGuide" aria-expanded="' + !!open + '">' + (open ? '접기 ▲' : '펼치기 ▼') + '</button></div>' +
+    (open ? '<h3 class="sub-h">자동차보험과 무엇이 다른가</h3><ul class="gd-list"><li><b>자동차보험</b>은 피해자에게 주는 <b>민사 배상</b>(대인·대물)을 맡습니다. <b>운전자보험</b>은 운전자 본인의 <b>형사·행정 책임</b>(형사합의금, 벌금, 변호사 비용)과 본인 부상을 맡습니다.</li>' +
+      '<li>교통사고처리 특례법(제3조·제4조): 피해자와 합의했거나 종합보험(공제)에 가입했으면 대부분의 상해 사고는 공소를 제기하지 않지만, <b>12대 중과실 사고·중상해·사망·도주(뺑소니)·음주측정 불응</b>은 이 특례가 적용되지 않아 형사처벌 대상이 될 수 있습니다. 이때 운전자보험이 필요합니다.</li>' +
+      '<li>운전자보험은 <b>가입한 사람이 운전할 때</b>를 보장합니다(자동차보험처럼 차 기준이 아님). 다른 차를 운전해도 보장되지만, 가족이 대신 운전하면 보장되지 않습니다.</li></ul>' +
+      '<h3 class="sub-h">핵심 담보</h3><div class="tablewrap"><table class="t gd-table"><thead><tr><th>담보</th><th>내용</th><th>상담 포인트</th></tr></thead><tbody>' +
+      r('교통사고처리지원금', '형사합의금. 피해자 사망·중상해, 12대 중과실 사고로 피해자가 일정 주 이상 진단을 받을 때 지급(상품마다 기준 다름)', '예전 상품은 한도가 낮거나 6주 미만 사고를 보장하지 않을 수 있음. 피해자 수·진단 주수별 한도 확인') +
+      r('변호사선임비용', '형사 재판(상품에 따라 경찰 조사·약식기소 단계 포함) 변호사 비용', '2026년 개정 상품은 <b>자기부담 50%</b>·<b>심급별 한도</b>가 적용될 수 있음(금감원 권고). 기존 계약은 가입 당시 약관 유지') +
+      r('벌금', '대인 사고 벌금(보통 2천만원 한도)', '<b>스쿨존 어린이 상해는 벌금 500만~3천만원</b>(특가법 제5조의13). 2020.4 이전 상품은 스쿨존 3천만원 보장이 없을 수 있음') +
+      r('자동차사고 부상치료비·면허 정지/취소 위로금', '본인 부상 등급별 치료비, 면허 행정처분 위로금', '선택 담보. 자동차보험 자기신체사고·자동차상해와 겹치는지 함께 봄') + '</tbody></table></div>' +
+      '<h3 class="sub-h">12대 중과실 (교통사고처리 특례법 제3조 제2항)</h3><div class="gd-six">' + ['신호·지시 위반', '중앙선 침범', '제한속도 20km/h 초과 과속', '앞지르기·끼어들기 위반', '철길건널목 통과방법 위반', '횡단보도 보행자 보호의무 위반', '무면허 운전', '음주·약물 운전', '보도 침범', '승객 추락방지의무 위반', '어린이보호구역 안전운전의무 위반', '화물 고정조치 위반'].map(function (x, i) { return '<div class="gd-card"><b>' + (i + 1) + '</b><span>' + x + '</span></div>'; }).join('') + '</div>' +
+      '<h3 class="sub-h">점검 순서</h3><ol class="gd-list"><li>고객이 실제로 운전하는지(자가용·영업용·이륜차) 확인 — 이륜차·영업용은 따로 고지해야 하고 보장이 다를 수 있음</li>' +
+      '<li>기존 운전자보험 가입일 확인 — 2020.4 이전이면 스쿨존 벌금, 교통사고처리지원금 기준 점검</li>' +
+      '<li>자동차보험의 <b>법률비용지원 특약</b> 가입 여부 확인 — 보험료가 낮고 가족 누구나 보장되지만 한도가 낮고 음주·무면허·뺑소니는 제외. 운전자보험과 겹치면 실제 손해 이상은 받지 못함</li>' +
+      '<li>2026년 개정 전 계약은 변호사비 조건이 더 나을 수 있으니 유지 검토. 갈아탈 때는 보험업법 제97조 비교 안내</li>' +
+      '<li>운전자 담보가 여러 계약에 있으면 비례보상 여부를 약관으로 확인하고 정리 검토</li></ol>' +
+      '<p class="muted" style="margin:0">보장 기준·한도는 보험사·상품·가입 시기마다 다릅니다. 실제 판단은 각 계약의 약관을 따르세요.</p><ul class="gd-list" style="font-size:12.5px">' + src.map(function (x) { return '<li><a href="' + attr(x[1]) + '" target="_blank" rel="noopener">' + x[0] + '</a></li>'; }).join('') + '</ul>'
+      : '<p class="muted" style="margin:0">자동차보험과의 차이, 핵심 담보와 2026년 변호사비 개정, 12대 중과실, 점검 순서를 볼 수 있습니다.</p>') + '</section>';
+}
 function renderAutoPage() {
   var list = allAutos(), q = norm(ui.aq || ''), F = ui.autoF || '';
   var soon = 0, late = 0, prem = 0;
@@ -3962,10 +4236,95 @@ function productsPanel() {
     cards.forEach(function (h) { if (h.indexOf('<!--closed-->') === 0) bufP += h.slice(13); else { if (bufP) { outP += '<div class="prod-list">' + bufP + '</div>'; bufP = ''; } outP += h; } });
     if (bufP) outP += '<div class="prod-list">' + bufP + '</div>';
     cards = outP;
-    body = '<section class="panel"><div class="row between"><h2>자주 제안하는 상품 ' + store.settings.products.length + '개</h2><div class="row" style="gap:6px"><input type="search" id="pq" class="mini-search" placeholder="보험사·상품·담보 검색" value="' + attr(ui.pq || '') + '" aria-label="상품 검색"><button class="btn" data-act="seedProds" title="지운 참고 상품을 다시 넣습니다(이미 있는 상품은 그대로)">참고 상품 다시 넣기</button><button class="btn primary" data-act="addProd">+ 상품 추가</button></div></div>' +
+    body = '<section class="panel"><div class="row between"><h2>자주 제안하는 상품 ' + store.settings.products.length + '개</h2><div class="row" style="gap:6px"><input type="search" id="pq" class="mini-search" placeholder="보험사·상품·담보 검색" value="' + attr(ui.pq || '') + '" aria-label="상품 검색"><button class="btn" data-act="seedProds" title="지운 참고 상품을 다시 넣습니다(이미 있는 상품은 그대로)">참고 상품 다시 넣기</button><button class="btn primary" data-act="addProd">+ 추가</button></div></div>' +
       '<div class="info">상품과 담보·보험료를 등록해 두면 고객 상세 → 정리·설계 → 신규 설계에서 "상품 불러오기"로 한 번에 넣을 수 있습니다. <b>참고 상품</b>은 보험저널 "2025 올해의 보험상품" 등 공개 자료에 나온 현장 인기 상품입니다. 상품명만 실제이고 담보·금액은 그 상품군에서 흔한 예시 구성이므로, 실제 가입설계서를 보고 담보·금액·보험료를 고쳐 쓰세요. 쓰지 않는 상품은 지우면 됩니다.</div>' +
       (cards || '<div class="empty"><strong>등록한 상품이 없습니다</strong></div>') + '</section>';
   return body;
+}
+// ===== 보험 → 보험가이드: 가입 절차 · 필요한 고객정보 · 꼭 알릴 내용 =====
+// 공개 자료(법령 요약·금융사 안내·기사)를 바탕으로 한 요약. 보험료·수수료 같은 숫자는 넣지 않는다.
+function insGuidePanel() {
+  var T = ui.gdT || 'long';
+  var steps = [
+    ['상담 · 보장분석', '가입 목적, 가족, 기존 계약을 듣고 보장분석으로 부족한 담보를 찾습니다. 기존 계약 증권을 받아 두면 중복·승환 여부를 바로 볼 수 있습니다.'],
+    ['적합성 확인', '금융소비자보호법의 적합성 원칙에 따라 나이·소득·재산·가입 목적·납입 여력을 확인하고, 맞지 않는 상품은 권하지 않습니다.'],
+    ['상품 설명', '상품설명서로 보장 내용, 보험료, 면책·감액 기간, 해지환급금, 갱신 시 보험료 변동 같은 불리한 점까지 설명합니다(설명의무).'],
+    ['청약 · 계약 전 알릴 의무', '청약서(모바일 청약) 질문표에 병력·직업·운전 여부를 고객 본인이 정확히 답하게 합니다. 말로만 들은 내용은 고지로 인정되지 않을 수 있습니다.'],
+    ['3대 기본 지키기', '① 약관 주요 내용 설명 ② 약관과 청약서 부본 전달 ③ 계약자·피보험자 자필서명(전자서명). 하나라도 빠지면 3개월 안에 품질보증해지 대상이 됩니다.'],
+    ['심사 · 1회 보험료', '보험사가 고지 내용을 심사(필요하면 진단·서류 추가)하고, 1회 보험료가 들어가면 보장이 시작됩니다.'],
+    ['증권 전달 · 확인 전화', '증권과 약관을 전달하고, 보험사의 완전판매 확인(해피콜)에 고객이 사실대로 답하도록 안내합니다.'],
+    ['사후 관리', '청약철회 가능 기간, 갱신일, 납입 완료일, 보험금 청구 방법을 알려 주고 이 프로그램의 일정에 등록해 둡니다.']];
+  var stepHtml = '<ol class="gd-steps">' + steps.map(function (x, i) { return '<li><span class="gd-n num">' + (i + 1) + '</span><div><b>' + x[0] + '</b><p>' + x[1] + '</p></div></li>'; }).join('') + '</ol>';
+  var tr = function (a, b, c) { return '<tr><td><b>' + a + '</b></td><td>' + b + '</td><td class="muted">' + (c || '') + '</td></tr>'; };
+  var info = {
+    long: [
+      ['계약자 · 피보험자 · 수익자', '성명, 생년월일, 성별, 관계', '보험나이(상령일)에 따라 보험료가 달라집니다'],
+      ['주민등록번호', '청약 시스템에서 고객 본인 인증과 함께 입력', '<b>이 프로그램에는 저장하지 않습니다</b>'],
+      ['연락처 · 주소 · 이메일', '증권·안내문 수령, 해피콜', ''],
+      ['직업 · 직무', '회사명보다 실제 하는 일(현장·사무, 운전 직무 등)', '직업 위험등급에 따라 가입 한도·보험료가 달라집니다'],
+      ['운전 여부', '자가용·영업용, 이륜자동차(오토바이·배달) 운전 여부', '이륜차 운전은 별도 고지 항목입니다'],
+      ['키 · 몸무게 · 음주 · 흡연', '상품에 따라 묻는 경우', '비흡연 할인 상품은 확인 서류가 필요할 수 있습니다'],
+      ['병력 · 투약', '3개월 안 진료·검사·투약, 1년 안 재검사, 5년 안 입원·수술·특정 질병 등', '아래 "계약 전 알릴 의무" 참고'],
+      ['기존 가입 계약', '타사 포함 증권, 실손 가입 여부', '실손 중복 가입 확인, 갈아타기(승환) 비교안내 필요'],
+      ['납입 정보', '자동이체 계좌·카드와 예금주', '예금주가 계약자와 다르면 동의가 필요합니다'],
+      ['소득 · 납입 여력 · 가입 목적', '적합성 확인 질문', '보장성은 목적·여력, 변액은 투자 성향까지 확인'],
+      ['동의서', '개인(신용)정보 수집·이용·조회·제공 동의, 타인 사망보험 피보험자 서면동의, 미성년자 법정대리인 동의', '']],
+    auto: [
+      ['차량 정보', '차량번호, 차대번호(신차·명의 이전 시), 차종·연식·주요 옵션', '자동차등록증으로 확인'],
+      ['기명피보험자', '차 주인(주로 운전하는 사람) 성명·생년월일', '공동명의면 함께 확인'],
+      ['운전자 범위', '본인, 부부, 가족, 누구나 등', '좁힐수록 보험료가 낮고, 범위 밖 운전자는 보상되지 않습니다'],
+      ['최저 운전자 나이', '함께 운전할 가장 어린 사람의 나이', '자녀가 운전할 예정이면 미리 반영'],
+      ['기존 보험', '현재 보험사, 만기일, 최근 사고 이력', '만기 전 갱신·이동 일정 잡기'],
+      ['할인 확인 자료', '블랙박스(사진), 주행거리(계기판 사진), 자녀 나이, 안전장치 등', '보험사마다 할인 특약 조건이 다릅니다'],
+      ['담보 선택', '대인Ⅱ, 대물 한도, 자손·자상, 무보험차, 자차 자기부담금', '자동차보험 메뉴의 담보 안내 참고']],
+    fire: [
+      ['물건 소재지', '정확한 주소(동·호수까지)', ''],
+      ['소유 · 임차 구분', '건물주인지, 세입자인지', '임차인은 건물 배상책임을 따로 챙깁니다'],
+      ['용도', '주택, 상가(업종), 공장 등', '업종에 따라 위험·보험료가 달라집니다'],
+      ['건물 구조', '철근콘크리트·조적·패널 등 구조, 층수, 면적, 준공 연도', '구조 급수에 따라 보험료가 달라집니다'],
+      ['의무보험 해당 여부', '다중이용업소(음식점 등), 재난배상책임 대상 시설', '미가입 시 과태료가 있으니 먼저 확인'],
+      ['가입금액', '건물·가재도구(집기·비품)·시설 금액', '실제 가치보다 낮으면 비례 보상될 수 있습니다'],
+      ['배상책임', '화재·누수로 남에게 준 피해 보상(가족·임차자 배상 등)', '화재보험 메뉴의 담보 안내 참고']]
+  };
+  var tabs = '<div class="seg" role="tablist" aria-label="보험 종류">' + [['long', '장기보험(생명·손해)'], ['auto', '자동차보험'], ['fire', '화재보험']].map(function (o) { return '<button class="seg-btn' + (T === o[0] ? ' on' : '') + '" role="tab" aria-selected="' + (T === o[0]) + '" data-act="gdT" data-id="' + o[0] + '">' + o[1] + '</button>'; }).join('') + '</div>';
+  var infoTable = '<div class="tablewrap"><table class="t gd-table"><thead><tr><th>항목</th><th>무엇을 받나</th><th>메모</th></tr></thead><tbody>' + info[T].map(function (r) { return tr(r[0], r[1], r[2]); }).join('') + '</tbody></table></div>';
+  var disc = '<div class="tablewrap"><table class="t gd-table"><thead><tr><th>질문 기간</th><th>흔히 묻는 내용</th><th>예시</th></tr></thead><tbody>' +
+    tr('최근 3개월', '진찰·검사·치료·투약(건강검진 포함)', '감기약 처방, 검진에서 위염 소견') +
+    tr('최근 1년', '추가 검사(재검사)를 받은 적', '내시경 재검 권유, 갑상선 결절 추적 관찰') +
+    tr('최근 5년', '입원·수술·계속 치료·특정 질병(고혈압·당뇨·암 등) 진단', '고혈압 약 복용 이력') + '</tbody></table></div>' +
+    '<ul class="gd-list"><li>가볍거나 다 나은 병도 기간 안이면 알려야 합니다. 약국에서 산 일반의약품은 보통 대상이 아닙니다.</li>' +
+    '<li>질문표·전산에 적힌 것만 공식 고지입니다. FC에게 말로만 한 내용은 고지로 인정되지 않을 수 있으니 고객이 직접 입력·확인하게 하세요.</li>' +
+    '<li>알릴 의무를 어기면 보험사는 안 날부터 1개월, 계약 후 3년 안에 계약을 해지할 수 있습니다(상법 제651조). 대리 검진 같은 사기성 위반은 더 길게 취소될 수 있습니다.</li>' +
+    '<li>질문 항목과 기간은 상품·보험사마다 다릅니다. 실제 청약서 질문표를 기준으로 하세요.</li></ul>';
+  var rights = '<div class="tablewrap"><table class="t gd-table"><thead><tr><th>고객 권리</th><th>기간</th><th>내용</th></tr></thead><tbody>' +
+    tr('청약철회', '증권 받은 날부터 15일 (청약일부터 30일 안)', '이유 없이 철회, 낸 보험료 전액 환급. 진단계약·보험기간 1년 이하·자동차보험 등은 제외') +
+    tr('품질보증해지', '계약 성립일부터 3개월', '3대 기본(약관·청약서 부본 전달, 중요 내용 설명, 자필서명)이 안 지켜졌을 때 보험료 환급') +
+    tr('위법계약해지', '위법을 안 날부터 1년 (계약 후 5년 안)', '적합성·설명의무 위반 등 판매원칙 위반 계약은 수수료·위약금 없이 해지 요구') +
+    tr('예금자보호', '보험사 파산 시', '1인당 최고 1억원까지(해지환급금 등 기준). 변액보험 적립금 등 대상 아닌 상품 확인') + '</tbody></table></div>';
+  var care = '<ul class="gd-list">' +
+    '<li><b>타인의 사망보험</b>: 계약자와 피보험자가 다르고 사망을 보장하면 계약할 때 피보험자의 <b>서면(전자서명) 동의</b>가 꼭 필요합니다(상법 제731조). 동의가 없으면 계약이 무효가 될 수 있습니다.</li>' +
+    '<li><b>15세 미만 · 심신상실자 · 심신박약자</b>: 이들의 사망을 보험사고로 하는 계약은 무효입니다(상법 제732조). 다만 심신박약자가 계약을 맺을 때나 단체보험 피보험자가 될 때 의사능력이 있으면 예외입니다. 자녀보험은 사망 담보가 빠지거나 15세 이후 보장됩니다.</li>' +
+    '<li><b>보험 갈아타기(승환)</b>: 기존 계약을 없애고 비슷한 새 계약을 들게 할 때, 앞뒤 1개월 안이면 원칙적으로 부당 승환으로 보고, 6개월 안이면 보험기간·예정이율 등 중요 사항을 비교해 알려야 합니다. 부당 승환이면 고객은 6개월 안에 기존 계약 부활과 새 계약 취소를 청구할 수 있습니다(보험업법 제97조).</li>' +
+    '<li><b>65세 이상 고객</b>: 종신·CI·변액 같은 상품은 고객이 지정한 가족 등에게 가입 사실을 알리는 서비스가 있습니다(월 보험료 5만원 이하 소액 등 제외). 불리한 점을 먼저, 천천히 설명하고 이해 여부를 확인하세요.</li>' +
+    '<li><b>특별이익 금지</b>: 계약과 관련해 주는 금품은 최초 1년 보험료의 10%와 3만원 중 적은 금액까지만 허용됩니다(보험업법 제98조). 업무 → 선물에서 기록을 관리할 수 있습니다.</li>' +
+    '<li><b>명의</b>: 실제 명의인이 아니거나 명의인 동의 없는 계약은 모집할 수 없습니다(보험업법 제97조).</li></ul>';
+  var six = '<div class="gd-six">' + [['적합성 원칙', '고객 정보를 확인해 맞지 않는 상품은 권하지 않기'], ['적정성 원칙', '고객이 먼저 고른 상품도 맞지 않으면 알리기'], ['설명의무', '중요 내용·불리한 점까지 이해하도록 설명'], ['불공정영업 금지', '다른 상품 끼워 팔기 등 우월한 지위 이용 금지'], ['부당권유 금지', '단정적 판단, 사실과 다른 비교 금지'], ['광고 규제', '광고는 회사 심의를 거친 자료만 사용']].map(function (x) { return '<div class="gd-card"><b>' + x[0] + '</b><span>' + x[1] + '</span></div>'; }).join('') + '</div>' +
+    '<p class="muted" style="margin:0">금융소비자보호법의 6대 판매원칙입니다. 어기면 위법계약해지·과징금 대상이 될 수 있습니다.</p>';
+  var check = ['가입 목적과 납입 여력을 확인했다', '기존 계약(타사 포함)과 실손 중복을 확인했다', '갈아타기라면 비교안내를 하고 확인서를 받았다', '상품설명서로 불리한 점(면책·감액·갱신 보험료·해지환급금)을 설명했다',
+    '고객이 질문표에 직접, 사실대로 답했다', '계약자·피보험자가 직접 서명했다(타인 사망보험은 피보험자 서면동의)', '약관과 청약서 부본을 전달했다', '청약철회 기간과 해피콜을 안내했다', '자동이체 예금주와 계약자를 확인했다', '갱신일·납입 완료일을 일정에 등록했다'];
+  var ckHtml = '<ul class="gd-check">' + check.map(function (x) { return '<li><label><input type="checkbox"> ' + x + '</label></li>'; }).join('') + '</ul>';
+  var src = [['금융소비자보호법 요약 (한국교육신문)', 'https://www.hangyo.com/news/article.html?no=94839'], ['보험 고지의무 3·5년 기준 (뱅크샐러드)', 'https://www.banksalad.com/articles/보험-일반보험-보험고지의무'], ['보험 가입 시 소비자 보호 안내 (씨티은행)', 'https://www.citibank.co.kr/kr/InsGuidPrtc0100.act'],
+    ['보험업법 제97조 (모집 금지행위)', 'https://korea.legal/wiki/보험업법-제97조/'], ['상법 제731조 (타인의 생명보험)', 'https://korea.legal/wiki/상법-제731조/'], ['상법 제732조 (15세미만자등에 대한 계약의 금지)', 'https://korea.legal/wiki/상법-제732조/'], ['65세 이상 지정인 알림 서비스 (시사경제)', 'https://www.sateconomy.co.kr/news/view/179588911960989'], ['국가법령정보센터', 'https://www.law.go.kr']];
+  var P = function (h, body, extra) { return '<section class="panel"><div class="row between"><h2>' + h + '</h2>' + (extra || '') + '</div>' + body + '</section>'; };
+  return '<div class="notice">보험 가입 상담 때 확인할 순서와 받을 정보를 정리한 안내입니다. 법령·감독규정과 회사 기준이 바뀔 수 있으니 실제 청약은 <b>소속 회사의 최신 지침과 청약서</b>를 따르세요.</div>' +
+    P('가입 진행 순서', stepHtml) +
+    P('가입할 때 필요한 고객정보', infoTable + '<p class="muted" style="margin:0">주민등록번호·계좌번호 같은 민감한 정보는 이 프로그램에 적지 말고 보험사 청약 시스템에서만 다루세요.</p>', tabs) +
+    P('계약 전 알릴 의무 (고지의무)', disc) +
+    P('고객에게 꼭 알려야 할 권리', rights) +
+    P('특히 조심할 계약', care) +
+    P('판매할 때 지킬 6대 원칙', six) +
+    P('청약 전 마지막 점검', ckHtml + '<p class="muted" style="margin:0">체크 표시는 저장되지 않습니다. 상담할 때 순서대로 확인하는 용도로 쓰세요.</p>') +
+    P('참고한 자료', '<ul class="gd-list">' + src.map(function (x) { return '<li><a href="' + attr(x[1]) + '" target="_blank" rel="noopener">' + x[0] + '</a></li>'; }).join('') + '</ul>');
 }
 function renderInsurance() {
   var sub = ui.isub || 'all', body = '';
@@ -3981,8 +4340,10 @@ function renderInsurance() {
       '<div id="iqWrap">' + renderAllPolicies() + '</div><p class="muted">줄을 누르면 해당 고객의 계약 입력 화면이 열립니다. 납입 진행은 계약일과 납입기간으로 계산하며, "다가오는 일"은 계약 입력의 다음 갱신일·납입 완료 예정일을 씁니다.</p></section>';
   } else if (sub === 'byins') { body = renderByInsurer();
   } else if (sub === 'byowner') { body = renderByOwner();
-  } else if (sub === 'auto') { body = renderAutoPage();
-  } else if (sub === 'fire') { body = renderFirePage();
+  } else if (sub === 'auto') { body = polViewTabs('auto') + ((ui.autoV || 'all') === 'all' ? renderAutoPage() : polGroupPanel('auto', ui.autoV));
+  } else if (sub === 'fire') { body = polViewTabs('fire') + ((ui.fireV || 'all') === 'all' ? renderFirePage() : polGroupPanel('fire', ui.fireV));
+  } else if (sub === 'drv') { body = drvPanel();
+  } else if (sub === 'guide') { body = insGuidePanel();
   } else body = productsPanel();
   if (sub === 'all' || sub === 'byins' || sub === 'byowner') body = '<div class="seg long-tabs" role="tablist" aria-label="장기보험 보기">' + [['all', '전체 계약'], ['byins', '보험사별 계약'], ['byowner', '계약자별 계약']].map(function (t) { return '<button class="seg-btn' + (sub === t[0] ? ' on' : '') + '" role="tab" aria-selected="' + (sub === t[0]) + '" data-act="goIns" data-id="' + t[0] + '">' + t[1] + '</button>'; }).join('') + '</div>' + body;
   return subPage('보험', INS_SUBS, (sub === 'byins' || sub === 'byowner') ? 'all' : sub, 'goIns', '보험 메뉴', body);
@@ -4079,9 +4440,10 @@ function solarToLunar(iso) {
 }
 function hasBirthday(c) { return !!(c.bdCal ? (num(c.bdMonth) && num(c.bdDay)) : c.birth); }
 function bdDesc(c) { // 사람이 읽는 생일 표기
-  if (c.bdCal === 'lunar' && num(c.bdMonth)) return '음력 ' + (c.bdLeap ? '윤' : '') + num(c.bdMonth) + '월 ' + num(c.bdDay) + '일';
-  if (c.bdCal === 'solar' && num(c.bdMonth)) return '양력 ' + num(c.bdMonth) + '월 ' + num(c.bdDay) + '일';
-  if (c.birth) return Number(c.birth.slice(5, 7)) + '월 ' + Number(c.birth.slice(8, 10)) + '일';
+  var p2 = function (n) { return (n < 10 ? '0' : '') + n; };
+  if (c.bdCal === 'lunar' && num(c.bdMonth)) return '음력 ' + (c.bdLeap ? '윤' : '') + p2(num(c.bdMonth)) + '월 ' + p2(num(c.bdDay)) + '일';
+  if (c.bdCal === 'solar' && num(c.bdMonth)) return '양력 ' + p2(num(c.bdMonth)) + '월 ' + p2(num(c.bdDay)) + '일';
+  if (c.birth) return '양력 ' + c.birth.slice(5, 7) + '월 ' + c.birth.slice(8, 10) + '일';
   return '';
 }
 function birthdaysInYear(c, y) { // 양력 y년 안에 오는 생일 날짜들 (음력은 그해 양력으로 바꿔서)
@@ -4137,7 +4499,7 @@ function renderListSub() {
       '<select data-scope="ui" data-k="nMethod" id="ui-nMethod" aria-label="방법으로 거르기">' + [['', '모든 방법']].concat(NOTE_METHODS.map(function (m) { return [m, m]; })).map(function (o) { return '<option value="' + o[0] + '"' + sel(ui.nMethod, o[0]) + '>' + o[1] + '</option>'; }).join('') + '</select>' +
       '<input type="search" id="nq" class="mini-search" placeholder="고객·내용 검색" value="' + attr(ui.nq) + '" aria-label="상담 기록 검색"></div></div><div id="nqWrap">' + renderAllNotes() + '</div></section>';
   else if (sub === 'contacts') body = '<section class="panel"><div class="row between"><h2>고객 ' + store.customers.length + '명</h2><div class="row" style="gap:6px"><input type="search" id="cq" class="mini-search" placeholder="이름·전화번호 검색" value="' + attr(ui.cq) + '" aria-label="고객 연락처 검색"></div></div>' +
-      '<div class="info">이름·성별·휴대폰·직업·주소·메모를 표에서 바로 고칠 수 있고, 고객 정보에도 똑같이 반영됩니다. 생년월일과 계약은 "고객 보기"에서 입력하세요.</div>' +
+      '<p class="muted" style="margin:0">줄을 두 번 누르면 이름·성별·휴대폰·주소·메모를 고칠 수 있고, 고객 정보에도 똑같이 반영됩니다. 생년월일과 계약은 "고객 보기"에서 입력하세요.</p>' +
       '<div id="cqWrap">' + renderCustContacts() + '</div></section>';
   else if (sub === 'props') body = renderProps();
   else if (sub === 'family') body = renderFamily();
@@ -4247,7 +4609,7 @@ function renderFamily() {
     '<div class="kpi" style="cursor:default"><span class="k">전체 가구 월 보험료</span><span class="v num">' + fmtWon(allPrem) + '</span></div></div>' +
     '<section class="panel fam-bar"><div class="row between"><div class="row"><input type="search" id="hq" class="mini-search" placeholder="가구·가족 이름 검색" value="' + attr(ui.hq) + '" aria-label="가구 검색">' +
     (H.length > 1 ? '<button class="btn ghost sm" data-act="hhAll" data-id="' + (H.every(function (h) { return ui.hhOpen[h.id] === true; }) ? '0' : '1') + '">' + (H.every(function (h) { return ui.hhOpen[h.id] === true; }) ? '모두 접기' : '모두 펼치기') + '</button>' : '') + '</div>' +
-    '<button class="btn primary" data-act="addHousehold">+ 새 가구 만들기</button></div></section>';
+    '<button class="btn primary" data-act="addHousehold" title="새 가구 만들기">+ 추가</button></div></section>';
   var cards = shown.map(function (h) {
     var mem = memOf(h), open = ui.hhOpen[h.id] === true;
     var tot = { prem: 0, short: 0, dup: 0, inc: 0, silson: 0, liab: 0, withPol: 0 }, ans = {};
@@ -4430,103 +4792,86 @@ var ORG_REPEAT = [['', '반복 없음'], ['w4', '매주 · 4주'], ['w8', '매�
 function orgEvents() { return store.settings.events.filter(function (e) { return e.org; }); }
 function orgWd(iso) { return '일월화수목금토'.charAt(new Date(iso + 'T00:00:00').getDay()); }
 function orgSchedulePanel() {
+  // 지점 일정 + 참석 체크를 한 화면에: 월별로 묶은 일정 카드, 누르면 펼쳐 참석 체크·수정·삭제
   var t = today(), all = orgEvents().slice().sort(function (a, b) { return (a.date + (a.time || '')).localeCompare(b.date + (b.time || '')); });
-  var F = ui.orgF || '', up = all.filter(function (e) { return e.date >= t; }), past = all.filter(function (e) { return e.date < t; }).reverse();
-  var list = (F === 'past' ? past : up).filter(function (e) { return !ui.orgT || e.type === ui.orgT; });
-  var week = up.filter(function (e) { var d = daysUntil(e.date); return d != null && d <= 7; }).length;
-  var form = ui.orgOpen ? '<div class="cal-add"><h3 style="margin:0"><span class="kind-dot org"></span>지점 일정 추가</h3><p class="kind-help">조회·회의·교육·시상·마감 같은 지점 공통 일정을 넣습니다. 업무 → 일정 달력에 초록색으로 함께 보입니다. 매주 조회처럼 되풀이되면 반복을 고르세요.</p>' +
-    '<div class="form-grid org-grid">' + lbl('날짜', f('ui', 'orgDate', ui.orgDate || t, { type: 'date', quick: true })) + lbl('시간', f('ui', 'orgTime', ui.orgTime || '', { type: 'time' })) +
-    lbl('구분', f('ui', 'orgType', ui.orgType || '조회', { type: 'select', options: ORG_TYPES.map(function (x) { return [x, x]; }) })) +
-    lbl('내용', f('ui', 'orgTitle', ui.orgTitle || '', { ph: '예: 월요 조회, 11월 실적 마감' }), 'g-title') + lbl('장소', f('ui', 'orgPlace', ui.orgPlace || '', { ph: '예: 3층 교육장' })) +
-    lbl('반복', f('ui', 'orgRep', ui.orgRep || '', { type: 'select', options: ORG_REPEAT })) +
-    '<div class="field"><span>&nbsp;</span><button class="btn primary" data-act="orgAdd">일정 추가</button></div></div></div>' : '';
+  var staff = store.settings.contacts.staff.slice().sort(function (a, b) { return (STAFF_ROLES.indexOf(a.role) + 99) % 99 - (STAFF_ROLES.indexOf(b.role) + 99) % 99 || byName(a, b); });
+  var F = ui.orgF || '', T = ui.orgT || '', up = all.filter(function (e) { return e.date >= t; }), past = all.filter(function (e) { return e.date < t; }).reverse();
+  var list = (F === 'past' ? past : up).filter(function (e) { return !T || e.type === T; });
+  var week = up.filter(function (e) { var d = daysUntil(e.date); return d != null && d <= 7; }).length, next = up.filter(function (e) { return !T || e.type === T; })[0];
+  var cntT = {}; (F === 'past' ? past : up).forEach(function (e) { cntT[e.type] = (cntT[e.type] || 0) + 1; });
   var chips = '<div class="todos">' + [['', '다가오는 일정 ' + up.length], ['past', '지난 일정 ' + past.length]].map(function (o) { return '<button class="todo' + (F === o[0] ? ' on' : '') + '" data-act="orgF" data-id="' + o[0] + '">' + o[1] + '</button>'; }).join('') +
-    '<span class="org-sep"></span>' + [''].concat(ORG_TYPES).map(function (x) { var on = (ui.orgT || '') === x; return '<button class="todo' + (on ? ' on' : '') + '" data-act="orgT" data-id="' + x + '">' + (x || '전체') + '</button>'; }).join('') + '</div>';
-  var lastM = '';
-  var rows = list.slice(0, 200).map(function (e) {
+    '<span class="org-sep"></span>' + [''].concat(ORG_TYPES).filter(function (x) { return !x || cntT[x] || T === x; }).map(function (x) { return '<button class="todo' + (T === x ? ' on' : '') + '" data-act="orgT" data-id="' + x + '">' + (x || '전체') + (x && cntT[x] ? ' <b>' + cntT[x] + '</b>' : '') + '</button>'; }).join('') + '</div>';
+  var lastM = '', openId = ui.eduOpenId === '-' ? '' : (ui.eduOpenId || (F !== 'past' && next ? next.id : ''));
+  var cards = list.slice(0, 200).map(function (e) {
     var m = e.date.slice(0, 7), head = '';
-    if (m !== lastM) { lastM = m; head = '<li class="org-month">' + Number(m.slice(0, 4)) + '년 ' + Number(m.slice(5)) + '월</li>'; }
-    var d = daysUntil(e.date), del = ui.armed === 'delOrg:' + e.id;
-    return head + '<li class="org-row row-dbl" data-dbl="org:' + e.id + '" tabindex="0" title="두 번 누르면 고치기"><span class="org-date num"><b>' + Number(e.date.slice(5, 7)) + '.' + Number(e.date.slice(8, 10)) + '</b> <small>(' + orgWd(e.date) + ')</small></span>' +
-      '<span class="org-time num">' + esc(e.time || '종일') + '</span><span class="kchip k-org">' + esc(e.type || '기타') + '</span><span class="org-title"><b>' + esc(e.title) + '</b>' + (e.place ? ' <span class="muted">· ' + esc(e.place) + '</span>' : '') + (e.grp ? ' <span class="muted" title="반복 일정">↻</span>' : '') + (eduAttCount(e) ? ' <span class="chip ok-chip">참석 ' + eduAttCount(e) + '명</span>' : '') + '</span>' +
+    if (m !== lastM) { lastM = m; head = '<div class="org-month">' + Number(m.slice(0, 4)) + '년 ' + Number(m.slice(5)) + '월</div>'; }
+    var a = e.att || {}, n = eduAttCount(e), d = daysUntil(e.date), open = openId === e.id, del = ui.armed === 'delOrg:' + e.id;
+    var who = staff.map(function (x) { var on = !!a[x.id]; return '<label class="chk-chip' + (on ? ' on' : '') + '"><input type="checkbox" data-act="eduAtt" data-pid="' + e.id + '" data-id="' + x.id + '"' + (on ? ' checked' : '') + '>' + esc(x.name || '이름 없음') + (x.role ? ' <small class="muted">' + esc(x.role) + '</small>' : '') + '</label>'; }).join('');
+    var names = staff.filter(function (x) { return a[x.id]; }).map(function (x) { return x.name || '이름 없음'; });
+    return head + '<div class="edu-card' + (open ? ' open' : '') + (e.date < t ? ' past' : '') + '"><button class="edu-head" data-act="eduToggle" data-id="' + e.id + '" aria-expanded="' + open + '">' +
+      '<span class="org-date num"><b>' + Number(e.date.slice(5, 7)) + '.' + Number(e.date.slice(8, 10)) + '</b> <small>(' + orgWd(e.date) + ')</small></span><span class="org-time num">' + esc(e.time || '종일') + '</span>' +
+      '<span class="kchip k-org">' + esc(e.type || '기타') + '</span><span class="edu-title"><b>' + esc(e.title) + '</b>' + (e.place ? ' <span class="muted">· ' + esc(e.place) + '</span>' : '') + (e.grp ? ' <span class="muted" title="반복 일정">↻</span>' : '') + '</span>' +
       (d != null && d >= 0 && d <= 7 ? '<span class="chip warn">' + dLabel(d) + '</span>' : '') +
-      '<button class="btn ghost sm' + (del ? ' danger armed' : '') + '" data-act="delOrg" data-id="' + e.id + '">' + (del ? '한 번 더' : '삭제') + '</button></li>';
+      '<span class="edu-count" title="참석 인원">참석 <b class="num">' + n + '</b><small> / ' + staff.length + '명</small></span><span class="chev">' + (open ? '▾' : '▸') + '</span></button>' +
+      (open ? '<div class="edu-body">' + (staff.length ? '<div class="chk-chips">' + who + '</div>' + (names.length ? '<p class="edu-names"><b>참석 ' + names.length + '명</b> · ' + esc(names.join(', ')) + '</p>' : '<p class="edu-names muted">아직 체크한 직원이 없습니다.</p>')
+          : '<div class="empty"><strong>직원 연락처가 비어 있습니다</strong><span>지점 → 직원 연락처에 직원을 넣으면 여기서 참석을 체크할 수 있습니다.</span><button class="btn primary sm" data-act="goOffice" data-id="staff">직원 연락처로</button></div>') +
+        '<div class="row edu-actions">' + (staff.length ? '<button class="btn sm" data-act="eduAll" data-id="' + e.id + '">모두 체크</button><button class="btn ghost sm" data-act="eduNone" data-id="' + e.id + '">모두 해제</button>' : '') + '<span class="spacer"></span>' +
+        (e.memo ? '<span class="muted edu-memo">' + esc(e.memo) + '</span>' : '') + '<button class="btn sm" data-act="openOrg" data-id="' + e.id + '">일정 수정</button><button class="btn ghost sm' + (del ? ' danger armed' : '') + '" data-act="delOrg" data-id="' + e.id + '">' + (del ? '한 번 더 누르면 삭제' : '삭제') + '</button></div></div>' : '') + '</div>';
   }).join('');
-  return '<div class="kpis"><div class="kpi" style="cursor:default"><span class="k">다가오는 지점 일정</span><span class="v num">' + up.length + '<small>건</small></span></div><div class="kpi warn" style="cursor:default"><span class="k">7일 안</span><span class="v num">' + week + '<small>건</small></span></div>' +
+  return '<div class="kpis"><div class="kpi" style="cursor:default"><span class="k">다가오는 지점 일정</span><span class="v num">' + up.length + '<small>건</small></span></div><div class="kpi' + (week ? ' warn' : '') + '" style="cursor:default"><span class="k">7일 안</span><span class="v num">' + week + '<small>건</small></span></div>' +
+    '<div class="kpi" style="cursor:default"><span class="k">다음 일정' + (T ? ' (' + esc(T) + ')' : '') + '</span><span class="v" style="font-size:15px">' + (next ? Number(next.date.slice(5, 7)) + '.' + Number(next.date.slice(8, 10)) + ' ' + esc(next.title) + ' <small>참석 ' + eduAttCount(next) + '/' + staff.length + '</small>' : '없음') + '</span></div>' +
     '<button class="kpi" data-act="goWork" data-id="calendar"><span class="k">업무 → 일정 달력</span><span class="v" style="font-size:15px">달력에서 보기 ›</span></button></div>' +
-    '<section class="panel"><div class="row between"><h2>지점 일정</h2><button class="btn primary sm" data-act="orgNew" data-id="' + attr(ui.orgT || '조회') + '">+ 추가</button></div>' + chips +
-    (rows ? '<ul class="org-list">' + rows + '</ul>' : '<div class="empty"><strong>' + (F === 'past' ? '지난 지점 일정이 없습니다' : '다가오는 지점 일정이 없습니다') + '</strong><span>"+ 추가"로 조회·회의·교육·시상 일정을 넣으세요.</span></div>') +
-    '<p class="muted" style="margin:0">줄을 두 번 누르면 날짜·내용을 고칠 수 있습니다. 반복 일정은 하나씩 따로 고치거나 지울 수 있습니다.</p></section>';
+    '<section class="panel"><div class="row between"><h2>지점 일정</h2><button class="btn primary sm" data-act="orgNew" data-id="' + attr(T || '조회') + '">+ 추가</button></div>' + chips +
+    (cards ? '<div class="edu-list">' + cards + '</div>' : '<div class="empty"><strong>' + (F === 'past' ? '지난 지점 일정이 없습니다' : '다가오는 지점 일정이 없습니다') + '</strong><span>"+ 추가"로 조회·회의·교육·시상·회식 일정을 넣으세요.</span></div>') +
+    '<p class="muted" style="margin:0">일정을 누르면 펼쳐져 직원 참석을 체크하고(바로 저장), 일정 수정·삭제를 할 수 있습니다. 가장 가까운 일정은 자동으로 펼쳐집니다. 지점 일정은 업무 → 일정 달력에도 함께 보입니다.</p></section>';
+}
+// ===== 지점 → 공지: 지점 공지 메모 (FC 본인 계정에 저장) =====
+// settings.notices = [{ id, date, title, body, cat, imp(중요), pin(고정), until(게시 끝, 선택), read, sample? }]
+var NOTICE_CATS = ['일반', '교육', '시상·이벤트', '상품·제도', '마감', '행사'];
+function noticeList() { return store.settings.notices = store.settings.notices || []; }
+function noticeActive(n) { return !n.until || n.until >= today(); }
+function noticePanel() {
+  var N = noticeList(), q = norm(ui.ntq || ''), F = ui.ntF || '', t = today();
+  var act = N.filter(noticeActive), nImp = act.filter(function (n) { return n.imp; }).length, nPin = act.filter(function (n) { return n.pin; }).length, nNew = act.filter(function (n) { return !n.read; }).length, nEnd = N.length - act.length;
+  var list = N.filter(function (n) {
+    if (F === 'end') { if (noticeActive(n)) return false; } else if (!noticeActive(n)) return false;
+    if (F === 'imp' && !n.imp) return false; if (F === 'pin' && !n.pin) return false; if (F === 'new' && n.read) return false;
+    if (F && F.indexOf('c:') === 0 && n.cat !== F.slice(2)) return false;
+    return !q || norm([n.title, n.body, n.cat].join(' ')).indexOf(q) >= 0;
+  }).sort(function (a, b) { return (b.pin ? 1 : 0) - (a.pin ? 1 : 0) || String(b.date || '').localeCompare(String(a.date || '')); });
+  var kp = function (k, label, v, tone) { var on = F === k; return '<button class="kpi' + (on ? ' on' : '') + (tone && v ? ' ' + tone : '') + '" data-act="ntF" data-id="' + (on ? '' : k) + '"><span class="k">' + label + '</span><span class="v num">' + v + '<small>건</small></span></button>'; };
+  var kpis = '<div class="kpis">' + kp('', '게시 중', act.length) + kp('new', '안 읽음', nNew, 'warn') + kp('imp', '중요', nImp, 'warn') + kp('pin', '고정', nPin) + kp('end', '게시 끝', nEnd) + '</div>';
+  var cats = {}; act.forEach(function (n) { if (n.cat) cats[n.cat] = (cats[n.cat] || 0) + 1; });
+  var chips = Object.keys(cats).length ? '<div class="todos">' + [['', '모든 분류']].concat(NOTICE_CATS.filter(function (c) { return cats[c]; }).map(function (c) { return ['c:' + c, c + ' ' + cats[c]]; })).map(function (o) { return '<button class="todo' + (F === o[0] || (!o[0] && F.indexOf('c:') !== 0 && F === '') ? ' on' : '') + '" data-act="ntF" data-id="' + o[0] + '">' + o[1] + '</button>'; }).join('') + '</div>' : '';
+  var cards = list.map(function (n) {
+    var open = ui.ntOpen === n.id, body = String(n.body || ''), short = body.length > 120 && !open;
+    var d = n.date ? daysUntil(n.date) : null;
+    return '<article class="nt-card' + (n.pin ? ' pin' : '') + (n.imp ? ' imp' : '') + (n.read ? '' : ' unread') + '" data-dbl="notice:' + n.id + '" tabindex="0" title="두 번 누르면 수정">' +
+      '<div class="nt-head">' + (n.pin ? '<span class="chip">📌 고정</span>' : '') + (n.imp ? '<span class="chip warn">중요</span>' : '') + (n.cat ? '<span class="kchip k-org">' + esc(n.cat) + '</span>' : '') +
+      '<b class="nt-title">' + esc(n.title || '제목 없음') + '</b>' + (n.read ? '' : '<span class="nt-new">새 글</span>') + '<span class="spacer"></span><span class="muted num">' + esc(String(n.date || '').replace(/-/g, '.')) + (d != null && d < 0 && d > -8 ? ' · ' + (-d) + '일 전' : d === 0 ? ' · 오늘' : '') + '</span></div>' +
+      (body ? '<p class="nt-body">' + esc(short ? body.slice(0, 120) + '…' : body).replace(/\n/g, '<br>') + '</p>' : '') +
+      '<div class="nt-foot">' + (n.until ? '<span class="muted">게시 끝 ' + esc(n.until.replace(/-/g, '.')) + (noticeActive(n) ? ' (' + dLabel(daysUntil(n.until)) + ')' : ' · 끝남') + '</span>' : '') + '<span class="spacer"></span>' +
+      (body.length > 120 ? '<button class="btn ghost sm" data-act="ntToggle" data-id="' + n.id + '">' + (open ? '접기' : '더보기') + '</button>' : '') +
+      '<button class="btn ghost sm" data-act="ntRead" data-id="' + n.id + '">' + (n.read ? '안 읽음으로' : '읽음') + '</button><button class="btn ghost sm" data-act="openNotice" data-id="' + n.id + '">수정</button></div></article>';
+  }).join('');
+  return kpis + '<section class="panel"><div class="row between"><h2>지점 공지 ' + list.length + '건</h2><div class="ins-tools"><input type="search" id="ntq" class="mini-search" placeholder="제목·내용 검색" value="' + attr(ui.ntq || '') + '" aria-label="공지 검색"><button class="btn primary sm" data-act="noticeNew">+ 추가</button></div></div>' + chips +
+    (cards ? '<div class="nt-list">' + cards + '</div>' : '<div class="empty"><strong>' + (N.length ? '조건에 맞는 공지가 없습니다' : '아직 적어 둔 공지가 없습니다') + '</strong><span>"+ 추가"로 지점 회의·단톡방에서 받은 공지(시상, 마감, 교육, 상품 변경 등)를 적어 두세요.</span></div>') +
+    '<p class="muted" style="margin:0">고정한 공지는 맨 위에, 나머지는 최근 날짜 순입니다. 카드를 두 번 누르면 수정합니다. 게시 끝 날짜가 지나면 "게시 끝"으로 옮겨집니다. 공지는 내 계정에만 저장되며 다른 직원에게 보내지지 않습니다.</p></section>';
+}
+function noticeModalBody(n) {
+  var A = function (k, v, o) { o = o || {}; o.id = n.id; return f('notice', k, v, o); };
+  var seg = function (k, cur, opts) { return '<span class="seg seg-f">' + opts.map(function (o) { return '<button type="button" class="seg-btn' + (String(cur) === o[0] ? ' on' : '') + '" data-act="noticeSet" data-id="' + n.id + '" data-k="' + k + '" data-v="' + attr(o[0]) + '">' + o[1] + '</button>'; }).join('') + '</span>'; };
+  return '<div class="grid-form dm-grid">' + lbl('제목', A('title', n.title, { ph: '예: 11월 시상 기준 안내' }), 'span2') +
+    lbl('날짜', A('date', n.date, { type: 'date' })) + lbl('게시 끝 (선택)', A('until', n.until, { type: 'date' })) +
+    '<div class="field span2"><span>분류</span>' + seg('cat', n.cat || '일반', NOTICE_CATS.map(function (c) { return [c, c]; })) + '</div>' +
+    '<div class="field"><span>중요</span>' + seg('imp', n.imp ? '1' : '', [['', '보통'], ['1', '중요']]) + '</div>' +
+    '<div class="field"><span>맨 위 고정</span>' + seg('pin', n.pin ? '1' : '', [['', '안 함'], ['1', '고정']]) + '</div>' +
+    lbl('내용', A('body', n.body, { type: 'textarea', ph: '공지 내용을 붙여 넣거나 적으세요' }), 'span2') + '</div>';
 }
 // ===== 지점 → 교육: 교육 일정별 참석 가능 직원 체크 =====
 // 지점 일정 중 구분이 '교육'인 것을 쓴다. 참석은 e.att = { 직원id: true }
 function eduEvents() { return orgEvents().filter(function (e) { return !ui.eduT || e.type === ui.eduT; }).sort(function (a, b) { return (a.date + (a.time || '')).localeCompare(b.date + (b.time || '')); }); }
 function eduAttCount(e) { var st = store.settings.contacts.staff, a = e.att || {}; return st.filter(function (x) { return a[x.id]; }).length; }
-function eduPanel() {
-  var t = today(), all = eduEvents(), staff = store.settings.contacts.staff.slice().sort(function (a, b) { return (STAFF_ROLES.indexOf(a.role) + 99) % 99 - (STAFF_ROLES.indexOf(b.role) + 99) % 99 || byName(a, b); });
-  var past = ui.eduF === 'past', list = all.filter(function (e) { return past ? e.date < t : e.date >= t; }); if (past) list.reverse();
-  var up = all.filter(function (e) { return e.date >= t; }), next = up[0];
-  var form = ui.eduOpen ? '<div class="cal-add"><h3 style="margin:0"><span class="kind-dot org"></span>일정 추가</h3><p class="kind-help">여기서 넣은 일정은 지점 일정과 업무 → 일정 달력에도 함께 보입니다.</p>' +
-    '<div class="form-grid org-grid">' + lbl('날짜', f('ui', 'eduDate', ui.eduDate || t, { type: 'date', quick: true })) + lbl('시간', f('ui', 'eduTime', ui.eduTime || '', { type: 'time' })) +
-    lbl('구분', f('ui', 'eduType', ui.eduType || ui.eduT || '교육', { type: 'select', options: ORG_TYPES.map(function (x) { return [x, x]; }) })) +
-    lbl('내용', f('ui', 'eduTitle', ui.eduTitle || '', { ph: '예: 신상품 교육, 11월 회식' }), 'g-title') + lbl('장소', f('ui', 'eduPlace', ui.eduPlace || '', { ph: '예: 3층 교육장' })) +
-    '<div class="field"><span>&nbsp;</span><button class="btn primary" data-act="eduAdd">교육 추가</button></div></div></div>' : '';
-  var chips = '<div class="todos">' + [['', '다가오는 일정 ' + up.length], ['past', '지난 일정 ' + (all.length - up.length)]].map(function (o) { return '<button class="todo' + ((ui.eduF || '') === o[0] ? ' on' : '') + '" data-act="eduF" data-id="' + o[0] + '">' + o[1] + '</button>'; }).join('') +
-    '<span class="org-sep"></span>' + [''].concat(ORG_TYPES).map(function (x) { var cnt = orgEvents().filter(function (e) { return e.date >= t && (!x || e.type === x); }).length; return '<button class="todo' + ((ui.eduT || '') === x ? ' on' : '') + '" data-act="eduT" data-id="' + x + '">' + (x || '전체') + (cnt ? ' <b>' + cnt + '</b>' : '') + '</button>'; }).join('') + '</div>';
-  var cards = list.map(function (e) {
-    var a = e.att || {}, n = eduAttCount(e), d = daysUntil(e.date), open = ui.eduOpenId === e.id || (!ui.eduOpenId && next && e.id === next.id && !past);
-    var who = staff.map(function (x) { var on = !!a[x.id]; return '<label class="chk-chip' + (on ? ' on' : '') + '"><input type="checkbox" data-act="eduAtt" data-pid="' + e.id + '" data-id="' + x.id + '"' + (on ? ' checked' : '') + '>' + esc(x.name || '이름 없음') + (x.role ? ' <small class="muted">' + esc(x.role) + '</small>' : '') + '</label>'; }).join('');
-    var names = staff.filter(function (x) { return a[x.id]; }).map(function (x) { return x.name || '이름 없음'; });
-    return '<div class="edu-card' + (open ? ' open' : '') + '"><button class="edu-head" data-act="eduToggle" data-id="' + e.id + '" aria-expanded="' + open + '">' +
-      '<span class="org-date num"><b>' + Number(e.date.slice(5, 7)) + '.' + Number(e.date.slice(8, 10)) + '</b> <small>(' + orgWd(e.date) + ')</small></span><span class="org-time num">' + esc(e.time || '종일') + '</span>' +
-      '<span class="kchip k-org">' + esc(e.type || '기타') + '</span><span class="edu-title"><b>' + esc(e.title) + '</b>' + (e.place ? ' <span class="muted">· ' + esc(e.place) + '</span>' : '') + '</span>' +
-      (d != null && d >= 0 && d <= 7 ? '<span class="chip warn">' + dLabel(d) + '</span>' : '') +
-      '<span class="edu-count"><b class="num">' + n + '</b><small> / ' + staff.length + '명</small></span><span class="chev">' + (open ? '▾' : '▸') + '</span></button>' +
-      (open ? '<div class="edu-body">' + (staff.length ? '<div class="row" style="gap:6px;justify-content:space-between;flex-wrap:wrap"><span class="muted">참석 가능한 직원을 눌러 체크하세요.</span><div class="row" style="gap:6px"><button class="btn sm" data-act="eduAll" data-id="' + e.id + '">모두 체크</button><button class="btn ghost sm" data-act="eduNone" data-id="' + e.id + '">모두 해제</button><button class="btn ghost sm" data-act="openOrg" data-id="' + e.id + '">일정 정보 고치기</button></div></div>' +
-        '<div class="chk-chips">' + who + '</div>' + (names.length ? '<p class="edu-names"><b>참석 ' + names.length + '명</b> · ' + esc(names.join(', ')) + '</p>' : '')
-        : '<div class="empty"><strong>직원 연락처가 비어 있습니다</strong><span>지점 → 직원 연락처에 직원을 넣으면 여기서 참석을 체크할 수 있습니다.</span><button class="btn primary sm" data-act="goOffice" data-id="staff">직원 연락처로</button></div>') + '</div>' : '') + '</div>';
-  }).join('');
-  return '<div class="kpis"><div class="kpi" style="cursor:default"><span class="k">다가오는 ' + (ui.eduT || '일정') + '</span><span class="v num">' + up.length + '<small>건</small></span></div>' +
-    '<div class="kpi warn" style="cursor:default"><span class="k">다음 ' + (ui.eduT || '일정') + '</span><span class="v" style="font-size:15px">' + (next ? Number(next.date.slice(5, 7)) + '.' + Number(next.date.slice(8, 10)) + ' ' + esc(next.title) : '없음') + '</span></div>' +
-    '<div class="kpi" style="cursor:default"><span class="k">다음 ' + (ui.eduT || '일정') + ' 참석</span><span class="v num">' + (next ? eduAttCount(next) + '<small> / ' + staff.length + '명</small>' : '–') + '</span></div></div>' +
-    '<section class="panel"><div class="row between"><h2>지점 일정 참석 체크</h2><button class="btn primary sm" data-act="orgNew" data-id="' + attr(ui.eduT || '교육') + '">+ 추가</button></div>' + chips +
-    (cards ? '<div class="edu-list">' + cards + '</div>' : '<div class="empty"><strong>' + (past ? '지난 일정이 없습니다' : '잡힌 일정이 없습니다') + '</strong><span>"+ 일정 추가"를 누르거나 지점 일정에서 넣으세요.</span></div>') +
-    '<p class="muted" style="margin:0">일정을 누르면 펼쳐집니다. 체크하면 바로 저장되고, 지점 일정 목록에도 참석 인원이 보입니다.</p></section>';
-}
-// ===== 지점 → 회식: 회식 참석표 (직원 × 회식 날짜) =====
-function dinePanel() {
-  var t = today(), staff = store.settings.contacts.staff.slice().sort(function (a, b) { return (STAFF_ROLES.indexOf(a.role) + 99) % 99 - (STAFF_ROLES.indexOf(b.role) + 99) % 99 || byName(a, b); });
-  var all = orgEvents().filter(function (e) { return e.type === '회식' || e.type === '행사'; }).sort(function (a, b) { return (a.date + (a.time || '')).localeCompare(b.date + (b.time || '')); });
-  var showPast = !!ui.dnPast, cols = all.filter(function (e) { return showPast || e.date >= t; });
-  var pastN = all.length - all.filter(function (e) { return e.date >= t; }).length;
-  var next = all.filter(function (e) { return e.date >= t; })[0];
-  var form = ui.dnOpen ? '<div class="cal-add"><h3 style="margin:0"><span class="kind-dot org"></span>행사 추가</h3><p class="kind-help">넣은 행사·회식은 지점 일정(구분: 행사·회식)과 업무 → 일정 달력에도 보입니다.</p>' +
-    '<div class="form-grid org-grid">' + lbl('날짜', f('ui', 'dnDate', ui.dnDate || t, { type: 'date', quick: true })) + lbl('시간', f('ui', 'dnTime', ui.dnTime || '18:30', { type: 'time' })) +
-    lbl('구분', f('ui', 'dnType', ui.dnType || '행사', { type: 'select', options: [['행사', '행사'], ['회식', '회식']] })) + lbl('내용', f('ui', 'dnTitle', ui.dnTitle || '', { ph: '예: 연말 시상식, 11월 지점 회식' }), 'g-title') + lbl('장소', f('ui', 'dnPlace', ui.dnPlace || '', { ph: '예: ○○식당 (예약 30명)' })) +
-    '<div class="field"><span>&nbsp;</span><button class="btn primary" data-act="dnAdd">행사 추가</button></div></div></div>' : '';
-  var table = '';
-  if (!staff.length) table = '<div class="empty"><strong>직원 연락처가 비어 있습니다</strong><span>지점 → 직원 연락처에 직원을 넣으면 참석표가 만들어집니다.</span><button class="btn primary sm" data-act="goOffice" data-id="staff">직원 연락처로</button></div>';
-  else if (!cols.length) table = '<div class="empty"><strong>' + (all.length ? '다가오는 행사이 없습니다' : '잡힌 행사이 없습니다') + '</strong><span>"+ 행사 추가"로 날짜를 넣으면 직원별 참석표가 만들어집니다.' + (pastN ? ' 지난 행사은 "지난 행사 보기"로 볼 수 있습니다.' : '') + '</span></div>';
-  else {
-    var head = '<tr><th class="dn-name">직원</th>' + cols.map(function (e) {
-      var d = daysUntil(e.date);
-      return '<th class="dn-col' + (e.date < t ? ' past' : '') + '"><button class="link-btn" data-act="openOrg" data-id="' + e.id + '" title="행사 정보 고치기"><span class="kchip k-org">' + esc(e.type) + '</span> <b class="num">' + Number(e.date.slice(5, 7)) + '.' + Number(e.date.slice(8, 10)) + '</b> <small>(' + orgWd(e.date) + ')</small></button><div class="dn-sub">' + esc(e.title) + '</div>' +
-        (d != null && d >= 0 && d <= 7 ? '<span class="chip warn">' + dLabel(d) + '</span>' : '') + '</th>'; }).join('') + '<th class="r">참석</th></tr>';
-    var body = staff.map(function (x) {
-      var n = 0;
-      var cells = cols.map(function (e) { var on = !!(e.att && e.att[x.id]); if (on) n++; return '<td class="dn-cell"><button class="dn-btn' + (on ? ' on' : '') + '" data-act="eduAtt" data-pid="' + e.id + '" data-id="' + x.id + '" aria-pressed="' + on + '" aria-label="' + attr((x.name || '') + ' ' + e.date + ' 참석') + '">' + (on ? '참석' : '–') + '</button></td>'; }).join('');
-      return '<tr><td class="dn-name"><b>' + esc(x.name || '이름 없음') + '</b>' + (x.role ? ' <small class="muted">' + esc(x.role) + '</small>' : '') + '</td>' + cells + '<td class="r num">' + n + '<small class="muted">/' + cols.length + '</small></td></tr>';
-    }).join('');
-    var foot = '<tr><td class="dn-name"><b>참석 인원</b></td>' + cols.map(function (e) { return '<td class="dn-cell num"><b>' + eduAttCount(e) + '</b><small class="muted">/' + staff.length + '</small><div class="dn-all"><button class="link-btn" data-act="eduAll" data-id="' + e.id + '">모두</button> · <button class="link-btn" data-act="eduNone" data-id="' + e.id + '">해제</button></div></td>'; }).join('') + '<td></td></tr>';
-    table = '<div class="tablewrap"><table class="t dn-table"><thead>' + head + '</thead><tbody>' + body + '</tbody><tfoot>' + foot + '</tfoot></table></div>';
-  }
-  return '<div class="kpis"><div class="kpi" style="cursor:default"><span class="k">다가오는 행사</span><span class="v num">' + (all.length - pastN) + '<small>건</small></span></div>' +
-    '<div class="kpi warn" style="cursor:default"><span class="k">다음 행사</span><span class="v" style="font-size:15px">' + (next ? Number(next.date.slice(5, 7)) + '.' + Number(next.date.slice(8, 10)) + ' ' + esc(next.title) : '없음') + '</span></div>' +
-    '<div class="kpi" style="cursor:default"><span class="k">다음 행사 참석</span><span class="v num">' + (next ? eduAttCount(next) + '<small> / ' + staff.length + '명</small>' : '–') + '</span></div></div>' +
-    '<section class="panel"><div class="row between"><h2>행사 참석표</h2><div class="row" style="gap:6px">' + (pastN ? '<button class="btn sm' + (showPast ? ' primary' : '') + '" data-act="toggleBox" data-id="dnPast">' + (showPast ? '지난 행사 숨기기' : '지난 행사 보기 ' + pastN) + '</button>' : '') +
-    '<button class="btn ' + (ui.dnOpen ? '' : 'primary ') + 'sm" data-act="toggleBox" data-id="dnOpen" aria-expanded="' + !!ui.dnOpen + '">' + (ui.dnOpen ? '닫기' : '+ 행사 추가') + '</button></div></div>' + form + table +
-    '<p class="muted" style="margin:0">칸을 누르면 참석 / 불참이 바뀌고 바로 저장됩니다. 날짜를 누르면 행사 정보(시간·장소)를 고칠 수 있습니다.</p></section>';
-}
 function orgModalBody(e) {
   var A = function (k, v, o) { o = o || {}; o.id = e.id; return f('orgev', k, v, o); };
   var sameGrp = e.grp ? orgEvents().filter(function (x) { return x.grp === e.grp; }).length : 0;
@@ -4537,7 +4882,78 @@ function orgModalBody(e) {
     (sameGrp > 1 ? '<p class="muted" style="margin:10px 0 0">반복으로 만든 일정 ' + sameGrp + '건 중 하나입니다. 여기서 고치면 이 날짜 일정만 바뀝니다.</p>'
       : '<div class="field" style="margin-top:12px"><span>반복 만들기 <small class="muted">이 일정과 같은 내용으로 이어서 만듭니다</small></span><span class="dquick">' + ORG_REPEAT.slice(1).map(function (o) { return '<button type="button" class="qchip" data-act="orgRepeat" data-id="' + e.id + '" data-k="' + o[0] + '">' + o[1] + '</button>'; }).join('') + '</span></div>');
 }
-// ===== 업무 (오늘 · 일정 · 기념일 · 할 일 · 실적) =====
+// ===== 업무 → 기념일: 기념일 입력 + 생일과 함께 월별 모아 보기 =====
+// settings.annivs = [{ id, who: 'c'|'s'|'e', cid, sid, name, type, date(처음 날짜, 양력), memo, sample? }]
+var AN_MSG = '{이름}님, {기념일}을 진심으로 축하드립니다! 늘 행복하시길 바랍니다. - {FC} 드림';
+function annivMsg(a, iso) { var t = (a.type || '기념일') + (iso ? annivYears(a, iso) : ''); return String(store.settings.params.anMsg || AN_MSG).replace(/\{이름\}/g, annivWho(a)).replace(/\{기념일\}/g, t).replace(/\{FC\}/g, store.settings.fc.name || '담당 FC'); }
+var ANNIV_TYPES = ['결혼기념일', '개업일', '첫 계약일', '입사일', '자녀 생일', '기타'];
+function whoSeg(act, cur, items) { return '<span class="seg who-seg" role="radiogroup" aria-label="보이는 대상">' + items.map(function (o) { var on = cur === o[0]; return '<button type="button" class="seg-btn' + (on ? ' on' : '') + '" role="radio" aria-checked="' + on + '" data-act="' + act + '" data-id="' + o[0] + '">' + o[1] + (o[2] != null ? ' <b class="num">' + o[2] + '</b>' : '') + '</button>'; }).join('') + '</span>'; }
+function annivList() { return store.settings.annivs = store.settings.annivs || []; }
+function annivWho(a) { if (a.who === 's') { var st = store.settings.contacts.staff.filter(function (x) { return x.id === a.sid; })[0]; return st ? (st.name || '직원') : '직원'; } if (a.who === 'e') return a.name || '이름 없음'; var c = custById(a.cid); return c ? (c.name || '고객') : (a.name || '고객 미선택'); }
+function annivDateIn(a, y) { if (!/^\d{4}-\d{2}-\d{2}$/.test(String(a.date || ''))) return '';
+  if (a.cal === 'lunar') { var lm = Number(a.date.slice(5, 7)), ld = Number(a.date.slice(8, 10)), hit = ''; [y - 1, y].forEach(function (ly) { var sd = lunarToSolar(ly, lm, ld, !!a.leap); if (sd && Number(sd.slice(0, 4)) === y && !hit) hit = sd; }); return hit; }
+  var mo = Number(a.date.slice(5, 7)), dy = Number(a.date.slice(8, 10)), dt = new Date(y, mo - 1, dy); if (dt.getMonth() !== mo - 1) dt = new Date(y, mo, 0); return isoDate(dt); }
+function annivYears(a, iso) { var n = Number(iso.slice(0, 4)) - Number(String(a.date || '').slice(0, 4)); return n > 0 && a.type !== '자녀 생일' ? ' ' + n + '주년' : (n > 0 && a.type === '자녀 생일' ? ' (만 ' + n + '세)' : ''); }
+function annivDateText(a) { return a.date ? (a.cal === 'lunar' ? '음력 ' : '') + a.date.replace(/-/g, '.') + (a.cal === 'lunar' && a.leap ? ' (윤달)' : '') : ''; }
+function annivNext(a) { var y = new Date().getFullYear(), best = null; [y, y + 1].forEach(function (yy) { var d = annivDateIn(a, yy), n = d ? daysUntil(d) : null; if (n != null && n >= 0 && (!best || n < best.days)) best = { date: d, days: n }; }); return best; }
+function annivPanel() {
+  var Y = new Date().getFullYear(), m = ui.anM || (new Date().getMonth() + 1), A = annivList();
+  // 1~12월 묶음: 기념일만 (생일은 업무 → 생일, 직원 생일은 지점 → 직원 생일)
+  var by = {}; for (var i = 1; i <= 12; i++) by[i] = [];
+  A.forEach(function (a) { var d = annivDateIn(a, Y); if (d) by[Number(d.slice(5, 7))].push({ d: d, k: 'anniv', who: annivWho(a), a: a, label: a.type || '기념일' }); });
+  for (var j = 1; j <= 12; j++) by[j].sort(function (x, y) { return x.d.localeCompare(y.d) || String(x.who).localeCompare(String(y.who)); });
+  var AW = ui.anW || '', anShow = function (a) { return !AW || (AW === 'c' ? a.who === 'c' : a.who !== 'c'); }, fl = function (L) { return L.filter(function (x) { return anShow(x.a); }); };
+  var tabs = '<div class="month-tabs">' + [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(function (mo) { var n = fl(by[mo]).length; return '<button class="todo' + (mo === m ? ' on' : '') + '" data-act="anM" data-id="' + mo + '">' + mo + '월' + (n ? ' <b>' + n + '</b>' : '') + '</button>'; }).join('') + '</div>';
+  var fchips = '<button class="btn sm" data-act="annivNew">+ 추가</button>';
+  var rows = fl(by[m]).map(function (x) {
+    var isA = x.k === 'anniv', c = x.c || (isA && x.a.who === 'c' ? custById(x.a.cid) : null), st = isA && x.a.who === 's' ? store.settings.contacts.staff.filter(function (y) { return y.id === x.a.sid; })[0] : null;
+    var nx = isA ? annivNext(x.a) : nextBirthday(x.c), n = daysUntil(x.d);
+    var whoH = (isA ? '<span class="who ' + (x.a.who === 's' ? 'who-s">직원' : x.a.who === 'e' ? 'who-e">지인' : 'who-c">고객') + '</span> ' : '') + (c ? custLink(c, 'info') : '<b>' + esc(x.who) + '</b>');
+    var orig = isA ? (x.a.date ? esc(annivDateText(x.a)) : '–') : esc(bdDesc(x.c));
+    var yrs = isA ? (x.a.date ? Number(x.d.slice(0, 4)) - Number(x.a.date.slice(0, 4)) : 0) : 0;
+    var ext = isA ? (yrs > 0 ? (x.a.type === '자녀 생일' ? '만 ' + yrs + '세' : '<b>' + yrs + '주년</b>') + (x.a.type === '결혼기념일' && yrs % 5 === 0 ? ' <span class="chip warn">' + (yrs === 25 ? '은혼식' : yrs === 50 ? '금혼식' : '5년 단위') + '</span>' : '') : '–') : (x.c.birth ? '만 ' + ageOf(x.c.birth, new Date(x.d + 'T00:00:00')) + '세' : '<span class="muted">생년월일 없음</span>');
+    var phone = c ? c.phone : st ? st.phone : '', ph = String(phone || '').replace(/[^\d+]/g, '');
+    var msg = isA ? annivMsg(x.a, x.d) : bdText(x.c);
+    var gOcc = isA ? (x.a.type === '결혼기념일' ? '결혼기념일' : '기념일(개업·입사 등)') : '생일';
+    var attrs = isA ? ' class="row-dbl" data-dbl="anniv:' + x.a.id + '" tabindex="0" title="두 번 누르면 수정"' : '';
+    return '<tr' + attrs + '><td data-l="대상">' + whoH + '</td><td data-l="구분"><span class="kchip ' + KIND[x.k][1] + '">' + esc(x.label) + '</span></td>' +
+      '<td class="num" data-l="처음 날짜">' + orig + '</td><td class="num" data-l="올해 날짜">' + Number(x.d.slice(5, 7)) + '월 ' + Number(x.d.slice(8, 10)) + '일</td>' +
+      '<td data-l="남은 날"><span class="chip' + (n != null && n >= 0 && n <= 7 ? ' warn' : '') + '">' + (n != null && n < 0 && nx ? '지남 · 다음 ' + dLabel(nx.days) : dLabel(n)) + '</span></td>' +
+      '<td class="num" data-l="주년·나이">' + ext + '</td><td class="num" data-l="연락처">' + (phone ? esc(phone) : '<span class="muted">연락처 없음</span>') + '</td>' +
+      '<td style="white-space:nowrap">' + (ph ? '<a class="btn sm tel" href="sms:' + attr(ph) + '?body=' + encodeURIComponent(msg) + '">축하 문자</a> ' : '') + (c ? '<button class="btn sm" data-act="giftNew" data-id="' + c.id + '" data-k="' + attr(gOcc) + '">선물 기록</button>' : '') + '</td></tr>';
+  }).join('');
+  // 생일 화면과 같은 구조: 30일 안 기념일 → 월별 기념일 → 축하 문자 문구
+  var up = A.map(function (a) { return { a: a, nx: annivNext(a) }; }).filter(function (o) { return o.nx && o.nx.days <= 30 && anShow(o.a); }).sort(function (a, b) { return a.nx.days - b.nx.days; });
+  var upH = '<section class="panel"><div class="row between"><h2>30일 안 기념일 ' + up.length + '건 <small class="muted">(고객 ' + up.filter(function (o) { return o.a.who === 'c'; }).length + ' · 직원·지인 ' + up.filter(function (o) { return o.a.who !== 'c'; }).length + ')</small></h2>' + whoSeg('anW', AW, [['', '전체', A.length], ['c', '고객', A.filter(function (a) { return a.who === 'c'; }).length], ['s', '직원·지인', A.filter(function (a) { return a.who !== 'c'; }).length]]) + '</div>' +
+    (up.length ? '<ul class="wlist">' + up.map(function (o) {
+      var a = o.a, c = a.who === 'c' ? custById(a.cid) : null, st = a.who === 's' ? store.settings.contacts.staff.filter(function (y) { return y.id === a.sid; })[0] : null, phone = c ? c.phone : st ? st.phone : '', ph = String(phone || '').replace(/[^\d+]/g, '');
+      var whoCls = a.who === 's' ? 'who-s">직원' : a.who === 'e' ? 'who-e">지인' : 'who-c">고객';
+      return '<li class="row-dbl" data-dbl="anniv:' + a.id + '" tabindex="0" title="두 번 누르면 수정"><span class="kchip k-anniv">' + dLabel(o.nx.days) + '</span><span class="who ' + whoCls + '</span><span class="what">' + esc(annivWho(a)) + ' · ' + Number(o.nx.date.slice(5, 7)) + '월 ' + Number(o.nx.date.slice(8, 10)) + '일 · ' + esc(a.type || '기념일') + esc(annivYears(a, o.nx.date)) + '</span>' +
+        (c ? custLink(c, 'info') : '') + (ph ? '<a class="btn sm tel" href="sms:' + attr(ph) + '?body=' + encodeURIComponent(annivMsg(a, o.nx.date)) + '">축하 문자</a>' : '') + '</li>'; }).join('') + '</ul>'
+      : '<p class="muted" style="margin:0">30일 안에 다가오는 기념일이 없습니다.</p>') + '</section>';
+  var hasWed = {}; A.forEach(function (a) { if (a.type === '결혼기념일' && a.who === 'c' && a.cid) hasWed[a.cid] = 1; });
+  var noWed = store.customers.filter(function (c) { return c.spouse && !hasWed[c.id]; }).sort(byName);
+  var miss = noWed.length ? '<div class="wed-miss"><span class="muted">배우자가 있는 고객 중 결혼기념일 미입력 <b>' + noWed.length + '명</b> · 눌러서 입력</span><div class="todos">' + noWed.slice(0, 20).map(function (c) { return '<button class="todo" data-act="annivNew" data-id="' + c.id + '" data-k="결혼기념일">+ ' + esc(c.name || '고객') + '</button>'; }).join('') + (noWed.length > 20 ? '<span class="muted">외 ' + (noWed.length - 20) + '명</span>' : '') + '</div></div>' : '';
+  return upH + '<section class="panel"><div class="row between"><h2>월별 기념일</h2>' + fchips + '</div>' + tabs +
+    (rows ? '<div class="tablewrap"><table class="t ctab an-table"><thead><tr><th>이름</th><th>종류</th><th>처음 날짜</th><th>올해 날짜</th><th>남은 날</th><th>주년</th><th>연락처</th><th></th></tr></thead><tbody>' + rows + '</tbody></table></div>' : '<p class="muted" style="margin:0">' + m + '월에는 기념일이 없습니다.</p>') +
+    (A.length ? '' : '<p class="muted" style="margin:0">아직 입력한 기념일이 없습니다. "+ 추가"로 고객의 결혼기념일·개업일, 첫 계약일 같은 날을 넣어 두세요.</p>') + miss +
+    '<p class="muted" style="margin:0">줄을 두 번 누르면 수정할 수 있습니다. 처음 날짜(연도 포함)를 넣으면 몇 주년인지 계산하고, 결혼기념일 5년 단위(25년 은혼식, 50년 금혼식)는 따로 표시합니다. 기념일은 양력 날짜로 해마다 반복되며 업무 → 일정 달력과 오늘 화면에도 나옵니다.</p></section>' +
+    '<section class="panel"><h2>축하 문자 문구</h2>' + lbl('문구 ({이름}, {기념일}, {FC}는 자동으로 바뀝니다)', f('param', 'anMsg', store.settings.params.anMsg || AN_MSG, { type: 'textarea' })) +
+    '<p class="muted" style="margin:0">"축하 문자"를 누르면 휴대폰 문자 앱이 이 문구로 열립니다. 보내기는 FC가 직접 누릅니다. {기념일}은 "결혼기념일 10주년"처럼 바뀝니다.</p></section>';
+}
+function annivModalBody(a) {
+  var A = function (k, v, o) { o = o || {}; o.id = a.id; return f('anniv', k, v, o); };
+  var seg = function (k, cur, opts) { return '<span class="seg seg-f">' + opts.map(function (o) { return '<button type="button" class="seg-btn' + (cur === o[0] ? ' on' : '') + '" data-act="annivSet" data-id="' + a.id + '" data-k="' + k + '" data-v="' + attr(o[0]) + '">' + o[1] + '</button>'; }).join('') + '</span>'; };
+  var whoField = a.who === 's' ? lbl('직원', A('sid', a.sid, { type: 'select', options: [['', '직원 선택']].concat(store.settings.contacts.staff.slice().sort(byName).map(function (x) { return [x.id, (x.name || '이름 없음') + (x.role ? ' ' + x.role : '')]; })) }))
+    : a.who === 'e' ? lbl('이름', A('name', a.name, { ph: '예: 김○○ 원장' })) : lbl('고객', A('cid', a.cid, { type: 'select', options: [['', '고객 선택']].concat(custOptions().slice(1)) }));
+  return '<div class="grid-form dm-grid"><div class="field"><span>대상</span>' + seg('who', a.who || 'c', [['c', '고객'], ['s', '직원'], ['e', '지인·기타']]) + '</div>' + whoField +
+    '<div class="field span2"><span>종류</span>' + seg('type', a.type, ANNIV_TYPES.map(function (t) { return [t, t]; })) + '</div>' +
+    '<div class="field"><span>양력 · 음력</span>' + seg('cal', a.cal === 'lunar' ? 'lunar' : 'solar', [['solar', '양력'], ['lunar', '음력']]) + (a.cal === 'lunar' ? ' ' + seg('leap', a.leap ? '1' : '', [['', '평달'], ['1', '윤달']]) : '') + '</div>' +
+    lbl(a.cal === 'lunar' ? '음력 날짜 (처음 그날)' : '날짜 (처음 그날)', A('date', a.date, { type: 'date' })) +
+    '<div class="field span2"><p class="muted" style="font-size:13px;margin:0;white-space:normal;line-height:1.5">' + (a.cal === 'lunar' ? '음력 연·월·일을 그대로 넣으세요(예: 19901003). 해마다 그해 양력 날짜로 바꿔 달력에 넣습니다.' + (DANGI ? '' : ' <b>이 브라우저는 음력 변환을 지원하지 않습니다.</b>') : '해마다 같은 날 반복합니다. 연도를 넣으면 몇 주년인지 계산합니다.') + '</p></div>' +
+    lbl('메모', A('memo', a.memo, { type: 'textarea', ph: '예: 부부 함께 가입, 꽃 보내기' }), 'span2') + '</div>';
+}
+// ===== 업무 (오늘 · 일정 · 생일 · 기념일 · 할 일 · 실적) =====
 var EV_TYPES = ['상담', '방문', '연락', '교육', '회의', '개인', '기타'];
 function calMonthOf() { var cm = ui.calMonth || today().slice(0, 7); return { y: Number(cm.slice(0, 4)), m: Number(cm.slice(5, 7)), key: cm }; }
 function custOptions(v) { return [['', '고객 선택 (선택)']].concat(store.customers.slice().sort(byName).map(function (c) { return [c.id, c.name || '이름 없음']; })); }
@@ -4570,6 +4986,8 @@ function workItems(from, to) {
     });
     var ce = consentExpiry(c); if (inR(ce)) out.push({ date: ce, kind: 'consent', label: nm + ' 동의 만료', cid: c.id, tab: 'info' });
   });
+  annivList().forEach(function (a) { for (var ya = Number(from.slice(0, 4)); ya <= Number(to.slice(0, 4)); ya++) { var ad = annivDateIn(a, ya); if (ad && inR(ad)) out.push({ date: ad, kind: 'anniv', label: annivWho(a) + ' ' + (a.type || '기념일') + annivYears(a, ad), cid: a.who === 'c' ? a.cid : '', tab: 'info', aid: a.id }); } });
+  friendsWithBd().forEach(function (fr) { for (var yf = Number(from.slice(0, 4)); yf <= Number(to.slice(0, 4)); yf++) birthdaysInYear(fr, yf).forEach(function (bd) { if (inR(bd)) out.push({ date: bd, kind: 'birthday', label: (fr.rel || '지인') + ' ' + (fr.name || '이름 없음') + ' 생일' + (fr.bdCal === 'lunar' ? ' (' + bdDesc(fr) + ')' : ''), phone: fr.phone }); }); });
   staffWithBd().forEach(function (st) {
     for (var y = Number(from.slice(0, 4)); y <= Number(to.slice(0, 4)); y++) birthdaysInYear(st, y).forEach(function (bd) {
       if (inR(bd)) out.push({ date: bd, kind: 'sbd', label: '직원 ' + (st.name || '이름 없음') + (st.role ? ' ' + st.role : '') + ' 생일' + (st.bdCal === 'lunar' ? ' (' + bdDesc(st) + ')' : ''), phone: st.phone, sid: st.id });
@@ -4577,7 +4995,7 @@ function workItems(from, to) {
   });
   return out.sort(function (a, b) { return String(a.date).localeCompare(String(b.date)) || String(a.time || '99').localeCompare(String(b.time || '99')); });
 }
-var KIND = { org: ['지점 일정', 'k-org'], event: ['일정', 'k-event'], task: ['할 일 기한', 'k-task'], follow: ['연락 예정', 'k-follow'], birthday: ['생일', 'k-bd'], sbd: ['직원 생일', 'k-sbd'], sang: ['상령일', 'k-sang'], renew: ['갱신', 'k-renew'], payend: ['납입완료', 'k-pay'], consent: ['동의', 'k-consent'] };
+var KIND = { org: ['지점 일정', 'k-org'], event: ['일정', 'k-event'], task: ['할 일 기한', 'k-task'], follow: ['연락 예정', 'k-follow'], birthday: ['생일', 'k-bd'], sbd: ['직원 생일', 'k-sbd'], sang: ['상령일', 'k-sang'], renew: ['갱신', 'k-renew'], payend: ['납입완료', 'k-pay'], consent: ['동의', 'k-consent'], anniv: ['기념일', 'k-anniv'] };
 function itemLabel(it) { return it.kind === 'event' ? (it.type || '일정') : KIND[it.kind][0]; }
 function evKey(e) { return [e.date, String(e.title || '').replace(/\s+/g, ''), e.cid || ''].join('|'); }
 function evIsDup(id) { // 같은 날짜·내용·고객 일정이 먼저 있으면 중복
@@ -4595,7 +5013,8 @@ function itemRow(it, showDate) {
   var act = it.kind === 'event' ? dupChip + '<button class="btn sm' + (it.done ? '' : ' tel') + '" data-act="evDone" data-id="' + it.id + '">' + (it.done ? '완료됨' : '완료') + '</button>' + evDel :
     it.kind === 'task' ? '<button class="btn sm tel" data-act="taskDone" data-id="' + it.id + '">완료</button>' :
     it.kind === 'follow' ? '<button class="btn sm tel" data-act="noteDone" data-pid="' + it.cid + '" data-id="' + it.nid + '">연락 완료</button>' :
-    it.kind === 'org' ? '<button class="btn ghost sm" data-act="openOrg" data-id="' + it.id + '" title="지점 일정 고치기">고치기</button>' : '';
+    it.kind === 'org' ? '<button class="btn ghost sm" data-act="openOrg" data-id="' + it.id + '" title="지점 일정 수정">수정</button>' :
+    it.kind === 'anniv' ? '<button class="btn ghost sm" data-act="openAnniv" data-id="' + it.aid + '" title="기념일 수정">수정</button>' : '';
   var link = c ? '<button class="link-btn" data-act="goCust" data-id="' + c.id + '" data-pid="' + (it.tab || 'info') + '">' + esc(c.name || '고객') + '</button>' : '';
   if (it.kind === 'task') act = '';
   return '<li class="' + (it.done ? 'is-done' : '') + (it.kind === 'task' ? ' is-task' : '') + '">' + (it.kind === 'task' ? '<button class="check-btn" data-act="taskDone" data-id="' + it.id + '" aria-label="완료 표시"></button>' : '') + (showDate ? '<span class="wdate num">' + esc(it.date.slice(5).replace('-', '.')) + '</span>' : '') +
@@ -4640,8 +5059,8 @@ function eventForm(dateDefault) {
     '<div class="field"><span>&nbsp;</span><button class="btn primary ev-btn" data-act="addEvent">일정 추가</button></div></div>';
 }
 function renderOffice() {
-  if (ui.osub === 'dine') ui.osub = 'edu'; // 행사(참석표) 메뉴는 없앰 → 교육·행사로
-  var sub = ['branch', 'staff', 'edu'].indexOf(ui.osub) >= 0 ? ui.osub : 'schedule', body = sub === 'branch' ? branchPanel() : sub === 'staff' ? staffPanel() : sub === 'edu' ? eduPanel() : sub === 'dine' ? dinePanel() : orgSchedulePanel();
+  if (ui.osub === 'dine' || ui.osub === 'edu') ui.osub = 'schedule'; // 예전 행사·참석체크 메뉴 → 지점 일정으로 합침
+  var sub = ['notice', 'schedule', 'branch', 'staff', 'sbd'].indexOf(ui.osub) >= 0 ? ui.osub : 'notice', body = sub === 'notice' ? noticePanel() : sub === 'branch' ? branchPanel() : sub === 'staff' ? staffPanel() : sub === 'sbd' ? staffBdPanel() : orgSchedulePanel();
   return subPage('지점', OFFICE_SUBS, sub, 'goOffice', '지점 메뉴', body);
 }
 function renderWork() {
@@ -4650,10 +5069,12 @@ function renderWork() {
   if (sub === 'home') body = workHome();
   else if (sub === 'calendar') body = workCalendar();
   else if (sub === 'birthday') body = workBirthday();
+  else if (sub === 'gifts') body = giftPanel();
+  else if (sub === 'anniv') body = annivPanel();
   else if (sub === 'tasks') body = workTasks();
   else if (sub === 'comm') body = workComm();
   else body = workStats();
-  var title = WORK_SUBS.filter(function (x) { return x[0] === sub; })[0][1];
+  var title = sub === 'anniv' ? '기념일' : sub === 'comm' ? '예상수수료' : WORK_SUBS.filter(function (x) { return x[0] === sub; })[0][1];
   var td = new Date(), wd = ['일', '월', '화', '수', '목', '금', '토'][td.getDay()];
   return '<section class="settings-page"><h1 class="page-title">' + (sub === 'home' ? '오늘 · ' + (td.getMonth() + 1) + '월 ' + td.getDate() + '일 (' + wd + ')' : title) + '</h1><div class="settings-body">' + body + '</div></section>';
 }
@@ -4685,35 +5106,44 @@ function workHome() {
     '<p class="kind-help">' + TK_HELP + '</p>' +
     (openTasks.length ? foldList(openTasks, 4, 'tkMore', taskRow, 'wlist tasks') : '<p class="muted" style="margin:0">남은 할 일이 없습니다.</p>') +
     '</section></div>' +
-    '<section class="panel"><div class="row between"><h2>다가오는 7일 일정</h2></div>' + (week.length ? foldList(week, 5, 'weekMore', function (it) { return itemRow(it, true); }, 'wlist') : '<p class="muted" style="margin:0">다가오는 일정이 없습니다.</p>') + '</section>' +
+    '<section class="panel"><div class="row between"><h2>다가오는 7일간 일정</h2></div>' + (week.length ? foldList(week, 5, 'weekMore', function (it) { return itemRow(it, true); }, 'wlist') : '<p class="muted" style="margin:0">다가오는 일정이 없습니다.</p>') + '</section>' +
     renderTodo();
 }
 function workCalendar() {
+  var wk = ui.calView !== 'month', WD = ['일', '월', '화', '수', '목', '금', '토'];
   var cm = calMonthOf(), first = new Date(cm.y, cm.m - 1, 1), start = new Date(first); start.setDate(1 - first.getDay());
-  var end = new Date(start); end.setDate(start.getDate() + 41);
-  var items = workItems(isoDate(start), isoDate(end)), byDay = {};
+  if (wk) { var bd0 = new Date((ui.calDay || today()) + 'T00:00:00'); start = new Date(bd0); start.setDate(bd0.getDate() - bd0.getDay()); }
+  var nDays = wk ? 7 : 42, end = new Date(start); end.setDate(start.getDate() + nDays - 1);
+  var schedOnly = !ui.calAll, isSched = function (it) { return !schedOnly || it.kind === 'event' || it.kind === 'org'; };
+  var items = workItems(isoDate(start), isoDate(end)).filter(isSched), byDay = {};
   items.forEach(function (it) { (byDay[it.date] = byDay[it.date] || []).push(it); });
   var t = today(), sel2 = ui.calDay || t, cells = '';
-  for (var i = 0; i < 42; i++) {
+  var lim = wk ? 99 : 3;
+  for (var i = 0; i < nDays; i++) {
     var d = new Date(start); d.setDate(start.getDate() + i); var iso = isoDate(d), list = byDay[iso] || [];
+    if (wk) { cells += '<button class="cal-cell wk' + (iso === t ? ' today' : '') + (iso === sel2 ? ' sel' : '') + (d.getDay() === 0 ? ' sun' : d.getDay() === 6 ? ' sat' : '') + '" data-act="calDay" data-id="' + iso + '">' +
+      '<span class="cal-num">' + (d.getMonth() + 1) + '.' + d.getDate() + ' <small class="wk-wd">' + WD[d.getDay()] + '</small></span>' + (list.length ? list.map(function (it) { return '<span class="cal-item ' + KIND[it.kind][1] + (it.done ? ' is-done' : '') + '">' + esc((it.time ? it.time + ' ' : '') + it.label) + '</span>'; }).join('') : '<span class="cal-none">일정 없음</span>') + '</button>'; continue; }
     cells += '<button class="cal-cell' + (d.getMonth() + 1 !== cm.m ? ' other' : '') + (iso === t ? ' today' : '') + (iso === sel2 ? ' sel' : '') + (d.getDay() === 0 ? ' sun' : d.getDay() === 6 ? ' sat' : '') + '" data-act="calDay" data-id="' + iso + '">' +
-      '<span class="cal-num">' + d.getDate() + '</span>' + list.slice(0, 3).map(function (it) { return '<span class="cal-item ' + KIND[it.kind][1] + (it.done ? ' is-done' : '') + '">' + esc((it.time ? it.time + ' ' : '') + it.label) + '</span>'; }).join('') +
-      (list.length > 3 ? '<span class="cal-more">외 ' + (list.length - 3) + '건</span>' : '') + '</button>';
+      '<span class="cal-num">' + d.getDate() + '</span>' + list.slice(0, lim).map(function (it) { return '<span class="cal-item ' + KIND[it.kind][1] + (it.done ? ' is-done' : '') + '">' + esc((it.time ? it.time + ' ' : '') + it.label) + '</span>'; }).join('') +
+      (list.length > lim ? '<span class="cal-more">외 ' + (list.length - lim) + '건</span>' : '') + '</button>';
   }
-  var dayList = workItems(sel2, sel2);
-  var legend = Object.keys(KIND).map(function (k) { return '<span class="kchip ' + KIND[k][1] + '">' + KIND[k][0] + '</span>'; }).join('');
-  return '<section class="panel"><div class="row between"><div class="row" style="gap:6px"><button class="btn sm" data-act="calMove" data-id="-1" aria-label="이전 달">‹</button><h2 class="num" style="min-width:110px;text-align:center">' + cm.y + '년 ' + cm.m + '월</h2><button class="btn sm" data-act="calMove" data-id="1" aria-label="다음 달">›</button><button class="btn sm" data-act="calMove" data-id="0">오늘</button></div><div class="legend-chips">' + legend + '</div></div>' +
-    '<div class="cal-grid">' + ['일', '월', '화', '수', '목', '금', '토'].map(function (w, i) { return '<div class="cal-head' + (i === 0 ? ' sun' : i === 6 ? ' sat' : '') + '">' + w + '</div>'; }).join('') + cells + '</div></section>' +
+  var dayList = workItems(sel2, sel2).filter(isSched);
+  var legend = '<span class="seg cal-view" role="tablist" aria-label="표시할 항목">' + [['', '일정만'], ['all', '전체 보기']].map(function (o) { var on = (ui.calAll ? 'all' : '') === o[0]; return '<button class="seg-btn' + (on ? ' on' : '') + '" data-act="calAll" data-id="' + o[0] + '">' + o[1] + '</button>'; }).join('') + '</span>' +
+    Object.keys(KIND).filter(function (k) { return !schedOnly || k === 'event' || k === 'org'; }).map(function (k) { return '<span class="kchip ' + KIND[k][1] + '">' + KIND[k][0] + '</span>'; }).join('');
+  var ttl = wk ? (start.getMonth() + 1) + '.' + start.getDate() + ' ~ ' + (end.getMonth() + 1) + '.' + end.getDate() : cm.y + '년 ' + cm.m + '월', unit = wk ? '주' : '달';
+  var viewSeg = '<span class="seg cal-view" role="tablist" aria-label="달력 보기">' + [['week', '주간'], ['month', '월간']].map(function (o) { var on = (wk ? 'week' : 'month') === o[0]; return '<button class="seg-btn' + (on ? ' on' : '') + '" role="tab" aria-selected="' + on + '" data-act="calView" data-id="' + o[0] + '">' + o[1] + '</button>'; }).join('') + '</span>';
+  return '<section class="panel"><div class="row between"><div class="row" style="gap:6px">' + viewSeg + '<button class="btn sm" data-act="calMove" data-id="-1" aria-label="이전 ' + unit + '">‹</button><h2 class="num" style="min-width:110px;text-align:center">' + ttl + '</h2><button class="btn sm" data-act="calMove" data-id="1" aria-label="다음 ' + unit + '">›</button><button class="btn sm" data-act="calMove" data-id="0">오늘</button></div><div class="legend-chips">' + legend + '</div></div>' +
+    '<div class="cal-grid' + (wk ? ' week' : '') + '">' + WD.map(function (w, i) { return '<div class="cal-head' + (i === 0 ? ' sun' : i === 6 ? ' sat' : '') + '">' + w + '</div>'; }).join('') + cells + '</div></section>' +
     '<section class="panel"><div class="row between"><h2 class="num">' + Number(sel2.slice(5, 7)) + '월 ' + Number(sel2.slice(8, 10)) + '일 일정 ' + dayList.length + '건</h2><div class="row" style="gap:6px">' + dedupBtn() + '<button class="btn ' + (ui.evCalOpen ? '' : 'primary ') + 'sm" data-act="toggleBox" data-id="evCalOpen">' + (ui.evCalOpen ? '닫기' : '+ 추가') + '</button></div></div>' +
     (dayList.length ? '<ul class="wlist">' + dayList.map(function (it) { return itemRow(it, false) + (it.kind === 'event' ? '' : ''); }).join('') + '</ul>' : '<p class="muted" style="margin:0">이 날은 일정이 없습니다.</p>') +
     (ui.evCalOpen ? '<div class="cal-add"><h3 style="margin:0"><span class="kind-dot ev"></span>' + Number(sel2.slice(5, 7)) + '월 ' + Number(sel2.slice(8, 10)) + '일에 일정 추가</h3><p class="kind-help">' + EV_HELP + ' 끝내면 체크하는 업무는 <button class="link-btn" data-act="goWork" data-id="tasks">할 일</button>에 넣으세요.</p>' + eventForm(sel2) + '</div>' : '') +
     eventList(sel2) +
-    '<p class="muted" style="margin:0">생일·상령일·갱신·납입완료·연락 예정·동의 만료는 고객 자료에서 자동으로 표시됩니다. 상령일은 생일에서 6개월이 지나 보험나이가 한 살 오르는 날로, 보험료가 오를 수 있습니다.</p></section>';
+    '<p class="muted" style="margin:0">' + (schedOnly ? '직접 등록한 일정과 지점 일정만 보입니다. 연락 예정·갱신·납입 완료·동의 만료·할 일 기한은 <button class="link-btn" data-act="goWork" data-id="tasks">할 일</button>에, 생일·기념일은 각 메뉴에 있습니다. "전체 보기"를 누르면 달력에 함께 표시합니다.' : '생일·상령일·갱신·납입완료·연락 예정·동의 만료는 고객 자료에서 자동으로 표시됩니다. 상령일은 생일에서 6개월이 지나 보험나이가 한 살 오르는 날로, 보험료가 오를 수 있습니다.') + '</p></section>';
 }
 function eventList(day) {
   var evs = store.settings.events.filter(function (e) { return e.date === day && !e.org; });
   if (!evs.length) return '';
-  return '<details class="ev-edit"><summary>직접 등록한 일정 고치기 (' + evs.length + ')</summary><div class="tablewrap"><table class="t"><thead><tr><th>날짜</th><th>시간</th><th>구분</th><th>내용</th><th>고객</th><th></th></tr></thead><tbody>' + evs.map(function (e) {
+  return '<details class="ev-edit"><summary>직접 등록한 일정 수정 (' + evs.length + ')</summary><div class="tablewrap"><table class="t"><thead><tr><th>날짜</th><th>시간</th><th>구분</th><th>내용</th><th>고객</th><th></th></tr></thead><tbody>' + evs.map(function (e) {
     var del = ui.armed === 'delE:' + e.id;
     return '<tr><td style="min-width:178px">' + f('ev', 'date', e.date, { id: e.id, type: 'date', aria: '날짜' }) + '</td><td style="min-width:100px">' + f('ev', 'time', e.time, { id: e.id, type: 'time', aria: '시간' }) + '</td>' +
       '<td style="min-width:84px">' + f('ev', 'type', e.type, { id: e.id, type: 'select', options: EV_TYPES.map(function (t) { return [t, t]; }), aria: '구분' }) + '</td><td style="min-width:220px;width:100%">' + f('ev', 'title', e.title, { id: e.id, aria: '내용' }) + '</td>' +
@@ -4726,13 +5156,28 @@ function bdText(c) {
 function workBirthday() {
   var t = new Date(), m = ui.bdMonth || (t.getMonth() + 1);
   var Y = t.getFullYear();
+  var W = ui.bdW || '', showC = !W || W === 'c', showS = !W || W === 's', showF = !W || W === 'f';
+  var wChips = '';
   var withBd = store.customers.filter(hasBirthday).map(function (c) { c._bdThis = birthdaysInYear(c, Y)[0] || ''; return c; }).filter(function (c) { return c._bdThis; });
-  var cnt = {}; withBd.forEach(function (c) { var mo = Number(c._bdThis.slice(5, 7)); cnt[mo] = (cnt[mo] || 0) + 1; });
+  var sWith = staffWithBd().map(function (x) { x._bdThis = birthdaysInYear(x, Y)[0] || ''; return x; }).filter(function (x) { return x._bdThis; });
+  var fWith = friendsWithBd().map(function (x) { x._bdThis = birthdaysInYear(x, Y)[0] || ''; return x; }).filter(function (x) { return x._bdThis; });
+  var people = (showC ? withBd.map(function (c) { return { c: c, d: c._bdThis }; }) : []).concat(showS ? sWith.map(function (x) { return { s: x, d: x._bdThis }; }) : []).concat(showF ? fWith.map(function (x) { return { f: x, d: x._bdThis }; }) : []);
+  var cnt = {}; people.forEach(function (o) { var mo = Number(o.d.slice(5, 7)); cnt[mo] = (cnt[mo] || 0) + 1; });
   var tabs = '<div class="month-tabs">' + [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(function (i) { return '<button class="todo' + (i === m ? ' on' : '') + '" data-act="bdMonth" data-id="' + i + '">' + i + '월' + (cnt[i] ? ' <b>' + cnt[i] + '</b>' : '') + '</button>'; }).join('') + '</div>';
-  var list = withBd.filter(function (c) { return Number(c._bdThis.slice(5, 7)) === m; }).sort(function (a, b) { return a._bdThis.localeCompare(b._bdThis) || byName(a, b); });
-  var rows = list.map(function (c) {
-    var nb = nextBirthday(c), sd = sangDate(c), ph = String(c.phone || '').replace(/[^\d+]/g, '');
-    return '<tr><td>' + custLink(c, 'info') + '</td><td class="num">' + esc(bdDesc(c)) + (c.bdCal ? '' : ' <span class="muted">(생년월일 기준)</span>') + '</td>' +
+  var list = people.filter(function (o) { return Number(o.d.slice(5, 7)) === m; }).sort(function (a, b) { return a.d.localeCompare(b.d) || String((a.c || a.s || a.f).name || '').localeCompare(String((b.c || b.s || b.f).name || '')); });
+  var rows = list.map(function (o) {
+    if (o.f) { var y = o.f, nbf = nextBirthday(y), phf = String(y.phone || '').replace(/[^\d+]/g, ''), agef = num(y.bdYear) ? Number(o.d.slice(0, 4)) - num(y.bdYear) : 0;
+      return '<tr class="row-dbl" data-dbl="friend:' + y.id + '" tabindex="0" title="두 번 누르면 수정"><td><span class="who who-e">' + esc(y.rel || '지인') + '</span> <b>' + esc(y.name || '이름 없음') + '</b></td><td class="num">' + esc(bdDesc(y)) + '</td>' +
+        '<td class="num">' + Number(o.d.slice(5, 7)) + '월 ' + Number(o.d.slice(8, 10)) + '일</td><td>' + (nbf ? '<span class="chip' + (nbf.days <= 7 ? ' warn' : '') + '">' + dLabel(nbf.days) + '</span>' : '–') + '</td>' +
+        '<td class="num">' + (agef > 0 ? '만 ' + agef + '세' : '<span class="muted">–</span>') + '</td><td class="num"><span class="muted">–</span></td><td class="num">' + (y.phone ? esc(y.phone) : '<span class="muted">연락처 없음</span>') + '</td>' +
+        '<td style="white-space:nowrap">' + (phf ? '<a class="btn sm tel" href="sms:' + attr(phf) + '?body=' + encodeURIComponent(bdText({ name: y.name })) + '">축하 문자</a> ' : '') + '<button class="btn ghost sm" data-act="openFriend" data-id="' + y.id + '">수정</button></td></tr>'; }
+    if (o.s) { var x = o.s, nbs = nextBirthday(x), phs = String(x.phone || '').replace(/[^\d+]/g, ''), age = num(x.bdYear) ? Number(o.d.slice(0, 4)) - num(x.bdYear) : 0;
+      return '<tr class="row-dbl" data-dbl="staff:' + x.id + '" tabindex="0" title="두 번 누르면 수정"><td><span class="who who-s">직원</span> <b>' + esc(x.name || '이름 없음') + '</b>' + (x.role ? ' <small class="muted">' + esc(x.role) + '</small>' : '') + '</td><td class="num">' + esc(bdDesc(x)) + '</td>' +
+        '<td class="num">' + Number(o.d.slice(5, 7)) + '월 ' + Number(o.d.slice(8, 10)) + '일</td><td>' + (nbs ? '<span class="chip' + (nbs.days <= 7 ? ' warn' : '') + '">' + dLabel(nbs.days) + '</span>' : '–') + '</td>' +
+        '<td class="num">' + (age > 0 ? '만 ' + age + '세' : '<span class="muted">–</span>') + '</td><td class="num"><span class="muted">–</span></td><td class="num">' + (x.phone ? esc(x.phone) : '<span class="muted">연락처 없음</span>') + '</td>' +
+        '<td style="white-space:nowrap">' + (phs ? '<a class="btn sm tel" href="sms:' + attr(phs) + '?body=' + encodeURIComponent(bdText({ name: x.name })) + '">축하 문자</a> ' : '') + bdEventBtn('s', x) + '</td></tr>'; }
+    var c = o.c, nb = nextBirthday(c), sd = sangDate(c), ph = String(c.phone || '').replace(/[^\d+]/g, '');
+    return '<tr><td><span class="who who-c">고객</span> ' + custLink(c, 'info') + '</td><td class="num">' + esc(bdDesc(c)) + '</td>' +
       '<td class="num">' + Number(c._bdThis.slice(5, 7)) + '월 ' + Number(c._bdThis.slice(8, 10)) + '일</td>' +
       '<td>' + (nb ? '<span class="chip' + (nb.days <= 7 ? ' warn' : '') + '">' + dLabel(nb.days) + '</span>' : '–') + '</td>' +
       '<td class="num">' + (c.birth ? '만 ' + ageOf(c.birth) + '세' : '<span class="muted">생년월일 없음</span>') + '</td><td class="num">' + (sd ? esc(sd.date) + ' <span class="muted">(' + dLabel(sd.days) + ')</span>' : '–') + '</td>' +
@@ -4741,16 +5186,17 @@ function workBirthday() {
   }).join('');
   var upcoming = store.customers.filter(hasBirthday).map(function (c) { return { c: c, nb: nextBirthday(c) }; })
     .concat(staffWithBd().map(function (x) { return { s: x, nb: nextBirthday(x) }; }).filter(function (o) { return o.nb; }))
-    .filter(function (x) { return x.nb.days <= 30; }).sort(function (a, b) { return a.nb.days - b.nb.days; });
-  return '<section class="panel"><div class="row between"><h2>30일 안 생일 ' + upcoming.length + '명 <small class="muted">(고객 ' + upcoming.filter(function (x) { return x.c; }).length + ' · 직원 ' + upcoming.filter(function (x) { return x.s; }).length + ')</small></h2><span class="muted">생일 전후 연락은 관계 관리와 보장 점검을 함께 하기 좋은 때입니다</span></div>' +
+    .concat(friendsWithBd().map(function (x) { return { f: x, nb: nextBirthday(x) }; }).filter(function (o) { return o.nb; }))
+    .filter(function (x) { return x.nb.days <= 30 && (x.c ? showC : x.s ? showS : showF); }).sort(function (a, b) { return a.nb.days - b.nb.days; });
+  return '<section class="panel"><div class="row between"><h2>30일 안 생일 ' + upcoming.length + '명 <small class="muted">(고객 ' + upcoming.filter(function (x) { return x.c; }).length + ' · 직원 ' + upcoming.filter(function (x) { return x.s; }).length + ' · 지인·기타 ' + upcoming.filter(function (x) { return x.f; }).length + ')</small></h2>' + whoSeg('bdW', W, [['', '전체', withBd.length + sWith.length + fWith.length], ['c', '고객', withBd.length], ['s', '직원', sWith.length], ['f', '지인·기타', fWith.length]]) + '</div>' +
     (upcoming.length ? '<ul class="wlist">' + upcoming.map(function (x) {
+      if (x.f) { var fph = String(x.f.phone || '').replace(/[^\d+]/g, ''); return '<li class="row-dbl" data-dbl="friend:' + x.f.id + '" tabindex="0" title="두 번 누르면 수정"><span class="kchip k-bd">' + dLabel(x.nb.days) + '</span><span class="who who-e">' + esc(x.f.rel || '지인') + '</span><span class="what">' + esc(x.f.name || '이름 없음') + ' · ' + Number(x.nb.date.slice(5, 7)) + '월 ' + Number(x.nb.date.slice(8, 10)) + '일' + (x.f.bdCal === 'lunar' ? ' (' + esc(bdDesc(x.f)) + ')' : '') + (x.f.memo ? ' · ' + esc(String(x.f.memo).slice(0, 20)) : '') + '</span>' + (fph ? '<a class="btn sm tel" href="sms:' + attr(fph) + '?body=' + encodeURIComponent(bdText({ name: x.f.name })) + '">축하 문자</a>' : '') + '</li>'; }
       if (x.s) return '<li><span class="kchip k-bd">' + dLabel(x.nb.days) + '</span><span class="who who-s">직원</span><span class="what">' + esc(x.s.name || '직원') + ' · ' + Number(x.nb.date.slice(5, 7)) + '월 ' + Number(x.nb.date.slice(8, 10)) + '일' + (x.s.bdCal === 'lunar' ? ' (' + esc(bdDesc(x.s)) + ')' : '') + (x.s.role || x.s.dept ? ' · ' + esc([x.s.role, x.s.dept].filter(Boolean).join(' · ')) : '') + '</span>' + (x.s.phone ? telLink(x.s.phone) : '') + '</li>';
       return '<li><span class="kchip k-bd">' + dLabel(x.nb.days) + '</span><span class="who who-c">고객</span><span class="what">' + esc(x.c.name || '고객') + ' · ' + Number(x.nb.date.slice(5, 7)) + '월 ' + Number(x.nb.date.slice(8, 10)) + '일' + (x.c.bdCal === 'lunar' ? ' (' + esc(bdDesc(x.c)) + ')' : '') + (x.nb.age != null ? ' · 만 ' + x.nb.age + '세' : '') + '</span>' + custLink(x.c, 'info', '고객 보기') + (x.c.phone ? telLink(x.c.phone) : '') + '</li>'; }).join('') + '</ul>' : '<p class="muted" style="margin:0">30일 안에 생일인 고객·직원이 없습니다.</p>') + '</section>' +
-    '<section class="panel"><div class="row between"><h2>월별 생일</h2></div>' + tabs +
-    (rows ? '<div class="tablewrap"><table class="t ctab"><thead><tr><th>고객</th><th>실제 생일</th><th>올해 양력</th><th>남은 날</th><th>나이</th><th>상령일 (보험나이 +1)</th><th>연락처</th><th></th></tr></thead><tbody>' + rows + '</tbody></table></div>' : '<p class="muted" style="margin:0">' + m + '월 생일인 고객이 없습니다.</p>') +
-    (store.customers.length > withBd.length ? '<p class="muted" style="margin:0">생일 정보가 없는 고객 ' + (store.customers.length - withBd.length) + '명은 표시되지 않습니다.</p>' : '') +
-    '<p class="muted" style="margin:0">실제 생일을 따로 넣은 고객은 그 날짜로, 없으면 생년월일(주민번호) 날짜로 표시합니다. 음력 생일은 해마다 양력 날짜가 바뀌어 자동으로 계산합니다. 나이·상령일은 생년월일 기준입니다.' + (DANGI ? '' : ' <b>이 브라우저는 음력 변환을 지원하지 않습니다. 최신 크롬·사파리로 열어 주세요.</b>') + '</p></section>' +
-    staffBdPanel() +
+    '<section class="panel"><div class="row between"><h2>월별 생일</h2><button class="btn sm" data-act="friendNew" title="지인·기타 생일 추가">+ 지인·기타 추가</button></div>' + tabs +
+    (rows ? '<div class="tablewrap"><table class="t ctab"><thead><tr><th>이름</th><th>실제 생일</th><th>올해 양력</th><th>남은 날</th><th>나이</th><th>상령일 (보험나이 +1)</th><th>연락처</th><th></th></tr></thead><tbody>' + rows + '</tbody></table></div>' : '<p class="muted" style="margin:0">' + m + '월 생일인 ' + (W === 'c' ? '고객이' : W === 's' ? '직원이' : W === 'f' ? '지인·기타가' : '사람이') + ' 없습니다.</p>') +
+    (store.customers.length > withBd.length || store.settings.contacts.staff.length > sWith.length ? '<p class="muted" style="margin:0">생일 정보가 없는 ' + [store.customers.length > withBd.length ? '고객 ' + (store.customers.length - withBd.length) + '명' : '', store.settings.contacts.staff.length > sWith.length ? '직원 ' + (store.settings.contacts.staff.length - sWith.length) + '명' : ''].filter(Boolean).join(' · ') + '은 표시되지 않습니다.</p>' : '') +
+    '<p class="muted" style="margin:0">위의 전체·고객·직원·지인·기타 중 하나를 골라 볼 수 있습니다. 지인·기타는 "+ 지인·기타 추가"로 넣고, 줄을 두 번 누르면 수정합니다. 실제 생일을 따로 넣은 고객은 그 날짜로, 없으면 생년월일(주민번호) 날짜로 표시합니다. 음력 생일은 해마다 양력 날짜가 바뀌어 자동으로 계산합니다. 나이·상령일은 생년월일 기준입니다.' + (DANGI ? '' : ' <b>이 브라우저는 음력 변환을 지원하지 않습니다. 최신 크롬·사파리로 열어 주세요.</b>') + '</p></section>' +
     '<section class="panel"><h2>축하 문자 문구</h2>' + lbl('문구 ({이름}, {FC}는 자동으로 바뀝니다)', f('param', 'bdMsg', store.settings.params.bdMsg, { type: 'textarea' })) +
     '<p class="muted" style="margin:0">"축하 문자"를 누르면 휴대폰 문자 앱이 이 문구로 열립니다. 보내기는 FC가 직접 누릅니다. 상령일은 생일에서 6개월이 지나 보험나이가 한 살 오르는 날로, 그 전에 가입하면 보험료가 낮을 수 있습니다.</p></section>';
 }
@@ -4773,16 +5219,23 @@ function staffBdPanel() {
   var list = staffWithBd().map(function (x) { return { x: x, nb: nextBirthday(x) }; }).filter(function (o) { return o.nb; }).sort(function (a, b) { return a.nb.days - b.nb.days; });
   var rows = list.map(function (o) {
     var x = o.x, ph = String(x.phone || '').replace(/[^\d+]/g, '');
-    return '<tr><td><b>' + esc(x.name || '이름 없음') + '</b></td><td>' + esc([x.role, x.dept, x.branch].filter(Boolean).join(' · ') || '–') + '</td><td class="num">' + esc(bdDesc(x)) + '</td>' +
+    return '<tr class="row-dbl" data-dbl="staff:' + x.id + '" tabindex="0" title="두 번 누르면 수정"><td><b>' + esc(x.name || '이름 없음') + '</b></td><td>' + (x.role ? esc(x.role) : '<span class="muted">–</span>') + '</td><td>' + esc([x.dept, x.branch].filter(Boolean).join(' · ') || '–') + '</td><td class="num">' + esc(bdDesc(x)) + '</td>' +
       '<td class="num">' + Number(o.nb.date.slice(5, 7)) + '월 ' + Number(o.nb.date.slice(8, 10)) + '일</td><td><span class="chip' + (o.nb.days <= 7 ? ' warn' : '') + '">' + dLabel(o.nb.days) + '</span></td>' +
       '<td class="num">' + (x.phone ? esc(x.phone) : '<span class="muted">연락처 없음</span>') + '</td>' +
       '<td style="white-space:nowrap">' + (ph ? '<a class="btn sm tel" href="sms:' + attr(ph) + '?body=' + encodeURIComponent(bdText({ name: x.name })) + '">축하 문자</a> ' : '') + bdEventBtn('s', x) + '</td></tr>';
   }).join('');
   var noBd = store.settings.contacts.staff.length - list.length;
-  return '<section class="panel"><div class="row between"><h2>직원 생일 ' + list.length + '명</h2><button class="btn sm" data-act="goContacts" data-id="staff">직원 생일 입력하기</button></div>' +
-    (rows ? '<div class="tablewrap"><table class="t ctab"><thead><tr><th>이름</th><th>직급 · 소속</th><th>생일</th><th>다음 생일 (양력)</th><th>남은 날</th><th>휴대폰</th><th></th></tr></thead><tbody>' + rows + '</tbody></table></div>'
-      : '<p class="muted" style="margin:0">생일을 넣은 직원이 없습니다. 업무 → 직원 연락처에서 직원 생일을 입력하세요.</p>') +
-    (noBd > 0 && rows ? '<p class="muted" style="margin:0">생일을 넣지 않은 직원 ' + noBd + '명은 표시되지 않습니다.</p>' : '') + '</section>';
+  return '<section class="panel"><div class="row between"><h2>직원 생일 ' + list.length + '명</h2><button class="btn primary sm" data-act="addStaff" title="직원을 추가하고 생일을 입력합니다">+ 추가</button></div>' +
+    (rows ? '<div class="tablewrap"><table class="t ctab"><thead><tr><th>이름</th><th>직급</th><th>소속</th><th>생일</th><th>다음 생일 (양력)</th><th>남은 날</th><th>휴대폰</th><th></th></tr></thead><tbody>' + rows + '</tbody></table></div>'
+      : '<p class="muted" style="margin:0">생일을 넣은 직원이 없습니다. "+ 추가"를 누르거나 아래 이름을 눌러 생일을 입력하세요.</p>') +
+    (noBd > 0 ? '<div class="wed-miss"><span class="muted">생일을 넣지 않은 직원 <b>' + noBd + '명</b> · 눌러서 입력</span><div class="todos">' + store.settings.contacts.staff.filter(function (x) { return !list.some(function (o) { return o.x === x; }); }).map(function (x) { return '<button class="todo" data-act="openStaffBd" data-id="' + x.id + '">+ ' + esc(x.name || '이름 없음') + (x.role ? ' <small class="muted">' + esc(x.role) + '</small>' : '') + '</button>'; }).join('') + '</div></div>' : '') +
+    '<p class="muted" style="margin:0">줄을 두 번 누르면 직원 정보와 생일을 수정할 수 있습니다. 음력 생일은 해마다 양력 날짜를 다시 계산합니다.</p></section>';
+}
+function autoTodoItems() { // 일정을 뺀, 고객 자료에서 생기는 해야 할 일
+  var t = today(), lim = isoDate(new Date(Date.now() + Math.max(7, num(store.settings.params.renewDays) || 60) * 864e5));
+  var past = workItems('2000-01-01', isoDate(new Date(Date.now() - 864e5))).filter(function (it) { return it.kind === 'follow'; });
+  var next = workItems(t, lim).filter(function (it) { return ['follow', 'renew', 'payend', 'consent', 'sang'].indexOf(it.kind) >= 0; });
+  return past.concat(next);
 }
 function workTasks() {
   var T = store.settings.tasks, open = T.filter(function (x) { return !x.done; }), done = T.filter(function (x) { return x.done; });
@@ -4790,7 +5243,16 @@ function workTasks() {
   open = sortTasks(open); var row = taskRow;
   return '<section class="panel"><div class="row between"><h2>남은 할 일 ' + open.length + '건</h2><button class="btn ' + (ui.tkOpen ? '' : 'primary ') + 'sm" data-act="toggleBox" data-id="tkOpen" aria-expanded="' + !!ui.tkOpen + '">' + (ui.tkOpen ? '닫기' : '+ 추가') + '</button></div>' +
     (ui.tkOpen ? '<div class="cal-add kind-tk"><h3 style="margin:0"><span class="kind-dot tk"></span>할 일 추가</h3><p class="kind-help">' + TK_HELP + ' 날짜·시간이 정해진 약속은 <button class="link-btn" data-act="goWork" data-id="calendar">일정</button>에 넣으세요.</p>' + taskForm(false) + '</div>' : '') + (open.length ? '<ul class="wlist tasks">' + open.map(row).join('') + '</ul>' : '<p class="muted" style="margin:0">남은 할 일이 없습니다.</p>') + '</section>' +
-    (done.length ? '<section class="panel"><div class="row between"><h2>완료 ' + done.length + '건</h2><button class="btn ghost sm" data-act="clearDoneTasks">완료 항목 지우기</button></div><ul class="wlist tasks">' + done.slice(-30).reverse().map(row).join('') + '</ul></section>' : '');
+    (function () {
+      var A = autoTodoItems(), F = ui.atF || '', kinds = [['', '전체'], ['follow', '연락 예정'], ['renew', '갱신'], ['payend', '납입 완료'], ['consent', '동의 만료'], ['sang', '상령일']];
+      var cnt = {}; A.forEach(function (it) { cnt[it.kind] = (cnt[it.kind] || 0) + 1; });
+      var L = A.filter(function (it) { return !F || it.kind === F; }), late = A.filter(function (it) { return it.date < today(); }).length;
+      return '<section class="panel"><div class="row between"><h2>고객 자료에서 생긴 할 일 ' + A.length + '건' + (late ? ' <span class="chip warn">밀림 ' + late + '</span>' : '') + '</h2><span class="muted">앞으로 ' + (num(store.settings.params.renewDays) || 60) + '일 · 일정 제외</span></div>' +
+        '<div class="todos">' + kinds.filter(function (o) { return !o[0] || cnt[o[0]]; }).map(function (o) { return '<button class="todo' + (F === o[0] ? ' on' : '') + '" data-act="atF" data-id="' + o[0] + '">' + o[1] + (o[0] ? ' <b>' + cnt[o[0]] + '</b>' : '') + '</button>'; }).join('') + '</div>' +
+        (L.length ? foldList(L, 8, 'atMore', function (it) { return itemRow(it, true); }, 'wlist') : '<p class="muted" style="margin:0">해야 할 일이 없습니다.</p>') +
+        '<p class="muted" style="margin:0">상담 기록의 다음 연락일, 계약의 갱신일·납입 완료일, 개인정보 동의 만료, 상령일(보험나이 +1)을 모아 보여 줍니다. 기간은 설정 → 분석 기준의 "갱신·납입완료 예정 표시"를 따릅니다.</p></section>';
+    })() +
+    (done.length ? '<section class="panel"><div class="row between"><h2>완료 ' + done.length + '건</h2><button class="btn ghost sm' + (ui.armed === 'clearDone' ? ' danger armed' : '') + '" data-act="clearDoneTasks">' + (ui.armed === 'clearDone' ? '한 번 더 누르면 삭제' : '완료항목 삭제') + '</button></div><ul class="wlist tasks">' + done.slice(-30).reverse().map(row).join('') + '</ul></section>' : '');
 }
 // ===== 업무 → 예상 수수료 =====
 // 수수료율은 회사·상품마다 달라 미리 넣지 않는다. 사용자가 회사 수수료 표를 보고 넣는다.
@@ -4929,6 +5391,20 @@ function setField(el) {
     v = pd.iso;
   }
   if (el.dataset.kind === 'time') { var ptm = parseTimeInput(v); if (!ptm.ok) { toast(ptm.msg); el.classList.add('input-bad'); el.focus(); return; } v = ptm.v; }
+  if (scope === 'notice') {
+    var nt = noticeList().filter(function (x) { return x.id === id; })[0]; if (!nt) return;
+    nt[k] = v; save(); if (k === 'title') { var dtn = document.getElementById('dmTitle'); if (dtn) dtn.textContent = v || '새 공지'; return; } if (k === 'body') return; render(); return;
+  }
+  if (scope === 'anniv') {
+    var an = annivList().filter(function (x) { return x.id === id; })[0]; if (!an) return;
+    an[k] = v; save(); if (k === 'memo' || k === 'name') return; render(); return;
+  }
+  if (scope === 'gift') {
+    var gg = giftList().filter(function (x) { return x.id === id; })[0]; if (!gg) return;
+    gg[k] = k === 'amount' ? parseWon(v) : v; save();
+    if (k === 'item' || k === 'memo') { var dtg = document.getElementById('dmTitle'); if (dtg && k === 'item') dtg.textContent = v || '고객 선물'; return; }
+    render(); return;
+  }
   if (scope === 'orgev') {
     var oev = store.settings.events.filter(function (x) { return x.id === id; })[0]; if (!oev) return;
     oev[k] = v; save();
@@ -5012,12 +5488,12 @@ function setField(el) {
     if (bk === 2) { v = String(v).trim(); if (v && BL.some(function (y, q) { return q !== bi && norm(y[2]) === norm(v); })) { toast('같은 이름의 지점이 이미 있습니다'); el.value = BL[bi][2]; return; } }
     BL[bi][bk] = v; store.settings.branches = BL;
   }
-  else if (scope === 'staff' || scope === 'insurer') {
-    var list = scope === 'staff' ? s.contacts.staff : s.contacts.insurers;
+  else if (scope === 'staff' || scope === 'insurer' || scope === 'friend') {
+    var list = scope === 'staff' ? s.contacts.staff : scope === 'friend' ? friendList() : s.contacts.insurers;
     var row = list.filter(function (x) { return x.id === id; })[0]; if (!row) return;
     if (k === 'bdMonth' || k === 'bdDay') v = v === '' ? '' : Number(v);
-    if (scope === 'staff' && !row.bdCal) row.bdCal = 'solar';
-    if (scope === 'staff' && k === 'bdText') {
+    if ((scope === 'staff' || scope === 'friend') && !row.bdCal) row.bdCal = 'solar';
+    if ((scope === 'staff' || scope === 'friend') && k === 'bdText') {
       var pb = parseBdInput(v);
       if (!pb) { toast('생일은 19800315처럼 숫자 8자리로 넣어 주세요 (연도 없이 0315도 됩니다)'); el.value = bdNumText(row); return; }
       if (pb.empty) { row.bdYear = ''; row.bdMonth = ''; row.bdDay = ''; row.bdLeap = false; }
@@ -5075,20 +5551,34 @@ function doAction(el) {
       }
       if (ui.modal) ui.modal.isNew = false; save(); toast('반복 일정 ' + mk2 + '건을 더 만들었습니다'); break; }
     case 'eduF': ui.eduF = id || ''; ui.eduOpenId = ''; break;
-    case 'dnAdd': {
-      var dt0 = String(ui.dnTitle || '').trim() || '지점 ' + (ui.dnType || '행사');
-      store.settings.events.push({ id: uid(), org: true, date: ui.dnDate || today(), time: ui.dnTime || '18:30', type: ui.dnType || '행사', title: dt0, place: String(ui.dnPlace || '').trim(), memo: '', grp: '', done: false, att: {} });
-      ui.dnTitle = ''; ui.dnPlace = ''; ui.dnOpen = false; save(); toast((ui.dnType || '행사') + ' 일정을 추가했습니다. 참석표에서 직원별로 체크하세요'); break; }
     case 'eduT': ui.eduT = id || ''; ui.eduOpenId = ''; break;
     case 'eduToggle': { var cur0 = document.querySelector('.edu-card.open .edu-head'); var isOpen = cur0 && cur0.dataset.id === id; ui.eduOpenId = isOpen ? '-' : id; break; }
     case 'eduAtt': { var ee = store.settings.events.filter(function (x) { return x.id === el.dataset.pid; })[0]; if (ee) { ee.att = ee.att || {}; if (ee.att[id]) delete ee.att[id]; else ee.att[id] = true; ui.eduOpenId = ee.id; save(); } break; }
     case 'eduAll': case 'eduNone': { var ea = store.settings.events.filter(function (x) { return x.id === id; })[0]; if (ea) { ea.att = {}; if (act === 'eduAll') store.settings.contacts.staff.forEach(function (x) { ea.att[x.id] = true; }); ui.eduOpenId = ea.id; save(); } break; }
-    case 'eduAdd': {
-      var et = String(ui.eduTitle || '').trim(); if (!et) { toast('내용을 입력하세요'); var ei = document.getElementById('ui-eduTitle-x'); if (ei) ei.focus(); return; }
-      var ne = { id: uid(), org: true, date: ui.eduDate || today(), time: ui.eduTime || '', type: ui.eduType || ui.eduT || '교육', title: et, place: String(ui.eduPlace || '').trim(), memo: '', grp: '', done: false, att: {} };
-      store.settings.events.push(ne); ui.eduTitle = ''; ui.eduPlace = ''; ui.eduTime = ''; ui.eduOpen = false; ui.eduOpenId = ne.id; save(); toast('일정을 추가했습니다. 참석 가능한 직원을 체크하세요'); break; }
     case 'orgT': ui.orgT = id || ''; break;
     case 'openOrg': openDetail('org:' + id); return;
+    case 'openAnniv': openDetail('anniv:' + id); return;
+    case 'openNotice': openDetail('notice:' + id); return;
+    case 'openFriend': openDetail('friend:' + id); return;
+    case 'friendNew': { var nf = { id: uid(), name: '', rel: '지인', phone: '', bdCal: 'solar', bdYear: '', bdMonth: '', bdDay: '', bdLeap: false, memo: '' }; friendList().unshift(nf); save(); ui.modal = { kind: 'friend', id: nf.id, isNew: true }; setTimeout(function () { var x = document.querySelector('.dmodal [data-k=name]'); if (x) x.focus(); }, 0); break; }
+    case 'friendRel': { var fr = friendList().filter(function (y) { return y.id === id; })[0]; if (fr) { fr.rel = el.dataset.v; save(); } break; }
+    case 'openStaffBd': openDetail('staff:' + id); return;
+    case 'gfY': ui.gfY = id || ''; break;
+    case 'gfO': ui.gfO = id || ''; break;
+    case 'anM': ui.anM = Number(id); break;
+    case 'ntF': ui.ntF = id || ''; break;
+    case 'ntToggle': ui.ntOpen = ui.ntOpen === id ? '' : id; { var nr = noticeList().filter(function (x) { return x.id === id; })[0]; if (nr && !nr.read) { nr.read = true; save(); } } break;
+    case 'ntRead': { var nr2 = noticeList().filter(function (x) { return x.id === id; })[0]; if (nr2) { nr2.read = !nr2.read; save(); } break; }
+    case 'noticeNew': { var nn = { id: uid(), date: today(), title: '', body: '', cat: '일반', imp: false, pin: false, until: '', read: true }; noticeList().unshift(nn); save(); ui.ntq = ''; ui.ntF = ''; ui.modal = { kind: 'notice', id: nn.id, isNew: true }; setTimeout(function () { var x = document.querySelector('.dmodal [data-k=title]'); if (x) x.focus(); }, 0); break; }
+    case 'noticeSet': { var ns = noticeList().filter(function (x) { return x.id === id; })[0]; if (ns) { var v2 = el.dataset.v; ns[el.dataset.k] = (el.dataset.k === 'imp' || el.dataset.k === 'pin') ? v2 === '1' : v2; save(); } break; }
+    case 'anF': ui.anF = id || ''; break;
+    case 'bdW': ui.bdW = id || ''; break;
+    case 'anW': ui.anW = id || ''; break;
+    case 'annivNew': { var na2 = { id: uid(), who: 'c', cid: id || '', sid: '', name: '', type: el.dataset.k || '결혼기념일', date: '', memo: '' }; annivList().unshift(na2); save(); ui.modal = { kind: 'anniv', id: na2.id, isNew: true }; break; }
+    case 'annivSet': { var as = annivList().filter(function (x) { return x.id === id; })[0]; if (as) { as[el.dataset.k] = el.dataset.v; save(); } break; }
+    case 'giftNew': { var ng = { id: uid(), cid: id || '', date: today(), occ: el.dataset.k || ui.gfO || '생일', item: '', amount: '', how: '모바일 쿠폰', memo: '' }; giftList().unshift(ng); save(); ui.modal = { kind: 'gift', id: ng.id, isNew: true }; setTimeout(function () { var x = document.querySelector('.dmodal [data-k=' + (id ? 'item' : 'cid') + ']'); if (x) x.focus(); }, 0); break; }
+    case 'giftSet': { var gs = giftList().filter(function (x) { return x.id === id; })[0]; if (gs) { gs[el.dataset.k] = el.dataset.v; save(); } break; }
+    case 'dmGoCust': ui.modal = null; ui.focusName = false; go('customer', { cid: id, tab: 'info' }); break;
     case 'orgSetType': { var oe = store.settings.events.filter(function (x) { return x.id === id; })[0]; if (oe) { oe.type = el.dataset.k; save(); } break; }
     case 'delOrg': { if (ui.armed !== 'delOrg:' + id) { ui.armed = 'delOrg:' + id; keepArm = true; break; } store.settings.events = store.settings.events.filter(function (x) { return x.id !== id; }); save(); toast('지점 일정을 지웠습니다'); break; }
     case 'orgAdd': {
@@ -5101,7 +5591,7 @@ function doAction(el) {
       }
       ui.orgTitle = ''; ui.orgPlace = ''; ui.orgRep = ''; ui.orgTime = ''; ui.orgOpen = false; save();
       toast(made ? '지점 일정 ' + made + '건을 추가했습니다. 업무 → 일정 달력에도 보입니다' : '같은 일정이 이미 있습니다'); break; }
-    case 'goOffice': go('office', { osub: id || 'schedule' }); break;
+    case 'goOffice': go('office', { osub: id || 'notice' }); break;
     case 'toggleBox': ui[id] = !ui[id]; break;
     case 'custBdCal': if (c) {
       var nv = el.dataset.v || '', ov = c.bdCal || '';
@@ -5111,7 +5601,7 @@ function doAction(el) {
       else if (nv !== ov) { var od = fromBirth(ov); if (!num(c.bdMonth) || (od && od[0] === num(c.bdMonth) && od[1] === num(c.bdDay))) { var nd = fromBirth(nv); if (nd) { c.bdMonth = nd[0]; c.bdDay = nd[1]; c.bdLeap = nd[2]; } } if (nv === 'solar') c.bdLeap = false; }
       c.bdCal = nv; save();
     } break;
-    case 'staffBdCal': { var sbx = store.settings.contacts.staff.filter(function (y) { return y.id === id; })[0]; if (sbx) { sbx.bdCal = el.dataset.v === 'lunar' ? 'lunar' : 'solar'; if (sbx.bdCal === 'solar') sbx.bdLeap = false; save(); } break; }
+    case 'staffBdCal': { var sbx = (el.dataset.pid === 'friend' ? friendList() : store.settings.contacts.staff).filter(function (y) { return y.id === id; })[0]; if (sbx) { sbx.bdCal = el.dataset.v === 'lunar' ? 'lunar' : 'solar'; if (sbx.bdCal === 'solar') sbx.bdLeap = false; save(); } break; }
     case 'editTask': ui.editTask = id || null; if (id) setTimeout(function () { var el2 = document.getElementById('task-title-' + id); if (el2) { el2.focus(); el2.setSelectionRange(el2.value.length, el2.value.length); } }, 0); break;
     case 'taskClearDue': { var tc = store.settings.tasks.filter(function (x) { return x.id === id; })[0]; if (tc) { tc.due = ''; save(); } break; }
     case 'quickDate': {
@@ -5120,7 +5610,11 @@ function doAction(el) {
       else if (qp[0] === 'task') { var qt = store.settings.tasks.filter(function (x) { return x.id === qp[2]; })[0]; if (qt) { qt[qp[1]] = qd; save(); } }
       break;
     }
-    case 'calMove': { var cm = calMonthOf(); var dd = new Date(cm.y, cm.m - 1 + Number(id || 0), 1); ui.calMonth = id === '0' ? '' : dd.getFullYear() + '-' + String(dd.getMonth() + 1).padStart(2, '0'); if (id === '0') ui.calDay = today(); break; }
+    case 'atF': ui.atF = id || ''; break;
+    case 'calAll': ui.calAll = id === 'all'; break;
+    case 'calView': { ui.calView = id === 'month' ? 'month' : ''; if (id === 'week') { var cmv = calMonthOf(); if (!ui.calDay || ui.calDay.slice(0, 7) !== cmv.key) ui.calDay = today().slice(0, 7) === cmv.key ? today() : cmv.key + '-01'; } else if (ui.calDay) ui.calMonth = ui.calDay.slice(0, 7) === today().slice(0, 7) ? '' : ui.calDay.slice(0, 7); break; }
+    case 'calMove': if (ui.calView !== 'month') { if (id === '0') ui.calDay = today(); else { var wd0 = new Date((ui.calDay || today()) + 'T00:00:00'); wd0.setDate(wd0.getDate() + 7 * Number(id)); ui.calDay = isoDate(wd0); } ui.evDate = ui.calDay; ui.calMonth = ui.calDay.slice(0, 7) === today().slice(0, 7) ? '' : ui.calDay.slice(0, 7); break; }
+    { var cm = calMonthOf(); var dd = new Date(cm.y, cm.m - 1 + Number(id || 0), 1); ui.calMonth = id === '0' ? '' : dd.getFullYear() + '-' + String(dd.getMonth() + 1).padStart(2, '0'); if (id === '0') ui.calDay = today(); break; }
     case 'calDay': ui.calDay = id; ui.evDate = id; break;
     case 'bdMonth': ui.bdMonth = Number(id); break;
     case 'addEvent': {
@@ -5149,7 +5643,7 @@ function doAction(el) {
       if (ui.armed === 'delT:' + id) { store.settings.tasks = store.settings.tasks.filter(function (x) { return x.id !== id; }); save(); }
       else { ui.armed = 'delT:' + id; keepArm = true; }
       break;
-    case 'clearDoneTasks': store.settings.tasks = store.settings.tasks.filter(function (x) { return !x.done; }); save(); break;
+    case 'clearDoneTasks': if (ui.armed !== 'clearDone') { ui.armed = 'clearDone'; keepArm = true; break; } store.settings.tasks = store.settings.tasks.filter(function (x) { return !x.done; }); save(); break;
     case 'staffBdEvent': {
       var sx = store.settings.contacts.staff.filter(function (x) { return x.id === id; })[0], snb = sx && nextBirthday(sx);
       if (snb && !bdEventOf('s', sx)) { store.settings.events.push({ id: uid(), date: snb.date, time: '', title: '직원 ' + (sx.name || '') + ' 생일 축하', type: '연락', cid: '', memo: '', done: false, bd: 's:' + sx.id + ':' + snb.date }); save(); toast(snb.date + ' 일정에 추가했습니다'); }
@@ -5211,6 +5705,11 @@ function doAction(el) {
     case 'dmOpenStaff': openDetail('staff:' + id); return;
     case 'openAuto': openDetail('auto:' + id); return;
     case 'autoF': ui.autoF = id || ''; break;
+    case 'drvF': ui.drvF = id || ''; break;
+    case 'drvOpen': ui.drvOpen = ui.drvOpen === id ? '' : id; break;
+    case 'pvTab': ui[el.dataset.pid + 'V'] = id === 'all' ? '' : id; break;
+    case 'pvGo': if (el.dataset.pid === 'auto') { ui.autoV = ''; ui.aq = id || ''; ui.autoF = ''; } else { ui.fireV = ''; ui.fq = id || ''; ui.fireF = ''; } break;
+    case 'gdT': ui.gdT = id || ''; break;
     case 'fireF': ui.fireF = id || ''; break;
     case 'commSetT': ui.commSet = id === '1'; break;
     case 'commMode': commCfg().mode = id === 'spread' ? 'spread' : 'lump'; save(); break;
@@ -5253,6 +5752,10 @@ function doAction(el) {
       if (ui.armed !== 'dmDel') { ui.armed = 'dmDel'; keepArm = true; break; }
       var mm = ui.modal; ui.modal = null;
       if (mm && mm.kind === 'staff') { var gx = store.settings.contacts.staff.filter(function (y) { return y.id === mm.id; })[0]; store.settings.contacts.staff = store.settings.contacts.staff.filter(function (y) { return y.id !== mm.id; }); toast((gx && gx.name ? gx.name : '직원') + '을(를) 지웠습니다'); }
+      else if (mm && mm.kind === 'friend') { store.settings.contacts.friends = friendList().filter(function (y) { return y.id !== mm.id; }); toast('지인을 지웠습니다'); }
+      else if (mm && mm.kind === 'notice') { store.settings.notices = noticeList().filter(function (y) { return y.id !== mm.id; }); toast('공지를 지웠습니다'); }
+      else if (mm && mm.kind === 'anniv') { store.settings.annivs = annivList().filter(function (y) { return y.id !== mm.id; }); toast('기념일을 지웠습니다'); }
+      else if (mm && mm.kind === 'gift') { store.settings.gifts = giftList().filter(function (y) { return y.id !== mm.id; }); toast('선물 기록을 지웠습니다'); }
       else if (mm && mm.kind === 'org') { store.settings.events = store.settings.events.filter(function (y) { return y.id !== mm.id; }); toast('지점 일정을 지웠습니다'); }
       else if (mm && mm.kind === 'fire') { var hf = fireById(mm.cid, mm.id); if (hf) { stampCustomer(hf.c); hf.c.fires = hf.c.fires.filter(function (y) { return y.id !== mm.id; }); toast((hf.c.name || '고객') + '님 화재보험(' + fireLabel(hf.a) + ')을 지웠습니다'); } }
       else if (mm && mm.kind === 'auto') { var ha = autoById(mm.cid, mm.id); if (ha) { stampCustomer(ha.c); ha.c.autos = ha.c.autos.filter(function (y) { return y.id !== mm.id; }); toast((ha.c.name || '고객') + '님 자동차보험(' + autoLabel(ha.a) + ')을 지웠습니다'); } }
@@ -5407,10 +5910,11 @@ function doAction(el) {
     case 'delAlias': store.settings.aliases.splice(Number(id), 1); save(); break;
     case 'aliasUp': { var i = Number(id), al = store.settings.aliases; if (i > 0) { var t = al[i - 1]; al[i - 1] = al[i]; al[i] = t; save(); } break; }
     case 'exportJson': exportJson(); break;
+    case 'fcCardDoc': store.settings.fc.cardOnDoc = store.settings.fc.cardOnDoc === false; save(); break;
     case 'fcCardDel': if (ui.armed !== 'fcCardDel') { ui.armed = 'fcCardDel'; keepArm = true; break; } store.settings.fc.card = ''; store.settings.fc.cardAt = ''; save(); toast('명함 이미지를 지웠습니다'); break;
     case 'setTheme': try { localStorage.setItem('fcp-theme', id); } catch (e) {} applyTheme(); break;
     case 'setZoom': try { localStorage.setItem('fcp-zoom', id); } catch (e) {} break;
-    case 'setStart': store.settings.params.startView = id; save(); toast(id === 'list' ? '다음부터 고객 리스트로 시작합니다' : '다음부터 오늘 업무로 시작합니다'); break;
+    case 'setStart': store.settings.params.startView = id; save(); toast(id === 'list' ? '다음부터 고객목록으로 시작합니다' : '다음부터 오늘 업무로 시작합니다'); break;
     case 'rulesOut': offerFile('분석기준_' + today() + '.json', new Blob([JSON.stringify({ kind: 'fcp-rules', bench: store.settings.bench, params: store.settings.params, aliases: store.settings.aliases.filter(function (a) { return a.type === 'keyword'; }) }, null, 2)], { type: 'application/json' })); break;
     case 'cleanLearned': { var before = store.settings.aliases.length; store.settings.aliases = store.settings.aliases.filter(function (a) { return a.type !== 'exact' || a.uses; }); save(); toast('학습 규칙 ' + (before - store.settings.aliases.length) + '개를 정리했습니다'); break; }
     case 'addSample': { if (ui.armed !== 'addSample') { ui.armed = 'addSample'; keepArm = true; break; } var sc = randomSampleCustomer(); stampCustomer(sc); store.customers.unshift(sc); go('customer', { cid: sc.id, tab: 'analysis' }); save(); toast('예시 고객 ' + sc.name + '을(를) 만들었습니다'); break; }
@@ -5428,9 +5932,9 @@ function doAction(el) {
 function importRules(file) {
   file.text().then(function (t) {
     var o = JSON.parse(t); if (!o || o.kind !== 'fcp-rules' || !o.bench) throw new Error('분석 기준 파일이 아닙니다');
-    var keep = { startView: store.settings.params.startView, bdMsg: store.settings.params.bdMsg };
+    var keep = { startView: store.settings.params.startView, bdMsg: store.settings.params.bdMsg, anMsg: store.settings.params.anMsg };
     STANDARDS.forEach(function (st) { if (o.bench[st.code]) store.settings.bench[st.code] = o.bench[st.code]; });
-    if (o.params) { Object.keys(o.params).forEach(function (k) { if (k !== 'startView' && k !== 'bdMsg') store.settings.params[k] = o.params[k]; }); }
+    if (o.params) { Object.keys(o.params).forEach(function (k) { if (k !== 'startView' && k !== 'bdMsg' && k !== 'anMsg') store.settings.params[k] = o.params[k]; }); }
     if (Array.isArray(o.aliases)) { var have = {}; store.settings.aliases.forEach(function (a) { have[a.type + '|' + norm(a.pattern)] = 1; }); o.aliases.forEach(function (a) { if (a && a.pattern && !have['keyword|' + norm(a.pattern)]) store.settings.aliases.push({ pattern: a.pattern, code: a.code, type: 'keyword', uses: 0 }); }); }
     Object.keys(keep).forEach(function (k) { if (keep[k] != null) store.settings.params[k] = keep[k]; });
     save(); render(); toast('분석 기준을 불러왔습니다');
@@ -5682,6 +6186,40 @@ function detailModalHtml() {
       '<div class="field"><span>생일</span>' + staffBdCell(x) + '</div>' +
       lbl('메모', f('staff', 'memo', x.memo, { id: x.id, type: 'textarea' }), 'span2') + '</div>';
     del = '<button class="btn danger' + (ui.armed === 'dmDel' ? ' armed' : '') + '" data-act="dmDel">' + (ui.armed === 'dmDel' ? '한 번 더 누르면 삭제' : '삭제') + '</button>';
+  } else if (m.kind === 'friend') {
+    var fx = friendList().filter(function (y) { return y.id === m.id; })[0]; if (!fx) { ui.modal = null; return ''; }
+    title = fx.name || (m.isNew ? '새 지인·기타' : '이름 없음'); head = [fx.rel || '지인', fx.phone].filter(Boolean).join(' · ');
+    body = '<div class="grid-form dm-grid">' + lbl('이름', f('friend', 'name', fx.name, { id: fx.id, ph: '이름' })) +
+      '<div class="field"><span>관계</span><span class="seg seg-f">' + FRIEND_RELS.map(function (r) { return '<button type="button" class="seg-btn' + ((fx.rel || '지인') === r ? ' on' : '') + '" data-act="friendRel" data-id="' + fx.id + '" data-v="' + attr(r) + '">' + r + '</button>'; }).join('') + '</span></div>' +
+      lbl('휴대폰', '<div class="tel-cell">' + f('friend', 'phone', fx.phone, { id: fx.id, ph: '010-0000-0000', inputmode: 'tel', kind: 'phone' }) + telLink(fx.phone) + '</div>') +
+      '<div class="field"><span>생일</span>' + staffBdCell(fx, 'friend') + '</div>' +
+      lbl('메모', f('friend', 'memo', fx.memo, { id: fx.id, type: 'textarea', ph: '예: 소개해 준 분, 선물 취향' }), 'span2') + '</div>';
+    del = '<button class="btn danger' + (ui.armed === 'dmDel' ? ' armed' : '') + '" data-act="dmDel">' + (ui.armed === 'dmDel' ? '한 번 더 누르면 삭제' : '삭제') + '</button>';
+  } else if (m.kind === 'notice') {
+    var nm2 = noticeList().filter(function (x) { return x.id === m.id; })[0]; if (!nm2) { ui.modal = null; return ''; }
+    if (!nm2.read) { nm2.read = true; save(); }
+    title = nm2.title || (m.isNew ? '새 공지' : '공지'); head = (nm2.cat || '일반') + ' · ' + String(nm2.date || '').replace(/-/g, '.') + (nm2.imp ? ' · 중요' : '') + (nm2.pin ? ' · 고정' : '');
+    body = noticeModalBody(nm2);
+    del = '<button class="btn danger' + (ui.armed === 'dmDel' ? ' armed' : '') + '" data-act="dmDel">' + (ui.armed === 'dmDel' ? '한 번 더 누르면 삭제' : '삭제') + '</button>';
+  } else if (m.kind === 'anniv') {
+    var am = annivList().filter(function (x) { return x.id === m.id; })[0]; if (!am) { ui.modal = null; return ''; }
+    title = m.isNew ? '새 기념일' : annivWho(am) + ' · ' + (am.type || '기념일'); head = am.date ? '처음 날짜 ' + annivDateText(am) : '날짜를 넣으면 해마다 달력에 나옵니다';
+    body = annivModalBody(am);
+    del = '<button class="btn danger' + (ui.armed === 'dmDel' ? ' armed' : '') + '" data-act="dmDel">' + (ui.armed === 'dmDel' ? '한 번 더 누르면 삭제' : '삭제') + '</button>';
+  } else if (m.kind === 'gift') {
+    var gm = giftList().filter(function (x) { return x.id === m.id; })[0]; if (!gm) { ui.modal = null; return ''; }
+    var gc = custById(gm.cid); title = gm.item || (m.isNew ? '새 선물 기록' : '고객 선물'); head = (gc ? (gc.name || '고객') + '님 · ' : '') + (gm.occ || '') + ' · ' + String(gm.date || '').replace(/-/g, '.');
+    body = giftModalBody(gm);
+    del = '<button class="btn danger' + (ui.armed === 'dmDel' ? ' armed' : '') + '" data-act="dmDel">' + (ui.armed === 'dmDel' ? '한 번 더 누르면 삭제' : '삭제') + '</button>';
+  } else if (m.kind === 'cust') {
+    var cx = custById(m.id); if (!cx) { ui.modal = null; return ''; }
+    var C = function (k, v, o) { o = o || {}; o.id = cx.id; return f('custc', k, v, o); };
+    title = cx.name || '이름 없음'; head = [cx.gender, cx.birth ? '만 ' + ageOf(cx.birth) + '세' : '', cx.job].filter(Boolean).join(' · ') || '고객 연락처';
+    body = '<div class="grid-form dm-grid">' + lbl('이름', C('name', cx.name, { ph: '이름' })) + lbl('성별', C('gender', cx.gender, { type: 'select', options: [['', '선택'], ['남', '남'], ['여', '여']] })) +
+      lbl('휴대폰', '<div class="tel-cell">' + C('phone', cx.phone, { ph: '010-0000-0000', inputmode: 'tel', kind: 'phone' }) + telLink(cx.phone) + smsLink(cx.phone) + '</div>') + lbl('직업', C('job', cx.job, { ph: '예: 회사원' })) +
+      lbl('주소', C('address', cx.address, { ph: '예: 고양시 일산동구 정발산로 24' }), 'span2') + lbl('메모', C('contactMemo', cx.contactMemo, { type: 'textarea', ph: '메모 (연락 가능 시간 등)' }), 'span2') + '</div>' +
+      '<div class="row" style="margin-top:10px"><button class="btn sm" data-act="dmGoCust" data-id="' + cx.id + '">고객 보기 (생년월일·계약 입력)</button></div>';
+    del = '';
   } else if (m.kind === 'org') {
     var oe2 = store.settings.events.filter(function (x) { return x.id === m.id; })[0]; if (!oe2) { ui.modal = null; return ''; }
     title = oe2.title || '지점 일정'; head = '지점 일정 · ' + oe2.date.replace(/-/g, '.') + ' (' + orgWd(oe2.date) + ')' + (oe2.time ? ' ' + oe2.time : '');
@@ -5718,14 +6256,18 @@ function detailModalHtml() {
 }
 function openDetail(spec) {
   var p = String(spec).split(':');
-  ui.modal = p[0] === 'staff' ? { kind: 'staff', id: p[1] } : p[0] === 'auto' ? { kind: 'auto', cid: p[1], id: p[2] } : p[0] === 'fire' ? { kind: 'fire', cid: p[1], id: p[2] } : p[0] === 'org' ? { kind: 'org', id: p[1] } : { kind: 'branch', idx: Number(p[1]) };
+  ui.modal = p[0] === 'staff' ? { kind: 'staff', id: p[1] } : p[0] === 'auto' ? { kind: 'auto', cid: p[1], id: p[2] } : p[0] === 'fire' ? { kind: 'fire', cid: p[1], id: p[2] } : p[0] === 'org' ? { kind: 'org', id: p[1] } : p[0] === 'cust' ? { kind: 'cust', id: p[1] } : p[0] === 'gift' ? { kind: 'gift', id: p[1] } : p[0] === 'anniv' ? { kind: 'anniv', id: p[1] } : p[0] === 'notice' ? { kind: 'notice', id: p[1] } : p[0] === 'friend' ? { kind: 'friend', id: p[1] } : { kind: 'branch', idx: Number(p[1]) };
   ui.armed = null; render();
   setTimeout(function () { var f1 = document.querySelector('.dmodal input, .dmodal select'); if (f1 && ui.modal && ui.modal.isNew) { var nm = document.querySelector('.dmodal [data-k=name], .dmodal [data-k="2"]'); (nm || f1).focus(); } }, 0);
 }
 function closeDetail() {
   var m = ui.modal; ui.modal = null; ui.armed = null;
   if (m && m.isNew) { // 이름을 안 넣고 닫으면 새로 만든 줄은 지운다
-    if (m.kind === 'org') { var eo = store.settings.events.filter(function (y) { return y.id === m.id; })[0]; if (eo && !String(eo.title || '').trim()) { store.settings.events = store.settings.events.filter(function (y) { return y !== eo; }); save(); } }
+    if (m.kind === 'friend') { var fz = friendList().filter(function (y) { return y.id === m.id; })[0]; if (fz && !String(fz.name || '').trim() && !hasBirthday(fz)) { store.settings.contacts.friends = friendList().filter(function (y) { return y !== fz; }); save(); } }
+    else if (m.kind === 'notice') { var nx2 = noticeList().filter(function (y) { return y.id === m.id; })[0]; if (nx2 && !String(nx2.title || '').trim() && !String(nx2.body || '').trim()) { store.settings.notices = noticeList().filter(function (y) { return y !== nx2; }); save(); } }
+    else if (m.kind === 'anniv') { var ax = annivList().filter(function (y) { return y.id === m.id; })[0]; if (ax && !ax.date && !ax.cid && !ax.sid && !String(ax.name || '').trim() && !String(ax.memo || '').trim()) { store.settings.annivs = annivList().filter(function (y) { return y !== ax; }); save(); } }
+    else if (m.kind === 'gift') { var gx = giftList().filter(function (y) { return y.id === m.id; })[0]; if (gx && !gx.cid && !String(gx.item || '').trim() && !num(gx.amount)) { store.settings.gifts = giftList().filter(function (y) { return y !== gx; }); save(); } }
+    else if (m.kind === 'org') { var eo = store.settings.events.filter(function (y) { return y.id === m.id; })[0]; if (eo && !String(eo.title || '').trim()) { store.settings.events = store.settings.events.filter(function (y) { return y !== eo; }); save(); } }
     else if (m.kind === 'fire') { var hfn = fireById(m.cid, m.id); if (hfn && !String(hfn.a.addr || '').trim() && !hfn.a.insurer && !num(hfn.a.premium)) { hfn.c.fires = hfn.c.fires.filter(function (y) { return y.id !== m.id; }); save(); } }
     else if (m.kind === 'auto') { var hn = autoById(m.cid, m.id); if (hn && !String(hn.a.carNo || '').trim() && !hn.a.insurer && !num(hn.a.premium)) { hn.c.autos = hn.c.autos.filter(function (y) { return y.id !== m.id; }); save(); } }
     else if (m.kind === 'staff') { var S = store.settings.contacts.staff, x = S.filter(function (y) { return y.id === m.id; })[0]; if (x && !String(x.name || '').trim()) { store.settings.contacts.staff = S.filter(function (y) { return y !== x; }); save(); } }
@@ -5919,7 +6461,7 @@ function checkLocalExtra() {
 // 로그인 없이(이 브라우저에만) 쓰던 자료를 로그인한 계정으로 합치기 — 고객·연락처·일정·할 일·가구·상품·FC 정보
 function localMergePlan() {
   var L = loadLocalOnly(); if (!L) return null;
-  var S = store.settings, LS = L.settings, P = { cust: [], staff: [], ins: [], ev: [], tk: [], hh: [], prod: [], fc: [] };
+  var S = store.settings, LS = L.settings, P = { cust: [], staff: [], ins: [], ev: [], tk: [], hh: [], prod: [], fc: [], gift: [], anniv: [], notice: [], friend: [] };
   var haveC = {}; store.customers.forEach(function (c) { haveC[c.id] = 1; });
   P.cust = L.customers.filter(function (c) { return !c.sample && !haveC[c.id]; });
   var key = function (arr, fn) { var m = {}; arr.forEach(function (x) { m[fn(x)] = 1; }); return m; };
@@ -5930,8 +6472,12 @@ function localMergePlan() {
   var kTk = function (t) { return norm(t.title) + '|' + (t.due || ''); }; var ht = key(S.tasks, kTk); P.tk = (LS.tasks || []).filter(function (t) { return !ht[kTk(t)]; });
   var hh = key(S.households, function (h) { return h.id; }); P.hh = (LS.households || []).filter(function (h) { return !hh[h.id]; });
   var kPr = function (x) { return norm(x.insurer) + '|' + norm(x.name); }; var hp = key(S.products, kPr); P.prod = (LS.products || []).filter(function (x) { return !x.preset && !hp[kPr(x)]; });
-  ['name', 'role', 'phone', 'email', 'org', 'branch'].forEach(function (k) { if (!S.fc[k] && LS.fc && LS.fc[k]) P.fc.push(k); });
-  P.L = L; P.total = P.cust.length + P.staff.length + P.ins.length + P.ev.length + P.tk.length + P.hh.length + P.prod.length + P.fc.length;
+  ['name', 'role', 'phone', 'email', 'org', 'branch', 'unit', 'unitTel', 'fax', 'addr', 'card'].forEach(function (k) { if (!S.fc[k] && LS.fc && LS.fc[k]) P.fc.push(k); });
+  var hg = key(S.gifts || [], function (g) { return g.id; }); P.gift = (LS.gifts || []).filter(function (g) { return !g.sample && !hg[g.id]; });
+  var hf = key(S.contacts.friends || [], function (a) { return a.id; }); P.friend = ((LS.contacts && LS.contacts.friends) || []).filter(function (a) { return !a.sample && !hf[a.id]; });
+  var hn = key(S.notices || [], function (a) { return a.id; }); P.notice = (LS.notices || []).filter(function (a) { return !a.sample && !hn[a.id]; });
+  var ha = key(S.annivs || [], function (a) { return a.id; }); P.anniv = (LS.annivs || []).filter(function (a) { return !a.sample && !ha[a.id]; });
+  P.L = L; P.total = P.cust.length + P.staff.length + P.ins.length + P.ev.length + P.tk.length + P.hh.length + P.prod.length + P.fc.length + P.gift.length + P.anniv.length + P.notice.length + P.friend.length;
   return P;
 }
 function applyLocalMerge() {
@@ -5941,16 +6487,17 @@ function applyLocalMerge() {
   P.staff.forEach(function (x) { S.contacts.staff.push(x); }); P.ins.forEach(function (x) { S.contacts.insurers.push(x); });
   P.ev.forEach(function (x) { S.events.push(x); }); P.tk.forEach(function (x) { S.tasks.push(x); });
   P.hh.forEach(function (x) { S.households.push(x); }); P.prod.forEach(function (x) { S.products.push(x); });
-  P.fc.forEach(function (k) { S.fc[k] = LS.fc[k]; });
+  P.fc.forEach(function (k) { S.fc[k] = LS.fc[k]; if (k === 'card') S.fc.cardAt = LS.fc.cardAt || ''; });
+  S.gifts = S.gifts || []; P.gift.forEach(function (x) { S.gifts.push(x); }); S.annivs = S.annivs || []; P.anniv.forEach(function (x) { S.annivs.push(x); }); S.notices = S.notices || []; P.notice.forEach(function (x) { S.notices.push(x); }); S.contacts.friends = S.contacts.friends || []; P.friend.forEach(function (x) { S.contacts.friends.push(x); });
   site.localExtra = null; save(); render();
-  toast('고객 ' + P.cust.length + '명 · 연락처 ' + (P.staff.length + P.ins.length) + '건 · 일정/할 일 ' + (P.ev.length + P.tk.length) + '건을 내 계정으로 옮겼습니다');
+  toast('고객 ' + P.cust.length + '명 · 연락처 ' + (P.staff.length + P.ins.length) + '건 · 일정/할 일 ' + (P.ev.length + P.tk.length) + '건 · 선물·기념일 ' + (P.gift.length + P.anniv.length) + '건을 내 계정으로 옮겼습니다');
 }
 function localMergePanel() {
   if (!cloud.on) return '';
   var P = localMergePlan(); if (!P || !P.total) return '';
   var it = function (label, n) { return n ? '<li>' + label + ' <b>' + n + '</b></li>' : ''; };
   return '<section class="panel"><h2>이 브라우저에만 저장된 자료</h2><div class="info">로그인 없이 쓰던 자료가 이 브라우저에 남아 있습니다. 아래 버튼을 누르면 서버의 내 계정에 <b>더해집니다</b>(이미 계정에 있는 고객·연락처·일정은 겹치지 않게 건너뜀). 다른 FC의 자료면 옮기지 마세요.</div>' +
-    '<ul class="merge-list">' + it('고객', P.cust.length) + it('직원 연락처', P.staff.length) + it('보험사 연락처', P.ins.length) + it('일정', P.ev.length) + it('할 일', P.tk.length) + it('가구', P.hh.length) + it('내가 만든 상품', P.prod.length) + (P.fc.length ? '<li>FC 정보 빈 칸 ' + P.fc.length + '개</li>' : '') + '</ul>' +
+    '<ul class="merge-list">' + it('고객', P.cust.length) + it('직원 연락처', P.staff.length) + it('보험사 연락처', P.ins.length) + it('일정', P.ev.length) + it('할 일', P.tk.length) + it('가구', P.hh.length) + it('내가 만든 상품', P.prod.length) + it('선물 기록', P.gift.length) + it('기념일', P.anniv.length) + it('공지', P.notice.length) + it('지인·기타', P.friend.length) + (P.fc.length ? '<li>FC 정보 빈 칸 ' + P.fc.length + '개</li>' : '') + '</ul>' +
     (P.cust.length ? '<p class="muted" style="margin:0">고객: ' + esc(P.cust.slice(0, 8).map(function (c) { return c.name || '이름 없음'; }).join(', ')) + (P.cust.length > 8 ? ' 외 ' + (P.cust.length - 8) + '명' : '') + '</p>' : '') +
     '<div class="row"><button class="btn primary" data-act="mergeLocal">내 계정으로 옮기기</button></div></section>';
 }
