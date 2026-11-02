@@ -517,6 +517,7 @@ table.t td[style*="min-width:84px"] { padding-inline: 4px; }
 .save-state { font-size: 13px; opacity: .85; display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
 .save-state::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #4CC38A; flex: none; }
 .save-state.bad::before { background: var(--accent); }
+.save-state.off::before { background: #E0A100; }
 .who-menu summary { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; padding: 4px 12px 4px 4px; border-radius: 999px; border: 0; background: rgba(255,255,255,.1); }
 .who-menu summary:hover { background: rgba(255,255,255,.16); }
 .who-av { width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex: none; }
@@ -1946,12 +1947,17 @@ function fixup(s) {
 var saveTimer = null, lastSaved = null;
 function save() {
   if (ui.booting) return;
-  if (site.on) { scheduleSite(); updateSaveState(cloud.on ? '서버에 저장 중…' : '사이트에 저장 중…'); return; }
+  if (site.on && cloud.on && cloud.offline) { offSaveSoon(); lastSaved = new Date(); storageOk = true; updateSaveState(); return; }
+  if (site.on) { if (cloud.on) offSaveSoon(); scheduleSite(); updateSaveState(cloud.on ? '서버에 저장 중…' : '사이트에 저장 중…'); return; }
   try { localStorage.setItem(KEY, JSON.stringify(store)); storageOk = true; lastSaved = new Date(); }
   catch (e) { storageOk = false; }
   updateSaveState();
 }
 function saveLabel() {
+  if (isOffNow()) {
+    var pn = offPendingNow();
+    return '오프라인 · 이 기기에 저장됨' + (lastSaved ? ' ' + hhmm(lastSaved) : '') + (pn ? ' · 올릴 것 ' + pn + '건' : '');
+  }
   if (site.on) {
     var where = cloud.on ? '서버' : '사이트';
     if (!storageOk) return where + ' 저장 실패 · 다시 시도 중';
@@ -2046,6 +2052,7 @@ function render() {
   if (document.querySelector('.dp')) dpClose();
   var y = window.scrollY, dmb0 = document.querySelector('.dmodal .dm-body'), dmY = dmb0 ? dmb0.scrollTop : 0, fae = document.activeElement, fid = fae && fae.id && fae.closest && fae.closest('.dmodal') ? fae.id : '';
   var notice = site.notice ? '<div class="notice" role="alert">' + esc(site.notice) + '</div>' : '';
+  if (isOffNow()) notice = '<div class="info offline-bar" role="status"><b>오프라인</b> · 인터넷에 연결되어 있지 않습니다. 바꾼 내용은 이 기기에 저장되고, 연결되면 서버에 자동으로 올라갑니다.</div>' + notice;
   if (ui.view === 'list' && site.localExtra && site.localExtra.length) notice += '<div class="notice" role="alert"><b>이 브라우저에만 저장된 고객 ' + site.localExtra.length + '명</b>이 있습니다 (' + esc(site.localExtra.map(function (c) { return c.name; }).slice(0, 5).join(', ')) + (site.localExtra.length > 5 ? ' 외' : '') + ').' + (cloud.on ? ' 내 계정으로 옮기면 다른 기기에서도 보입니다. 다른 FC의 고객이면 옮기지 마세요.' : ' 사이트로 옮겨야 다른 기기에서도 보입니다.') + '<div class="row" style="margin-top:8px"><button class="btn primary sm" data-act="moveLocal">' + (cloud.on ? '내 계정으로 옮기기' : '사이트로 옮기기') + '</button>' + (cloud.on ? '<button class="btn sm" data-act="skipLocal">옮기지 않기</button>' : '') + '</div></div>';
   var page = ui.view === 'work' ? renderWork() : ui.view === 'office' ? renderOffice() : ui.view === 'settings' ? renderSettings() : ui.view === 'customer' ? renderCustomer() : ui.view === 'insurance' ? renderInsurance() : (ui.lsub && ui.lsub !== 'list' ? renderListSub() : renderList());
   app.innerHTML = renderTop() + '<main class="main page-' + ui.view + '">' + notice + page + '</main>' + printModalHtml() + detailModalHtml();
@@ -2163,7 +2170,7 @@ function renderTop() {
     '<button class="navbtn' + (ui.view === 'settings' ? ' on' : '') + '" data-act="settings">설정</button></nav>' +
     '<div class="spacer"></div>' +
     (LOGIN_OFF ? '<span class="test-badge" title="로그인 기능이 꺼져 있습니다. 자료는 이 브라우저에만 저장됩니다."><span class="tb-long">로그인 꺼짐 · </span>테스트</span>' : '') +
-    '<span class="save-state' + (storageOk ? '' : ' bad') + '" id="saveState" role="status">' + esc(saveLabel()) + '</span>' +
+    '<span class="save-state' + (storageOk ? '' : ' bad') + (isOffNow() ? ' off' : '') + '" id="saveState" role="status">' + esc(saveLabel()) + '</span>' +
     (who ? '<details class="who-menu"><summary title="' + attr(cloud.user.email || '') + '"><span class="who-av" aria-hidden="true">' + esc(Array.from(String(who).trim())[0] || '·') + '</span><span class="who-nm">' + esc(who) + ' ▾</span></summary>' +
       '<div class="who-pop"><div class="muted">' + esc(cloud.user.email || '') + '</div><button class="btn sm" data-act="goSettings" data-id="me">내 정보</button><button class="btn sm" data-act="logout">로그아웃</button></div></details>' : '') +
     '</header>' + subbarHtml() + '</div>';
@@ -2775,7 +2782,7 @@ function renderSettings() {
     var fcRoles = [['', '선택'], ['FC', 'FC'], ['팀장', '팀장'], ['지점장', '지점장'], ['단장', '단장']]; if (s.fc.role && !fcRoles.some(function (o) { return o[0] === s.fc.role; })) fcRoles.push([s.fc.role, s.fc.role]);
     var fcLine = fcLineText(s.fc);
     var miss = [!s.fc.name && '이름', !s.fc.phone && '연락처', !s.fc.org && '소속'].filter(Boolean);
-    body = renderAccountSection() + passkeySection() + '<section class="panel"><h2>FC 정보 <span class="muted">제안서·축하 문자에 표시됩니다</span></h2><div class="grid-form">' +
+    body = renderAccountSection() + offlineSection() + passkeySection() + '<section class="panel"><h2>FC 정보 <span class="muted">제안서·축하 문자에 표시됩니다</span></h2><div class="grid-form">' +
       lbl('이름', f('fc', 'name', s.fc.name, { ph: '예: 홍길동' })) + lbl('직급', f('fc', 'role', s.fc.role || '', { type: 'select', options: fcRoles })) +
       lbl('연락처', f('fc', 'phone', s.fc.phone, { ph: '예: 010-1234-5678', inputmode: 'tel', kind: 'phone' })) + lbl('이메일', f('fc', 'email', s.fc.email || '', { type: 'email', ph: 'name@company.com' })) +
       lbl('소속', f('fc', 'org', s.fc.org, { ph: '예: ABA금융서비스' })) + lbl('사업단·지사', f('fc', 'branch', s.fc.branch, { kind: 'branch', ph: '눌러서 목록에서 선택' })) + lbl('지점', f('fc', 'unit', s.fc.unit || '', { ph: '예: 일산지점 (없으면 비워 두세요)' })) +
@@ -5968,6 +5975,7 @@ function doAction(el) {
     case 'logout': cloudLogout(); return;
     case 'authView': ui.auth = id; cloud.msg = ''; break;
     case 'passkeyLogin': passkeyLogin(); return;
+    case 'offToggle': if (offEnabled()) { if (cloud.offline && offPendingNow()) { toast('오프라인 상태에서 못 올린 수정이 있어 지금은 끌 수 없습니다. 연결된 뒤 끄세요'); break; } try { localStorage.setItem('fcp-offline-off', '1'); } catch (e) {} if (cloud.user) offDel('copy:' + cloud.user.id); offDel('last'); cloud.offAt = null; toast('이 기기의 오프라인 사본을 지웠습니다'); } else { try { localStorage.removeItem('fcp-offline-off'); } catch (e) {} offSaveNow(); if (cloud.user) offPut('last', cloud.user.id); toast('이 기기에서 오프라인 모드를 켰습니다'); } break;
     case 'socialLogin': socialLogin(id); return;
     case 'passkeyAdd': passkeyAdd(); return;
     case 'passkeyDel': if (ui.armed !== 'pkDel:' + id) { ui.armed = 'pkDel:' + id; keepArm = true; break; } ui.armed = null; passkeyDel(id); break;
@@ -6091,7 +6099,7 @@ function scheduleSite() {
 }
 function flushSite() {
   clearTimeout(site.timer);
-  if (!site.on) return Promise.resolve();
+  if (!site.on || (cloud.on && cloud.offline)) return Promise.resolve();
   if (site.busy) { site.again = true; return Promise.resolve(); }
   site.busy = true; updateSaveState(cloud.on ? '서버에 저장 중…' : '사이트에 저장 중…');
   var now = new Date().toISOString(), ops = [], seen = {};
@@ -6106,7 +6114,7 @@ function flushSite() {
     if (!seen[id]) ops.push(site.db.doc('customers/' + id).delete().then(function () { delete site.cache.customers[id]; }));
   });
   return Promise.all(ops).then(function () {
-    storageOk = true; site.err = ''; if (ops.length) lastSaved = new Date();
+    storageOk = true; site.err = ''; if (ops.length) { lastSaved = new Date(); if (cloud.on) offSaveSoon(); }
   }).catch(function (e) {
     storageOk = false; site.err = (e && (e.code || e.message)) || '알 수 없는 오류';
     if (e && e.code === 'unavailable') setTimeout(scheduleSite, 1500 + Math.random() * 1500);
@@ -6118,7 +6126,7 @@ function flushSite() {
 }
 function updateSaveState(text) {
   var el = document.getElementById('saveState');
-  if (el) { el.textContent = text || saveLabel(); el.classList.toggle('bad', !storageOk); }
+  if (el) { el.textContent = text || saveLabel(); el.classList.toggle('bad', !storageOk); el.classList.toggle('off', isOffNow()); }
 }
 
 // ----- 데이터 파일 보관함 -----
@@ -6684,6 +6692,7 @@ function onRemoteSettings(p) {
 }
 var remoteToastAt = 0;
 function remoteRender() {
+  offSaveSoon();
   var a = document.activeElement, typing = a && a !== document.body && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) && document.getElementById('app').contains(a);
   if (typing) { ui.remotePending = true; } else render();
   if (Date.now() - remoteToastAt > 8000) { remoteToastAt = Date.now(); toast('다른 기기에서 바뀐 내용을 반영했습니다'); }
@@ -6691,7 +6700,7 @@ function remoteRender() {
 document.addEventListener('focusout', function () { if (ui.remotePending) setTimeout(function () { var a = document.activeElement; if (a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)) return; ui.remotePending = false; render(); }, 200); });
 // 잠자기·탭 숨김 뒤에 돌아오면 서버와 한 번 맞춘다 (그 사이 놓친 알림 보완)
 function resyncCloud() {
-  if (!site.on || !cloud.on || site.busy || site.timer) return;
+  if (!site.on || !cloud.on || cloud.offline || site.busy || site.timer) return;
   var sb = cloud.client;
   Promise.all([sb.from('user_settings').select('data').maybeSingle(), sb.from('customers').select('id,data').limit(5000)]).then(function (r) {
     if (r[0].error || r[1].error) return;
@@ -6786,7 +6795,7 @@ function cloudDb() {
     }
   };
 }
-function loadCloud() {
+function loadCloud(seq) {
   var sb = cloud.client;
   return Promise.all([
     sb.from('user_settings').select('data').maybeSingle(),
@@ -6794,6 +6803,7 @@ function loadCloud() {
   ]).then(function (r) {
     if (r[0].error) throw r[0].error;
     if (r[1].error) throw r[1].error;
+    if (seq && seq !== cloud.loadSeq) throw { stale: true, message: 'stale' }; // 이미 시간 초과로 오프라인 사본을 열었음
     var settings = r[0].data && r[0].data.data ? r[0].data.data : defaultSettings();
     var meta = cloud.user.user_metadata || {};
     if (!r[0].data && meta.name) settings.fc = Object.assign({}, settings.fc, { name: meta.name });
@@ -6806,13 +6816,24 @@ function enterCloud(user) {
   cloud.user = user; cloud.on = true; cloud.msg = '';
   site.db = cloudDb(); site.assets = null; site.downloads = null; site.notice = '';
   ui.auth = null; ui.booting = true; render();
-  loadCloud().then(function () {
-    site.on = true; lastSaved = null; storageOk = true;
+  var seq = cloud.loadSeq = (cloud.loadSeq || 0) + 1;
+  // 서버가 12초 넘게 답하지 않으면 끊긴 것으로 보고 이 기기 사본으로 연다(사본이 있을 때만)
+  var guard = new Promise(function (res, rej) { setTimeout(function () { offGet('copy:' + user.id).then(function (rec) { if (rec && offEnabled() && seq === cloud.loadSeq && ui.booting) { cloud.loadSeq++; rej({ message: 'timed out' }); } }); }, 12000); });
+  Promise.race([loadCloud(seq), guard]).then(function () {
+    // 오프라인 동안 이 기기에서 바꾼 것(서버에 못 올린 것)이 있으면 서버 자료 위에 덮어 놓고 바로 올린다
+    return offGet('copy:' + user.id).then(function (rec) { var p = rec ? offPending(rec) : null; if (p && p.n) offApply(p); return p ? p.n : 0; });
+  }).then(function (n) {
+    site.on = true; cloud.offline = false; lastSaved = null; storageOk = true;
+    offPut('last', user.id);
     checkLocalExtra();
     afterLoad();
-    if (site.cache.settings === null) flushSite();
+    if (site.cache.settings === null || n) flushSite();
+    if (n) toast('오프라인 동안 바꾼 ' + n + '건을 서버에 올립니다');
+    offSaveSoon();
     startRealtime();
   }).catch(function (e) {
+    if (e && e.stale) return;
+    if (isNetErr(e)) { offEnter(user); return; }
     cloud.on = false; site.on = false; ui.booting = false;
     ui.auth = 'login'; cloud.msg = koAuthError(e); cloud.msgKind = 'err';
     render();
@@ -6823,31 +6844,149 @@ function startCloud(cfg) {
   cloud.recovery = /type=recovery/.test(location.hash);
   var oerr = oauthReturnError(); if (oerr) { cloud.msg = oerr; cloud.msgKind = 'err'; }
   ui.booting = false; ui.auth = 'loading'; render();
-  var slow = setTimeout(function () { if (ui.auth === 'loading') { ui.auth = 'login'; cloud.msg = '서버 응답이 늦습니다. 인터넷 연결을 확인하고 로그인해 보세요'; cloud.msgKind = 'err'; render(); } }, 10000);
+  var slow = setTimeout(function () { if (ui.auth === 'loading' && navigator.onLine === false) { offBoot(); return; } if (ui.auth === 'loading') { ui.auth = 'login'; cloud.msg = '서버 응답이 늦습니다. 인터넷 연결을 확인하고 로그인해 보세요'; cloud.msgKind = 'err'; render(); } }, 10000);
   cloud.client = window.supabase.createClient(cfg.url, cfg.anonKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, storageKey: 'fc-planner-auth', experimental: { passkey: true } } });
   cloud.client.auth.onAuthStateChange(function (ev) {
     if (ev === 'PASSWORD_RECOVERY') { cloud.recovery = true; ui.booting = false; ui.auth = 'newpw'; render(); }
   });
-  cloud.client.auth.getSession().then(function (r) {
+  if (navigator.onLine === false && !cloud.recovery) { clearTimeout(slow); offBoot(); }
+  else cloud.client.auth.getSession().then(function (r) {
     clearTimeout(slow); if (ui.auth !== 'loading' && ui.auth !== 'newpw') return;
     var s = r && r.data && r.data.session;
     if (s && cloud.recovery) { ui.booting = false; ui.auth = 'newpw'; render(); return; }
     if (s) enterCloud(s.user);
+    else if (r && r.error && isNetErr(r.error)) offBoot();
     else { ui.booting = false; ui.auth = 'login'; render(); }
-  }).catch(function (e) { ui.booting = false; ui.auth = 'login'; cloud.msg = koAuthError(e); cloud.msgKind = 'err'; render(); });
+  }).catch(function (e) { if (isNetErr(e)) { clearTimeout(slow); offBoot(); return; } ui.booting = false; ui.auth = 'login'; cloud.msg = koAuthError(e); cloud.msgKind = 'err'; render(); });
   document.addEventListener('visibilitychange', function () {
-    if (!cloud.on || !site.on) return;
+    if (!cloud.on || !site.on || cloud.offline) return;
     if (document.visibilityState === 'hidden') { flushSite(); cloud.hiddenAt = Date.now(); return; }
     // 다른 기기에서 고친 내용을 반영: 1분 넘게 다른 창에 있다가 돌아오면 다시 불러온다
-    if (cloud.hiddenAt && Date.now() - cloud.hiddenAt > 60000 && !site.busy && !site.timer) {
+    if (cloud.hiddenAt && Date.now() - cloud.hiddenAt > 60000 && !site.busy && !site.timer && !offPendingNow()) {
       var keep = ui.cid;
       loadCloud().then(function () { ui.cid = keep && cur() ? keep : firstId(); render(); }).catch(function () {});
     }
   });
 }
+// ===== 오프라인 모드 =====
+// 로그인 상태에서 인터넷이 끊겨도 계속 쓴다. 자료 사본을 이 기기(IndexedDB)에 두고, 연결되면 못 올린 것만 서버에 올린다.
+// 사본 = { uid, email, meta, store(JSON), cache(JSON: 서버에 올라간 상태), at }. store와 cache가 다른 고객·설정이 '올릴 것'.
+// 로그아웃하면 사본을 지운다. 설정 → 내 정보에서 기기별로 끌 수 있다(끄면 사본 삭제).
+var OFF_DB = 'fcp-offline', OFF_ST = 'kv', offTimer = null, offDbP = null;
+function offIdb() {
+  if (offDbP) return offDbP;
+  offDbP = new Promise(function (res, rej) {
+    if (!window.indexedDB) return rej(new Error('no indexedDB'));
+    var r = indexedDB.open(OFF_DB, 1);
+    r.onupgradeneeded = function () { r.result.createObjectStore(OFF_ST); };
+    r.onsuccess = function () { res(r.result); }; r.onerror = function () { rej(r.error); };
+  });
+  offDbP.catch(function () { offDbP = null; });
+  return offDbP;
+}
+function offReq(mode, fn) { return offIdb().then(function (db) { return new Promise(function (res, rej) { var q = fn(db.transaction(OFF_ST, mode).objectStore(OFF_ST)); q.onsuccess = function () { res(q.result); }; q.onerror = function () { rej(q.error); }; }); }); }
+function offGet(k) { return offReq('readonly', function (o) { return o.get(k); }).then(function (v) { return v == null ? null : v; }).catch(function () { return null; }); }
+function offPut(k, v) { return offReq('readwrite', function (o) { return o.put(v, k); }).catch(function () {}); }
+function offDel(k) { return offReq('readwrite', function (o) { return o.delete(k); }).catch(function () {}); }
+function isOffNow() { return !!(site.on && cloud.on && (cloud.offline || navigator.onLine === false)); }
+function offEnabled() { try { return localStorage.getItem('fcp-offline-off') !== '1'; } catch (e) { return true; } }
+function isNetErr(e) {
+  if (navigator.onLine === false) return true;
+  var m = String((e && (e.message || e.name)) || e || '');
+  return /Failed to fetch|NetworkError|Load failed|network|AuthRetryableFetchError|ERR_INTERNET|timed? ?out/i.test(m) || (e && (e.status === 0 || e.name === 'AuthRetryableFetchError'));
+}
+function offSaveSoon() { if (!cloud.on || !cloud.user || !offEnabled()) return; clearTimeout(offTimer); offTimer = setTimeout(offSaveNow, 400); }
+function offSaveNow() {
+  clearTimeout(offTimer);
+  if (!cloud.on || !cloud.user || !site.on || !offEnabled()) return Promise.resolve();
+  var u = cloud.user, rec = { uid: u.id, email: u.email || '', meta: u.user_metadata || {}, store: JSON.stringify(store), cache: JSON.stringify(site.cache), at: new Date().toISOString() };
+  return offPut('copy:' + u.id, rec).then(function () { cloud.offAt = rec.at; });
+}
+function offPending(rec) {
+  var out = { cust: {}, settings: null, n: 0 };
+  try {
+    var st = JSON.parse(rec.store), ca = JSON.parse(rec.cache) || {}, seen = {}, cc = ca.customers || {};
+    (st.customers || []).forEach(function (x) { seen[x.id] = 1; if (cc[x.id] !== JSON.stringify(x)) { out.cust[x.id] = x; out.n++; } });
+    Object.keys(cc).forEach(function (id) { if (!seen[id]) { out.cust[id] = null; out.n++; } });
+    if (ca.settings !== JSON.stringify(st.settings)) { out.settings = st.settings; out.n++; }
+  } catch (e) {}
+  return out;
+}
+function offPendingNow() {
+  if (!site.on || !site.cache) return 0;
+  var n = 0, seen = {}, cc = site.cache.customers || {};
+  store.customers.forEach(function (c) { seen[c.id] = 1; if (cc[c.id] !== JSON.stringify(c)) n++; });
+  Object.keys(cc).forEach(function (id) { if (!seen[id]) n++; });
+  if (site.cache.settings !== JSON.stringify(store.settings)) n++;
+  return n;
+}
+function offApply(p) {
+  Object.keys(p.cust).forEach(function (id) {
+    var v = p.cust[id], ix = -1;
+    store.customers.forEach(function (c, i) { if (c.id === id) ix = i; });
+    if (v === null) { if (ix >= 0) store.customers.splice(ix, 1); return; }
+    v = fixup({ customers: [v], settings: store.settings }).customers[0];
+    if (ix >= 0) store.customers[ix] = v; else store.customers.push(v);
+  });
+  if (p.settings) store.settings = fixup({ customers: [], settings: p.settings }).settings;
+}
+// 서버에 못 닿을 때: 이 기기 사본으로 연다
+function offEnter(user, rec0) {
+  (rec0 ? Promise.resolve(rec0) : offGet('copy:' + user.id)).then(function (rec) {
+    if (!rec || !offEnabled()) {
+      cloud.on = false; site.on = false; ui.booting = false; ui.auth = 'login';
+      cloud.msg = '인터넷에 연결되어 있지 않습니다. 이 기기에는 오프라인 사본이 없어서, 연결된 뒤 로그인해야 합니다'; cloud.msgKind = 'err'; render(); return;
+    }
+    stopRealtime();
+    store = fixup(JSON.parse(rec.store)); site.cache = JSON.parse(rec.cache) || { settings: null, customers: {} };
+    cloud.user = user; cloud.on = true; cloud.offline = true; cloud.offAt = rec.at; cloud.msg = '';
+    site.db = cloudDb(); site.on = true; site.notice = ''; storageOk = true; lastSaved = rec.at ? new Date(rec.at) : null;
+    ui.auth = null; afterLoad();
+  });
+}
+function offBoot() {
+  offGet('last').then(function (uid) { return uid ? offGet('copy:' + uid) : null; }).then(function (rec) {
+    if (rec) offEnter({ id: rec.uid, email: rec.email, user_metadata: rec.meta || {} }, rec);
+    else { ui.booting = false; ui.auth = 'login'; cloud.msg = '인터넷에 연결되어 있지 않습니다. 이 기기에는 오프라인 사본이 없어서, 연결된 뒤 로그인해야 합니다'; cloud.msgKind = 'err'; render(); }
+  });
+}
+// 다시 연결되면: 세션을 확인하고 서버 자료를 받은 뒤 못 올린 것을 올린다
+function offReconnect() {
+  if (!cloud.client) return;
+  if (!cloud.offline) { if (cloud.on && site.on) { scheduleSite(); startRealtime(); } updateSaveState(); return; }
+  if (cloud.reconnecting) return; cloud.reconnecting = true;
+  offSaveNow().then(function () { return cloud.client.auth.getSession(); }).then(function (r) {
+    cloud.reconnecting = false;
+    var s = r && r.data && r.data.session;
+    if (s && s.user && s.user.id === cloud.user.id) { toast('인터넷에 다시 연결됐습니다. 서버와 맞추는 중…'); enterCloud(s.user); return; }
+    if (r && r.error && isNetErr(r.error)) return; // 아직 서버에 못 닿음
+    // 로그인이 만료됨: 사본은 남겨 두고, 다시 로그인하면 그때 올라간다
+    cloud.on = false; site.on = false; cloud.offline = false; stopRealtime();
+    ui.auth = 'login'; cloud.email = cloud.user.email || ''; cloud.msg = '로그인이 만료됐습니다. 다시 로그인하면 오프라인 동안 바꾼 내용이 서버에 올라갑니다'; cloud.msgKind = 'ok'; render();
+  }).catch(function () { cloud.reconnecting = false; });
+}
+window.addEventListener('online', function () { setTimeout(offReconnect, 800); });
+window.addEventListener('offline', function () { if (cloud.on) { offSaveNow(); updateSaveState(); if (ui.view === 'settings') render(); } });
+setInterval(function () { if (cloud.offline && navigator.onLine !== false) offReconnect(); }, 30000);
+function offAtText(at) { var d = new Date(at); if (isNaN(d)) return ''; return d.getFullYear() + '.' + String(d.getMonth() + 1).padStart(2, '0') + '.' + String(d.getDate()).padStart(2, '0') + ' ' + hhmm(d); }
+function offlineSection() {
+  if (!cloud.on || !cloud.user) return '';
+  var on = offEnabled(), pn = offPendingNow(), net = cloud.offline || navigator.onLine === false;
+  var st = net ? '<span class="chip warn">오프라인</span>' : '<span class="chip ok">온라인</span>';
+  return '<section class="panel"><div class="row between"><h2>오프라인 모드 ' + st + '</h2><button class="btn' + (on ? '' : ' primary') + '" data-act="offToggle">' + (on ? '이 기기에서 끄기' : '이 기기에서 켜기') + '</button></div>' +
+    (on ? '<p style="margin:0">인터넷이 끊겨도 이 기기에서 계속 보고 고칠 수 있습니다. 바꾼 내용은 이 기기에 저장해 두었다가, 연결되면 서버에 자동으로 올립니다.' +
+      (pn ? ' <b>아직 서버에 못 올린 수정 ' + pn + '건</b>이 있습니다.' : ' 지금은 올릴 것이 없습니다.') +
+      (cloud.offAt ? ' <span class="muted num">이 기기 사본 ' + esc(offAtText(cloud.offAt)) + ' 저장</span>' : '') + '</p>'
+      : '<p style="margin:0">꺼져 있습니다. 이 기기에는 고객 자료 사본을 두지 않으며, 인터넷이 끊기면 저장되지 않을 수 있습니다.</p>') +
+    '<p class="muted" style="margin:8px 0 0">고객 자료 사본이 이 기기 브라우저에 남습니다. 공용 컴퓨터에서는 끄거나, 쓴 뒤 꼭 로그아웃하세요(로그아웃하면 사본이 지워집니다). 처음 한 번은 인터넷에 연결된 상태에서 로그인해야 합니다.</p></section>';
+}
 function cloudLogout() {
+  if (cloud.offline && offPendingNow() && ui.armed !== 'logoutOff') { ui.armed = 'logoutOff'; toast('오프라인이라 서버에 못 올린 수정 ' + offPendingNow() + '건이 있습니다. 지금 로그아웃하면 사라집니다. 그래도 하려면 로그아웃을 한 번 더 누르세요'); return; }
+  ui.armed = null;
+  var uid = cloud.user && cloud.user.id;
   var done = function () {
-    stopRealtime(); ui.hist = null;
+    stopRealtime(); ui.hist = null; clearTimeout(offTimer); cloud.offline = false;
+    if (uid) { offDel('copy:' + uid); offDel('last'); }
     cloud.client.auth.signOut().catch(function () {}).then(function () {
       cloud.on = false; cloud.user = null; site.on = false; site.localExtra = null;
       store = fixup({ customers: [], settings: defaultSettings() });
@@ -6898,6 +7037,7 @@ function passkeyDel(id) {
 }
 function passkeySection() {
   if (!cloud.on || !cloud.user) return '';
+  if (isOffNow()) return '<section class="panel"><h2>패스키 로그인</h2><p class="muted" style="margin:0">인터넷에 연결되면 패스키를 등록하거나 지울 수 있습니다.</p></section>';
   if (!passkeyOk()) return '<section class="panel"><h2>패스키 로그인</h2><p class="muted" style="margin:0">패스키(휴대폰 지문·얼굴, 맥 Touch ID, 윈도 Hello)로 비밀번호 없이 로그인할 수 있습니다. 이 주소나 브라우저에서는 쓸 수 없으니, 웹사이트 주소(https)로 열어 등록하세요.</p></section>';
   passkeyLoad();
   var list = cloud.passkeys;
@@ -7061,6 +7201,8 @@ function renderAccountSection() {
     '</section>';
 }
 
+// 웹사이트(https)에서 열면 sw.js로 화면 파일을 이 기기에 보관해 인터넷 없이도 열리게 한다
+if ('serviceWorker' in navigator && location.protocol === 'https:' && !inFrame() && !LOGIN_OFF) { try { navigator.serviceWorker.register('sw.js').catch(function () {}); } catch (e) {} }
 ui.booting = true; render();
 setTimeout(function () {
   if (!ui.booting) return;
