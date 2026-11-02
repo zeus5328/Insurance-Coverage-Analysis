@@ -779,6 +779,16 @@ table.t.ctable td { padding: 10px 12px; }
 /* 2차 기능 화면 */
 .auth-or { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 13px; margin: 14px 0 10px; }
 .auth-or::before, .auth-or::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+.team-forms { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.team-form { border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
+.team-form h3 { margin: 0 0 8px; font-size: 15px; }
+.team-form .row { gap: 8px; flex-wrap: nowrap; }
+.team-form .row input { flex: 1; min-width: 0; }
+.team-code { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.team-code b { font-size: 22px; letter-spacing: .12em; }
+.team-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.team-list li { padding: 6px 0; border-bottom: 1px solid var(--line); gap: 8px; }
+.team-chip { background: #2F6FDE; color: #fff; border-color: #2F6FDE; }
 .social-list { display: grid; gap: 8px; }
 .passkey-btn + .social-list { margin-top: 8px; }
 .social-btn { width: 100%; justify-content: center; font-weight: 700; border: 1px solid transparent; }
@@ -1948,7 +1958,7 @@ var saveTimer = null, lastSaved = null;
 function save() {
   if (ui.booting) return;
   if (site.on && cloud.on && cloud.offline) { offSaveSoon(); lastSaved = new Date(); storageOk = true; updateSaveState(); return; }
-  if (site.on) { if (cloud.on) offSaveSoon(); scheduleSite(); updateSaveState(cloud.on ? '서버에 저장 중…' : '사이트에 저장 중…'); return; }
+  if (site.on) { if (cloud.on) { offSaveSoon(); teamStatsSoon(); } scheduleSite(); updateSaveState(cloud.on ? '서버에 저장 중…' : '사이트에 저장 중…'); return; }
   try { localStorage.setItem(KEY, JSON.stringify(store)); storageOk = true; lastSaved = new Date(); }
   catch (e) { storageOk = false; }
   updateSaveState();
@@ -2069,6 +2079,7 @@ var STEPS = [['info', '고객 정보'], ['policies', '계약 입력'], ['analysi
 var SETTING_SUBS = [['display', '화면 설정'], ['me', '내 정보'], ['rules', '분석 기준'], ['dict', '담보 사전'], ['products', '상품 관리'], ['data', '자료 관리']];
 var WORK_SUBS = [['home', '오늘'], ['calendar', '일정'], ['tasks', '할 일'], ['birthday', '생일'], ['anniv', '기념일'], ['gifts', '선물'], ['stats', '실적'], ['comm', '수수료']];
 var OFFICE_SUBS = [['notice', '공지'], ['schedule', '지점 일정'], ['staff', '직원 연락처'], ['sbd', '직원 생일'], ['branch', '지점·사업단']];
+function officeSubs() { return team.info ? OFFICE_SUBS.concat([['team', '팀 현황']]) : OFFICE_SUBS; }
 var LIST_SUBS = [['list', '고객목록'], ['contacts', '연락처'], ['family', '가족·가구'], ['notes', '상담 기록'], ['props', '제안 기록'], ['care', '관리 필요']];
 var INS_SUBS = [['all', '장기보험'], ['auto', '자동차보험'], ['fire', '화재보험'], ['drv', '운전자보험'], ['insurer', '보험사 연락처'], ['guide', '보험가이드']];
 function routeHash() {
@@ -2108,7 +2119,7 @@ function applyHash() {
   } else if ((m = h.match(/^#work(?:-(home|calendar|birthday|anniv|gifts|tasks|stats|comm|staff|branch))?$/)) || h === '#cust-gifts' || h === '#cust-todo' || h === '' || h === '#') {
     ui.view = 'work'; ui.wsub = (m && m[1]) || (h === '#cust-gifts' ? 'gifts' : 'home');
     if (ui.wsub === 'staff' || ui.wsub === 'branch') { ui.view = 'office'; ui.osub = ui.wsub; ui.wsub = 'home'; } // 예전 주소
-  } else if ((m = h.match(/^#office(?:-(notice|schedule|edu|dine|staff|sbd|branch))?$/))) {
+  } else if ((m = h.match(/^#office(?:-(notice|schedule|edu|dine|staff|sbd|branch|team))?$/))) {
     ui.view = 'office'; ui.osub = m[1] === 'edu' || m[1] === 'dine' ? 'schedule' : (m[1] || 'notice');
   } else if ((m = h.match(/^#cust-(notes|props|family|care|contacts)$/))) {
     ui.view = 'list'; ui.lsub = m[1];
@@ -2151,7 +2162,7 @@ function custStatus(c, an) {
 function subbarHtml() {
   var subs, cur, act, label;
   if (ui.view === 'work') { subs = WORK_SUBS; cur = ui.wsub || 'home'; act = 'goWork'; label = '업무 메뉴'; }
-  else if (ui.view === 'office') { subs = OFFICE_SUBS; cur = ui.osub || 'notice'; act = 'goOffice'; label = '지점 메뉴'; }
+  else if (ui.view === 'office') { subs = officeSubs(); cur = ui.osub || 'notice'; act = 'goOffice'; label = '지점 메뉴'; }
   else if (ui.view === 'list') { subs = LIST_SUBS; cur = ui.lsub || 'list'; act = 'goList'; label = '고객 메뉴'; }
   else if (ui.view === 'settings') { subs = SETTING_SUBS; cur = ui.sub || 'display'; act = 'goSettings'; label = '설정 메뉴'; }
   else if (ui.view === 'insurance') { subs = INS_SUBS; cur = (ui.isub === 'byins' || ui.isub === 'byowner') ? 'all' : (ui.isub || 'all'); act = 'goIns'; label = '보험 메뉴'; }
@@ -2782,7 +2793,7 @@ function renderSettings() {
     var fcRoles = [['', '선택'], ['FC', 'FC'], ['팀장', '팀장'], ['지점장', '지점장'], ['단장', '단장']]; if (s.fc.role && !fcRoles.some(function (o) { return o[0] === s.fc.role; })) fcRoles.push([s.fc.role, s.fc.role]);
     var fcLine = fcLineText(s.fc);
     var miss = [!s.fc.name && '이름', !s.fc.phone && '연락처', !s.fc.org && '소속'].filter(Boolean);
-    body = renderAccountSection() + offlineSection() + passkeySection() + '<section class="panel"><h2>FC 정보 <span class="muted">제안서·축하 문자에 표시됩니다</span></h2><div class="grid-form">' +
+    body = renderAccountSection() + teamSection() + offlineSection() + passkeySection() + '<section class="panel"><h2>FC 정보 <span class="muted">제안서·축하 문자에 표시됩니다</span></h2><div class="grid-form">' +
       lbl('이름', f('fc', 'name', s.fc.name, { ph: '예: 홍길동' })) + lbl('직급', f('fc', 'role', s.fc.role || '', { type: 'select', options: fcRoles })) +
       lbl('연락처', f('fc', 'phone', s.fc.phone, { ph: '예: 010-1234-5678', inputmode: 'tel', kind: 'phone' })) + lbl('이메일', f('fc', 'email', s.fc.email || '', { type: 'email', ph: 'name@company.com' })) +
       lbl('소속', f('fc', 'org', s.fc.org, { ph: '예: ABA금융서비스' })) + lbl('사업단·지사', f('fc', 'branch', s.fc.branch, { kind: 'branch', ph: '눌러서 목록에서 선택' })) + lbl('지점', f('fc', 'unit', s.fc.unit || '', { ph: '예: 일산지점 (없으면 비워 두세요)' })) +
@@ -3861,7 +3872,7 @@ var AUTO_DISC = [['mile', '마일리지(주행거리)'], ['bb', '블랙박스'],
 function blankAuto() {
   var t = today();
   return { id: uid(), carNo: '', carModel: '', carYear: '', carValue: '', insurer: '', start: t, end: addMonths(t, 12), premium: '', pay: '일시납', driver: '부부 한정', minAge: '만 26세 이상',
-    d2: '무한', dm: 50000, js: '자상', jsAmt: 10000, mu: 20000, jc: '가입', jcDed: '20%', hc: 200, em: true, disc: {}, memo: '', at: t };
+    d2: '무한', dm: 50000, js: '자상', jsAmt: 10000, mu: 20000, jc: '가입', jcDed: '20%', hc: 200, em: true, law: '', disc: {}, memo: '', at: t };
 }
 function allAutos() { var out = []; store.customers.forEach(function (c) { (c.autos || []).forEach(function (a) { out.push({ c: c, a: a }); }); }); return out; }
 function autoById(cid, id) { var c = custById(cid); if (!c || !c.autos) return null; var a = c.autos.filter(function (x) { return x.id === id; })[0]; return a ? { c: c, a: a } : null; }
@@ -3880,6 +3891,8 @@ function autoChecks(a) {
   if (num(a.hc) && num(a.hc) <= 50) out.push(['info', '물적사고 할증기준 ' + num(a.hc) + '만원: 작은 접촉 사고도 할증될 수 있습니다.']);
   if (a.driver === '누구나') out.push(['info', '운전자 범위 "누구나"는 보험료가 가장 비싼 조건입니다. 실제로 운전하는 사람을 확인하세요.']);
   if (!a.em) out.push(['info', '긴급출동 특약이 없습니다. 배터리·견인·비상급유 서비스가 빠집니다.']);
+  if (a.law === '미가입') out.push(['info', '법률비용지원 특약 미가입: 중대 사고로 형사합의·벌금·변호사 선임이 필요할 때 자동차보험에서는 받을 곳이 없습니다. 운전자보험에 같은 보장이 있는지 확인하세요.']);
+  else if (a.law === '가입') out.push(['info', '법률비용지원 특약 가입: 운전자보험에도 형사합의금·벌금·변호사선임비용이 있으면 겹칠 수 있습니다. 보상 방식(실손·정액)과 한도를 비교하세요.']);
   return out;
 }
 function autoTone(a) { var ch = autoChecks(a); return ch.some(function (x) { return x[0] === 'bad'; }) ? 'bad' : ch.some(function (x) { return x[0] === 'warn'; }) ? 'warn' : 'ok'; }
@@ -4049,6 +4062,7 @@ function autoGuide() {
       row('무보험차상해', false, '무보험·뺑소니 차에 나와 가족이 다쳤을 때. 보통 2억 또는 5억.') +
       row('자기차량손해', false, '내 차 수리비. 자기부담금 비율(20%·30%)과 물적사고 할증기준(50~200만원)을 함께 정합니다.') +
       row('긴급출동', false, '견인·배터리·비상급유·잠금 해제 등 현장 서비스 특약.') +
+      row('법률비용지원', false, '운전 중 중대 사고로 형사 절차가 생겼을 때 형사합의금·벌금·변호사 선임비용 등을 지원하는 특약. 보장 항목과 한도는 보험사·상품마다 다르고, 운전자보험과 겹치는지 확인합니다.') +
       '</tbody></table></div>' +
       '<h3 class="sub-h">보험료를 낮추는 특약 (보험사마다 조건·할인율이 다릅니다)</h3><ul class="auto-tips">' +
       '<li><b>마일리지</b> 연간 주행거리가 짧으면 만기 때 환급. 보험사·거리별 약 5~42%.</li>' +
@@ -4090,7 +4104,8 @@ function autoModalBody(c, a) {
     '<div class="cov-row"><span class="cov-n">자기차량손해</span>' + S('jc', a.jc, [['가입', '가입'], ['미가입', '미가입']], '자기차량손해') +
       (a.jc === '가입' ? '<span class="cov-sub">자기부담</span>' + S('jcDed', a.jcDed, [['20%', '20%'], ['30%', '30%']], '자기부담금 비율') : '') + '</div>' +
     '<div class="cov-row"><span class="cov-n">물적할증기준</span>' + S('hc', a.hc, o(AUTO_HC, function (v) { return v + '만'; }), '물적사고 할증기준') + '</div>' +
-    '<div class="cov-row"><span class="cov-n">긴급출동</span>' + S('em', a.em ? '1' : '0', [['1', '가입'], ['0', '미가입']], '긴급출동') + '</div></div>' +
+    '<div class="cov-row"><span class="cov-n">긴급출동</span>' + S('em', a.em ? '1' : '0', [['1', '가입'], ['0', '미가입']], '긴급출동') + '</div>' +
+    '<div class="cov-row"><span class="cov-n">법률비용지원</span>' + S('law', a.law || '', [['가입', '가입'], ['미가입', '미가입'], ['', '모름']], '법률비용지원 특약') + '</div></div>' +
     '<h3 class="dm-h" id="am-disc">할인 특약 <small class="muted">눌러서 켜고 끕니다</small></h3><div class="chk-chips">' + discs + '</div>' +
     '<h3 class="dm-h" id="am-memo">메모</h3>' + A('memo', a.memo, { type: 'textarea', ph: '예: 갱신 때 마일리지 사진 제출, 비교 견적 2곳' });
 }
@@ -5164,8 +5179,8 @@ function eventForm(dateDefault) {
 }
 function renderOffice() {
   if (ui.osub === 'dine' || ui.osub === 'edu') ui.osub = 'schedule'; // 예전 행사·참석체크 메뉴 → 지점 일정으로 합침
-  var sub = ['notice', 'schedule', 'branch', 'staff', 'sbd'].indexOf(ui.osub) >= 0 ? ui.osub : 'notice', body = sub === 'notice' ? noticePanel() : sub === 'branch' ? branchPanel() : sub === 'staff' ? staffPanel() : sub === 'sbd' ? staffBdPanel() : orgSchedulePanel();
-  return subPage('지점', OFFICE_SUBS, sub, 'goOffice', '지점 메뉴', body);
+  var sub = ['notice', 'schedule', 'branch', 'staff', 'sbd'].indexOf(ui.osub) >= 0 || (ui.osub === 'team' && team.info) ? ui.osub : 'notice', body = sub === 'team' ? teamStatsPanel() : sub === 'notice' ? teamNoticeSection() + noticePanel() : sub === 'branch' ? branchPanel() : sub === 'staff' ? staffPanel() : sub === 'sbd' ? staffBdPanel() : orgSchedulePanel();
+  return subPage('지점', officeSubs(), sub, 'goOffice', '지점 메뉴', body);
 }
 function renderWork() {
   if (ui.booting) return '<div class="panel"><div class="empty"><strong>불러오는 중입니다…</strong></div></div>';
@@ -5566,7 +5581,7 @@ function setField(el) {
     var ad = c.plan.additions.filter(function (x) { return x.id === id; })[0]; if (!ad) return;
     ad[k] = v;
   } else if (scope === 'fc') { s.fc[k] = v; }
-  else if (scope === 'ui') { if (k === 'brDrop' && ui.brImport) { ui.brImport.drop = !!v; render(); return; } ui[k] = v; if (/^(nd|ev|tk|hhN|qa|qf|org|edu|dn)/.test(k) && el.dataset.kind !== 'date' && el.dataset.kind !== 'datecal') return; render(); return; }
+  else if (scope === 'ui') { if (k === 'brDrop' && ui.brImport) { ui.brImport.drop = !!v; render(); return; } ui[k] = v; if (/^(nd|ev|tk|hhN|qa|qf|org|edu|dn|tm|tn)/.test(k) && el.dataset.kind !== 'date' && el.dataset.kind !== 'datecal') return; render(); return; }
   else if (scope === 'ev' || scope === 'task') {
     var lst5 = scope === 'ev' ? s.events : s.tasks; var it5 = lst5.filter(function (x) { return x.id === id; })[0]; if (!it5) return;
     if (k === 'title' && !String(v).trim()) { toast('내용을 비울 수 없습니다'); render(); return; }
@@ -5994,6 +6009,27 @@ function doAction(el) {
     case 'skipLocal': site.localExtra = null; break;
     case 'logout': cloudLogout(); return;
     case 'authView': ui.auth = id; cloud.msg = ''; break;
+    case 'teamJoin': teamRpc('join_team', { p_code: String(ui.tmCode || '').trim(), p_my_name: teamMyName() }, function (d) { return (d && d.name ? d.name + ' 팀에' : '팀에') + ' 들어갔습니다'; }); return;
+    case 'teamCreate': teamRpc('create_team', { p_name: String(ui.tmName || '').trim(), p_my_name: teamMyName() }, function (d) { return '팀을 만들었습니다. 초대 코드 ' + (d && d.code || '') + '를 FC에게 알려 주세요'; }); return;
+    case 'teamRefresh': teamLoad(true); return;
+    case 'teamCopy': try { navigator.clipboard.writeText(team.info.code).then(function () { toast('초대 코드를 복사했습니다'); }, function () { toast('복사하지 못했습니다. 코드를 직접 적어 주세요'); }); } catch (e) { toast('복사하지 못했습니다'); } return;
+    case 'teamRotate': if (ui.armed !== 'tmRotate') { ui.armed = 'tmRotate'; keepArm = true; break; } ui.armed = null; teamRpc('rotate_team_code', { p_team: team.info.id }, function () { return '새 초대 코드를 만들었습니다'; }); return;
+    case 'teamShare': if (!team.info) return; teamDo(cloud.client.from('team_members').update({ share_stats: !!id }).eq('team_id', team.info.id).eq('user_id', cloud.user.id), id ? '관리자에게 실적 숫자를 공유합니다' : '실적 공유를 껐습니다. 올려 둔 숫자도 지웠습니다'); team.lastPush = ''; return;
+    case 'teamKick': if (ui.armed !== 'tmKick:' + id) { ui.armed = 'tmKick:' + id; keepArm = true; break; } ui.armed = null; teamDo(cloud.client.from('team_members').delete().eq('team_id', team.info.id).eq('user_id', id), '팀에서 내보냈습니다'); return;
+    case 'teamLeave': if (ui.armed !== 'tmLeave') { ui.armed = 'tmLeave'; keepArm = true; break; } ui.armed = null; teamDo(cloud.client.from('team_members').delete().eq('team_id', team.info.id).eq('user_id', cloud.user.id), '팀에서 나왔습니다'); return;
+    case 'teamDelete': if (ui.armed !== 'tmDelete') { ui.armed = 'tmDelete'; keepArm = true; break; } ui.armed = null; teamDo(cloud.client.from('teams').delete().eq('id', team.info.id), '팀을 삭제했습니다'); return;
+    case 'tnNew': ui.tnEdit = 'new'; ui.tnTitle = ''; ui.tnBody = ''; ui.tnUntil = ''; ui.tnCat = '일반'; ui.tnImp = false; ui.tnPin = false; break;
+    case 'tnEditOpen': { var tn = team.notices.filter(function (x) { return x.id === id; })[0]; if (!tn) break; ui.tnEdit = id; ui.tnTitle = tn.title || ''; ui.tnBody = tn.body || ''; ui.tnUntil = tn.until || ''; ui.tnCat = tn.cat || '일반'; ui.tnImp = !!tn.imp; ui.tnPin = !!tn.pin; break; }
+    case 'tnCancel': ui.tnEdit = null; break;
+    case 'tnSet': { var tk = el.dataset.k, tv = el.dataset.v; if (tk === 'tnImp' || tk === 'tnPin') ui[tk] = !!tv; else ui[tk] = tv; break; }
+    case 'tnSave': {
+      var tt = String(ui.tnTitle || '').trim(); if (!tt) { toast('제목을 적으세요'); break; }
+      var row = { title: tt.slice(0, 200), body: String(ui.tnBody || '').slice(0, 5000), cat: ui.tnCat || '일반', imp: !!ui.tnImp, pin: !!ui.tnPin, until: /^\d{4}-\d{2}-\d{2}$/.test(ui.tnUntil || '') ? ui.tnUntil : null, updated_at: new Date().toISOString() };
+      var q = ui.tnEdit === 'new' ? cloud.client.from('team_notices').insert(Object.assign(row, { team_id: team.info.id, author: cloud.user.id, author_name: teamMyName() || null, date: today() }))
+        : cloud.client.from('team_notices').update(row).eq('id', ui.tnEdit);
+      var wasNew = ui.tnEdit === 'new'; ui.tnEdit = null; teamDo(q, wasNew ? '팀 공지를 올렸습니다' : '팀 공지를 고쳤습니다'); return; }
+    case 'tnDel': if (ui.armed !== 'tnDel:' + id) { ui.armed = 'tnDel:' + id; keepArm = true; break; } ui.armed = null; teamDo(cloud.client.from('team_notices').delete().eq('id', id), '팀 공지를 지웠습니다'); return;
+    case 'tnRead': { var TR = teamNoticeRead(); if (TR[id]) delete TR[id]; else TR[id] = true; save(); break; }
     case 'passkeyLogin': passkeyLogin(); return;
     case 'offToggle': if (offEnabled()) { if (cloud.offline && offPendingNow()) { toast('오프라인 상태에서 못 올린 수정이 있어 지금은 끌 수 없습니다. 연결된 뒤 끄세요'); break; } try { localStorage.setItem('fcp-offline-off', '1'); } catch (e) {} if (cloud.user) offDel('copy:' + cloud.user.id); offDel('last'); cloud.offAt = null; toast('이 기기의 오프라인 사본을 지웠습니다'); } else { try { localStorage.removeItem('fcp-offline-off'); } catch (e) {} offSaveNow(); if (cloud.user) offPut('last', cloud.user.id); toast('이 기기에서 오프라인 모드를 켰습니다'); } break;
     case 'socialLogin': socialLogin(id); return;
@@ -6850,6 +6886,7 @@ function enterCloud(user) {
     if (site.cache.settings === null || n) flushSite();
     if (n) toast('오프라인 동안 바꾼 ' + n + '건을 서버에 올립니다');
     offSaveSoon();
+    teamLoad();
     startRealtime();
   }).catch(function (e) {
     if (e && e.stale) return;
@@ -6887,6 +6924,175 @@ function startCloud(cfg) {
       loadCloud().then(function () { ui.cid = keep && cur() ? keep : firstId(); render(); }).catch(function () {});
     }
   });
+}
+// ===== 팀(지점) — 초대 코드, 팀 공지(관리자만 작성), 팀 현황(실적 숫자만) =====
+// 서버 표: teams · team_members · team_notices · team_stats (supabase_setup.sql 3단계). 고객 자료는 팀에 공유되지 않는다.
+// 관리자는 FC가 "실적 숫자 공유"를 켠 경우에만 그 FC의 합계(myTeamStats)를 본다.
+var team = { loaded: false, loading: false, info: null, me: null, members: [], notices: [], stats: [], err: '', at: 0, pushTimer: null, lastPush: '' };
+function teamReset() { clearTimeout(team.pushTimer); team = { loaded: false, loading: false, info: null, me: null, members: [], notices: [], stats: [], err: '', at: 0, pushTimer: null, lastPush: '' }; }
+function teamOk() { return !!(cloud.on && cloud.client && cloud.user && !cloud.offline); }
+function teamErr(e) {
+  var m = String((e && (e.message || e.details)) || e || '');
+  if (/already_in_team/.test(m)) return '이미 다른 팀에 들어가 있습니다. 한 계정은 한 팀에만 들어갈 수 있습니다';
+  if (/invalid_code/.test(m)) return '초대 코드가 맞지 않습니다. 관리자에게 코드를 다시 확인하세요';
+  if (/name_required/.test(m)) return '팀 이름을 적으세요';
+  if (/not_manager/.test(m)) return '관리자만 할 수 있습니다';
+  if (/does not exist|PGRST202|PGRST205|schema cache/.test(m)) return '서버에 팀 기능 표가 아직 없습니다. 설치 안내서의 SQL(3단계)을 서버에서 먼저 실행하세요';
+  if (/row-level security|permission denied|42501/.test(m)) return '권한이 없습니다';
+  return koAuthError(e);
+}
+function teamLoad(force) {
+  if (!teamOk() || team.loading) return Promise.resolve();
+  if (team.loaded && !force && Date.now() - team.at < 60000) return Promise.resolve();
+  var sb = cloud.client, uid = cloud.user.id; team.loading = true;
+  return sb.from('team_members').select('team_id,role,name,share_stats').eq('user_id', uid).maybeSingle().then(function (r) {
+    if (r.error) throw r.error;
+    if (!r.data) { team.info = null; team.me = null; team.members = []; team.notices = []; team.stats = []; return; }
+    team.me = r.data;
+    var tid = r.data.team_id, mgr = r.data.role === 'manager';
+    return Promise.all([
+      sb.from('teams').select('id,name,code,created_at').eq('id', tid).maybeSingle(),
+      sb.from('team_members').select('user_id,role,name,share_stats,joined_at').eq('team_id', tid).order('joined_at'),
+      sb.from('team_notices').select('*').eq('team_id', tid).order('pin', { ascending: false }).order('date', { ascending: false }).limit(200),
+      mgr ? sb.from('team_stats').select('user_id,data,updated_at').eq('team_id', tid) : Promise.resolve({ data: [] })
+    ]).then(function (x) {
+      x.forEach(function (y) { if (y && y.error) throw y.error; });
+      team.info = x[0].data ? { id: x[0].data.id, name: x[0].data.name, code: x[0].data.code, role: r.data.role } : null;
+      team.members = x[1].data || []; team.notices = x[2].data || []; team.stats = x[3].data || [];
+    });
+  }).then(function () { team.loaded = true; team.loading = false; team.err = ''; team.at = Date.now(); teamStatsSoon(true); render(); },
+    function (e) { team.loaded = true; team.loading = false; team.err = teamErr(e); team.at = Date.now(); render(); });
+}
+function myTeamStats() {
+  var t = today(), mm = t.slice(0, 7), P = store.settings.params, live = store.customers.filter(function (c) { return !c.sample; });
+  var o = { customers: live.length, notes: 0, props: 0, won: 0, renew: 0, tasksOpen: 0, tasksLate: 0 };
+  live.forEach(function (c) {
+    (c.snapshots || []).forEach(function (sn) { if (String(sn.at).slice(0, 7) === mm) { o.props++; if (sn.result === '성사') o.won++; } });
+    (c.notes || []).forEach(function (n) { if (String(n.date).slice(0, 7) === mm) o.notes++; });
+  });
+  try { o.renew = workItems(t, isoDate(new Date(Date.now() + num(P.renewDays) * 864e5))).filter(function (it) { return it.kind === 'renew' || it.kind === 'payend'; }).length; } catch (e) {}
+  (store.settings.tasks || []).forEach(function (x) { if (!x.done) { o.tasksOpen++; if (x.due && x.due < t) o.tasksLate++; } });
+  o.month = mm; o.renewDays = num(P.renewDays);
+  return o;
+}
+function teamStatsSoon(now) {
+  if (!teamOk() || !team.info || !team.me || !team.me.share_stats) return;
+  clearTimeout(team.pushTimer);
+  team.pushTimer = setTimeout(function () {
+    if (!teamOk() || !team.info || !team.me || !team.me.share_stats) return;
+    var d = myTeamStats(), j = JSON.stringify(d); if (j === team.lastPush) return;
+    cloud.client.from('team_stats').upsert({ team_id: team.info.id, user_id: cloud.user.id, data: d, updated_at: new Date().toISOString() }, { onConflict: 'team_id,user_id' })
+      .then(function (r) { if (!r.error) team.lastPush = j; });
+  }, now ? 500 : 8000);
+}
+function teamMyName() { return String((store.settings.fc && store.settings.fc.name) || (cloud.user && cloud.user.user_metadata && cloud.user.user_metadata.name) || '').trim().slice(0, 40); }
+function teamRpc(fn, args, okMsg) {
+  if (!teamOk()) { toast('인터넷에 연결된 로그인 상태에서만 됩니다'); return; }
+  team.busy = true; render();
+  cloud.client.rpc(fn, args).then(function (r) {
+    team.busy = false; if (r.error) { team.err = teamErr(r.error); render(); return; }
+    team.err = ''; ui.tmName = ''; ui.tmCode = ''; if (okMsg) toast(okMsg(r.data)); teamLoad(true);
+  }, function (e) { team.busy = false; team.err = teamErr(e); render(); });
+}
+function teamDo(p, okMsg) { // 표 쓰기 공용
+  team.busy = true; render();
+  p.then(function (r) { team.busy = false; if (r && r.error) { team.err = teamErr(r.error); render(); return; } team.err = ''; if (okMsg) toast(okMsg); teamLoad(true); },
+    function (e) { team.busy = false; team.err = teamErr(e); render(); });
+}
+function teamSection() {
+  if (LOGIN_OFF || !cloud.on) return '<section class="panel"><h2>팀</h2><p class="muted" style="margin:0">팀 만들기·초대 코드·팀 공지·팀 현황은 로그인해서 쓸 때만 됩니다. 지금은 로그인 없이 이 브라우저에만 저장하는 방식입니다.</p></section>';
+  if (cloud.offline) return '<section class="panel"><h2>팀</h2><p class="muted" style="margin:0">인터넷에 연결되면 팀 정보를 볼 수 있습니다.</p></section>';
+  if (!team.loaded) { teamLoad(); return '<section class="panel"><h2>팀</h2><p class="muted" style="margin:0">불러오는 중…</p></section>'; }
+  var err = team.err ? '<div class="notice" role="alert">' + esc(team.err) + '</div>' : '', busy = team.busy ? ' disabled' : '';
+  if (!team.info) {
+    return '<section class="panel"><h2>팀</h2>' + err +
+      '<p style="margin:0 0 10px">지점장·팀장은 팀을 만들고 초대 코드를 FC에게 알려 주세요. 팀에 들어가면 <b>팀 공지</b>를 함께 보고, FC가 원하면 <b>실적 숫자</b>(고객 수·제안·성사 같은 합계)를 관리자에게 공유합니다. 고객 이름·연락처·계약 내용은 공유되지 않습니다.</p>' +
+      '<div class="team-forms"><div class="team-form"><h3>초대 코드로 들어가기 <small class="muted">FC</small></h3><div class="row">' + f('ui', 'tmCode', ui.tmCode || '', { ph: '예: 2VFDPQ', aria: '초대 코드' }) +
+      '<button class="btn primary" data-act="teamJoin"' + busy + '>들어가기</button></div></div>' +
+      '<div class="team-form"><h3>새 팀 만들기 <small class="muted">관리자</small></h3><div class="row">' + f('ui', 'tmName', ui.tmName || '', { ph: '예: 일산지점', aria: '팀 이름' }) +
+      '<button class="btn" data-act="teamCreate"' + busy + '>만들기</button></div><p class="muted" style="margin:6px 0 0">만든 사람이 관리자가 됩니다. 한 계정은 한 팀에만 들어갈 수 있습니다.</p></div></div></section>';
+  }
+  var mgr = team.info.role === 'manager', me = team.me || {};
+  var rows = team.members.map(function (m) {
+    var isMe = m.user_id === cloud.user.id, arm = 'tmKick:' + m.user_id;
+    return '<li class="row between"><span>' + esc(m.name || '이름 없음') + (isMe ? ' <small class="muted">(나)</small>' : '') + ' <span class="chip' + (m.role === 'manager' ? ' warn' : '') + '">' + (m.role === 'manager' ? '관리자' : 'FC') + '</span>' +
+      (m.role === 'member' ? ' <small class="muted">' + (m.share_stats ? '실적 공유 중' : '실적 비공유') + '</small>' : '') + '</span>' +
+      (mgr && !isMe ? '<button class="btn ghost sm' + (ui.armed === arm ? ' danger armed' : '') + '" data-act="teamKick" data-id="' + attr(m.user_id) + '">' + (ui.armed === arm ? '한 번 더 누르면 내보내기' : '내보내기') + '</button>' : '') + '</li>';
+  }).join('');
+  return '<section class="panel"><div class="row between"><h2>팀 · ' + esc(team.info.name) + ' <span class="chip' + (mgr ? ' warn' : '') + '">' + (mgr ? '관리자' : 'FC') + '</span></h2><button class="btn sm" data-act="teamRefresh"' + busy + '>새로 고침</button></div>' + err +
+    (mgr ? '<div class="team-code"><span class="muted">초대 코드</span><b class="num">' + esc(team.info.code) + '</b><button class="btn sm" data-act="teamCopy">복사</button>' +
+      '<button class="btn ghost sm' + (ui.armed === 'tmRotate' ? ' danger armed' : '') + '" data-act="teamRotate"' + busy + '>' + (ui.armed === 'tmRotate' ? '한 번 더 누르면 새 코드 (예전 코드는 막힘)' : '새 코드 만들기') + '</button></div>' +
+      '<p class="muted" style="margin:6px 0 10px">FC에게 이 코드를 알려 주면 설정 → 내 정보 → 팀에서 코드를 넣고 들어옵니다. 팀 공지는 지점 → 공지에서 올리고, FC 실적은 지점 → 팀 현황에서 봅니다.</p>'
+      : '<div class="field" style="margin:4px 0 10px"><span>관리자에게 실적 숫자 공유 <small class="muted">고객 수, 이번 달 상담·제안·성사, 갱신 예정, 할 일 건수만. 고객 이름·연락처는 안 보냅니다.</small></span>' +
+        '<span class="seg seg-f"><button type="button" class="seg-btn' + (me.share_stats ? ' on' : '') + '" data-act="teamShare" data-id="1"' + busy + '>공유</button><button type="button" class="seg-btn' + (!me.share_stats ? ' on' : '') + '" data-act="teamShare" data-id=""' + busy + '>안 함</button></span></div>') +
+    '<h3 class="sub-h">구성원 ' + team.members.length + '명</h3><ul class="team-list">' + rows + '</ul>' +
+    '<div class="row" style="margin-top:10px">' + (mgr
+      ? '<button class="btn ghost sm' + (ui.armed === 'tmDelete' ? ' danger armed' : '') + '" data-act="teamDelete"' + busy + '>' + (ui.armed === 'tmDelete' ? '한 번 더 누르면 팀·팀 공지 모두 삭제' : '팀 삭제') + '</button>'
+      : '<button class="btn ghost sm' + (ui.armed === 'tmLeave' ? ' danger armed' : '') + '" data-act="teamLeave"' + busy + '>' + (ui.armed === 'tmLeave' ? '한 번 더 누르면 팀에서 나가기' : '팀 나가기') + '</button>') + '</div></section>';
+}
+function teamNoticeRead() { var s = store.settings; return s.teamRead = s.teamRead || {}; }
+function teamNoticeSection() {
+  if (!teamOk()) return '';
+  if (!team.loaded) { teamLoad(); return ''; }
+  if (!team.info) return '';
+  teamLoad(); // 1분 넘었으면 새로 받기
+  var mgr = team.info.role === 'manager', R = teamNoticeRead(), t = today();
+  var list = team.notices.filter(function (n) { return !n.until || n.until >= t || mgr; });
+  var unread = list.filter(function (n) { return !R[n.id]; }).length;
+  var form = '';
+  if (mgr && ui.tnEdit) {
+    var seg = function (k, cur, opts) { return '<span class="seg seg-f">' + opts.map(function (o) { return '<button type="button" class="seg-btn' + (String(cur || '') === o[0] ? ' on' : '') + '" data-act="tnSet" data-k="' + k + '" data-v="' + attr(o[0]) + '">' + o[1] + '</button>'; }).join('') + '</span>'; };
+    form = '<div class="cal-add qa-box"><h3 style="margin:0">' + (ui.tnEdit === 'new' ? '팀 공지 올리기' : '팀 공지 고치기') + '</h3><div class="grid-form dm-grid">' +
+      lbl('제목', f('ui', 'tnTitle', ui.tnTitle || '', { ph: '예: 11월 시상 기준 안내' }), 'span2') +
+      lbl('게시 끝 (선택)', f('ui', 'tnUntil', ui.tnUntil || '', { type: 'date' })) +
+      '<div class="field"><span>분류</span>' + seg('tnCat', ui.tnCat || '일반', NOTICE_CATS.map(function (c) { return [c, c]; })) + '</div>' +
+      '<div class="field"><span>중요</span>' + seg('tnImp', ui.tnImp ? '1' : '', [['', '보통'], ['1', '중요']]) + '</div>' +
+      '<div class="field"><span>맨 위 고정</span>' + seg('tnPin', ui.tnPin ? '1' : '', [['', '안 함'], ['1', '고정']]) + '</div>' +
+      lbl('내용', f('ui', 'tnBody', ui.tnBody || '', { type: 'textarea', ph: '팀원 모두에게 보일 공지 내용' }), 'span2') + '</div>' +
+      '<div class="row"><button class="btn primary" data-act="tnSave"' + (team.busy ? ' disabled' : '') + '>' + (ui.tnEdit === 'new' ? '팀 전체에 올리기' : '저장') + '</button><button class="btn ghost" data-act="tnCancel">취소</button></div></div>';
+  }
+  var cards = list.map(function (n) {
+    var read = !!R[n.id], arm = 'tnDel:' + n.id, ended = n.until && n.until < t, body = String(n.body || '');
+    return '<article class="nt-card team' + (n.pin ? ' pin' : '') + (n.imp ? ' imp' : '') + (read ? '' : ' unread') + '">' +
+      '<div class="nt-head"><span class="chip team-chip">팀 공지</span>' + (n.pin ? '<span class="chip">📌 고정</span>' : '') + (n.imp ? '<span class="chip warn">중요</span>' : '') + (n.cat ? '<span class="kchip k-org">' + esc(n.cat) + '</span>' : '') +
+      '<b class="nt-title">' + esc(n.title || '제목 없음') + '</b>' + (read ? '' : '<span class="nt-new">새 글</span>') + '<span class="spacer"></span><span class="muted num">' + esc(String(n.date || '').replace(/-/g, '.')) + (n.author_name ? ' · ' + esc(n.author_name) : '') + '</span></div>' +
+      (body ? '<p class="nt-body">' + esc(body).replace(/\n/g, '<br>') + '</p>' : '') +
+      '<div class="nt-foot">' + (n.until ? '<span class="muted">게시 끝 ' + esc(n.until.replace(/-/g, '.')) + (ended ? ' · 끝남 (관리자에게만 보임)' : '') + '</span>' : '') + '<span class="spacer"></span>' +
+      '<button class="btn ghost sm" data-act="tnRead" data-id="' + attr(n.id) + '">' + (read ? '안 읽음으로' : '읽음') + '</button>' +
+      (mgr ? '<button class="btn ghost sm" data-act="tnEditOpen" data-id="' + attr(n.id) + '">수정</button><button class="btn ghost sm' + (ui.armed === arm ? ' danger armed' : '') + '" data-act="tnDel" data-id="' + attr(n.id) + '">' + (ui.armed === arm ? '한 번 더 누르면 삭제' : '삭제') + '</button>' : '') + '</div></article>';
+  }).join('');
+  return '<section class="panel team-notices"><div class="row between"><h2>팀 공지 · ' + esc(team.info.name) + ' <span class="muted num">' + list.length + '건' + (unread ? ' · 안 읽음 ' + unread : '') + '</span></h2>' +
+    (mgr && !ui.tnEdit ? '<button class="btn primary sm" data-act="tnNew">+ 팀 공지</button>' : '') + '</div>' + (team.err ? '<div class="notice" role="alert">' + esc(team.err) + '</div>' : '') + form +
+    (cards ? '<div class="nt-list">' + cards + '</div>' : '<p class="muted" style="margin:0">' + (mgr ? '"+ 팀 공지"로 올리면 팀원 모두의 공지 화면에 보입니다.' : '아직 관리자가 올린 팀 공지가 없습니다.') + '</p>') + '</section>';
+}
+function teamStatsPanel() {
+  if (!teamOk()) return '<section class="panel"><div class="empty"><strong>인터넷에 연결된 로그인 상태에서만 볼 수 있습니다</strong></div></section>';
+  if (!team.loaded) { teamLoad(); return '<section class="panel"><p class="muted">불러오는 중…</p></section>'; }
+  if (!team.info) return '<section class="panel"><div class="empty"><strong>아직 팀에 들어가 있지 않습니다</strong><span>설정 → 내 정보 → 팀에서 만들거나 초대 코드로 들어가세요.</span></div></section>';
+  teamLoad();
+  var mgr = team.info.role === 'manager';
+  if (!mgr) {
+    var mine = myTeamStats(), sh = team.me && team.me.share_stats;
+    return '<section class="panel"><h2>팀 현황 · ' + esc(team.info.name) + '</h2><p style="margin:0">팀 현황표는 관리자만 봅니다. 지금 내 실적 숫자는 관리자에게 <b>' + (sh ? '공유 중' : '공유하지 않음') + '</b>입니다' +
+      (sh ? ' (고객 ' + mine.customers + '명, 이번 달 제안 ' + mine.props + ' · 성사 ' + mine.won + ').' : '.') + ' 바꾸려면 설정 → 내 정보 → 팀에서 고르세요.</p></section>';
+  }
+  var byU = {}; team.stats.forEach(function (x) { byU[x.user_id] = x; });
+  var members = team.members.filter(function (m) { return m.role === 'member'; });
+  var sum = { customers: 0, notes: 0, props: 0, won: 0, renew: 0, tasksLate: 0 }, shared = 0, mm = today().slice(0, 7);
+  var rows = members.map(function (m) {
+    var st = byU[m.user_id], d = st && st.data, old = d && d.month !== mm;
+    if (d && !old) { shared++; Object.keys(sum).forEach(function (k) { sum[k] += num(d[k]); }); }
+    var c = function (k) { return d ? '<td class="r num">' + (old && /^(notes|props|won)$/.test(k) ? '<span class="muted">-</span>' : num(d[k])) + '</td>' : '<td class="r muted">-</td>'; };
+    return '<tr><td><b>' + esc(m.name || '이름 없음') + '</b>' + (!m.share_stats ? ' <small class="muted">비공유</small>' : '') + '</td>' + c('customers') + c('notes') + c('props') + c('won') +
+      (d ? '<td class="r num">' + (num(d.props) && !old ? Math.round(num(d.won) / num(d.props) * 100) + '%' : '-') + '</td>' : '<td class="r muted">-</td>') + c('renew') + c('tasksLate') +
+      '<td class="muted num">' + (st ? esc(offAtText(st.updated_at).slice(5)) : '') + '</td></tr>';
+  }).join('');
+  var kp = function (k, v, u, tone) { return '<div class="kpi' + (tone && v ? ' ' + tone : '') + '" style="cursor:default"><span class="k">' + k + '</span><span class="v num">' + v + '<small>' + u + '</small></span></div>'; };
+  return '<div class="kpis">' + kp('공유 중인 FC', shared + ' / ' + members.length, '명') + kp('이번 달 제안', sum.props, '건') + kp('이번 달 성사', sum.won, '건', 'warn') + kp('갱신 예정', sum.renew, '건') + kp('기한 지난 할 일', sum.tasksLate, '건', 'warn') + '</div>' +
+    '<section class="panel"><div class="row between"><h2>팀 현황 · ' + esc(team.info.name) + '</h2><button class="btn sm" data-act="teamRefresh">새로 고침</button></div>' +
+    (members.length ? '<div class="tablewrap"><table class="t ctab"><thead><tr><th>FC</th><th class="r">고객</th><th class="r">이번 달 상담</th><th class="r">제안</th><th class="r">성사</th><th class="r">성사율</th><th class="r">갱신 예정</th><th class="r">기한 지난 할 일</th><th>마지막 반영</th></tr></thead><tbody>' + rows + '</tbody></table></div>'
+      : '<div class="empty"><strong>아직 들어온 FC가 없습니다</strong><span>설정 → 내 정보 → 팀의 초대 코드를 FC에게 알려 주세요.</span></div>') +
+    '<p class="muted" style="margin:0">FC가 "실적 숫자 공유"를 켠 경우에만 숫자가 보이고, FC가 앱을 쓸 때마다 자동으로 반영됩니다. 고객 이름·연락처·계약 내용은 관리자에게도 보이지 않습니다. 지난달 숫자가 그대로인 FC는 이번 달에 아직 앱을 열지 않은 것입니다(-로 표시).</p></section>';
 }
 // ===== 오프라인 모드 =====
 // 로그인 상태에서 인터넷이 끊겨도 계속 쓴다. 자료 사본을 이 기기(IndexedDB)에 두고, 연결되면 못 올린 것만 서버에 올린다.
@@ -7005,7 +7211,7 @@ function cloudLogout() {
   ui.armed = null;
   var uid = cloud.user && cloud.user.id;
   var done = function () {
-    stopRealtime(); ui.hist = null; clearTimeout(offTimer); cloud.offline = false;
+    stopRealtime(); ui.hist = null; clearTimeout(offTimer); cloud.offline = false; teamReset();
     if (uid) { offDel('copy:' + uid); offDel('last'); }
     cloud.client.auth.signOut().catch(function () {}).then(function () {
       cloud.on = false; cloud.user = null; site.on = false; site.localExtra = null;
