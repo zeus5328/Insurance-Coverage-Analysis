@@ -781,7 +781,7 @@ table.t tr.done td { opacity: .6; }
 td.wrap { white-space: normal !important; min-width: 220px; }
 .todo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 14px; align-items: start; }
 .todo-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
-.kind-ev .more-btn, .todo-card .more-btn { display: block; width: 100%; margin-top: 8px; color: var(--ink-2); }
+.page-work .more-btn, .todo-card .more-btn { display: block; width: 100%; margin-top: 8px; color: var(--ink-2); }
 .todo-list li { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
 .todo-list li:last-child { border-bottom: 0; }
 .todo-list .when { flex: none; min-width: 64px; font-size: 11.5px; font-weight: 700; color: var(--ink-2); background: var(--surface-2); border-radius: 999px; padding: 2px 8px; text-align: center; }
@@ -4368,6 +4368,11 @@ function renderWork() {
   var td = new Date(), wd = ['일', '월', '화', '수', '목', '금', '토'][td.getDay()];
   return '<section class="settings-page"><h1 class="page-title">' + (sub === 'home' ? '오늘 · ' + (td.getMonth() + 1) + '월 ' + td.getDate() + '일 (' + wd + ')' : title) + '</h1><div class="settings-body">' + body + '</div></section>';
 }
+// 오늘 화면 목록 공용: 많으면 limit건만 보이고 더보기/접기 (ui[key])
+function foldList(items, limit, key, rowFn, cls) {
+  var more = items.length - limit, open = !!ui[key], shown = more > 0 && !open ? items.slice(0, limit) : items;
+  return '<ul class="' + cls + '">' + shown.map(rowFn).join('') + '</ul>' + (more > 0 ? '<button class="btn sm more-btn" data-act="toggleBox" data-id="' + key + '" aria-expanded="' + open + '">' + (open ? '접기 ▲' : '더보기 (' + more + '건 더) ▼') + '</button>' : '');
+}
 function workHome() {
   var t = today(), wk = isoDate(new Date(Date.now() + 6 * 864e5)), P = store.settings.params;
   var sched = workItems('2000-01-01', t).filter(function (it) { return it.kind !== 'task' && (it.date === t || ((it.kind === 'follow' || (it.kind === 'event' && !it.done)) && it.date < t)); });
@@ -4385,14 +4390,13 @@ function workHome() {
     '<div class="work-cols">' +
     '<section class="panel kind-ev"><div class="row between"><h2><span class="kind-dot ev"></span>오늘 일정 ' + sched.length + '</h2><div class="row" style="gap:6px">' + dedupBtn() + '<button class="btn sm" data-act="goWork" data-id="calendar">달력 보기</button></div></div>' +
     '<p class="kind-help">' + EV_HELP + ' 생일·갱신·연락 예정은 자동으로 들어옵니다.</p>' +
-    (sched.length ? '<ul class="wlist">' + (sched.length > 4 && !ui.schedMore ? sched.slice(0, 4) : sched).map(function (it) { return itemRow(it, it.date !== t); }).join('') + '</ul>' +
-      (sched.length > 4 ? '<button class="btn sm more-btn" data-act="toggleBox" data-id="schedMore" aria-expanded="' + !!ui.schedMore + '">' + (ui.schedMore ? '접기 ▲' : '더보기 (' + (sched.length - 4) + '건 더) ▼') + '</button>' : '') : '<p class="muted" style="margin:0">오늘 일정이 없습니다.</p>') +
+    (sched.length ? foldList(sched, 4, 'schedMore', function (it) { return itemRow(it, it.date !== t); }, 'wlist') : '<p class="muted" style="margin:0">오늘 일정이 없습니다.</p>') +
     '<details class="add-box"' + (ui.evOpen ? ' open' : '') + '><summary data-act="toggleBox" data-id="evOpen">+ 일정 추가</summary>' + eventForm(t) + '</details></section>' +
     '<section class="panel kind-tk"><div class="row between"><h2><span class="kind-dot tk"></span>할 일 ' + openTasks.length + '</h2><button class="btn sm" data-act="goWork" data-id="tasks">전체 보기</button></div>' +
     '<p class="kind-help">' + TK_HELP + '</p>' +
-    (openTasks.length ? '<ul class="wlist tasks">' + openTasks.slice(0, 8).map(taskRow).join('') + '</ul>' + (openTasks.length > 8 ? '<button class="link-btn" data-act="goWork" data-id="tasks">외 ' + (openTasks.length - 8) + '건 더 보기 ›</button>' : '') : '<p class="muted" style="margin:0">남은 할 일이 없습니다.</p>') +
+    (openTasks.length ? foldList(openTasks, 4, 'tkMore', taskRow, 'wlist tasks') : '<p class="muted" style="margin:0">남은 할 일이 없습니다.</p>') +
     '<details class="add-box tk"' + (ui.tkOpen ? ' open' : '') + '><summary data-act="toggleBox" data-id="tkOpen">+ 할 일 추가</summary>' + taskForm(false) + '</details></section></div>' +
-    '<section class="panel"><div class="row between"><h2>다가오는 7일 일정</h2></div>' + (week.length ? '<ul class="wlist">' + week.map(function (it) { return itemRow(it, true); }).join('') + '</ul>' : '<p class="muted" style="margin:0">다가오는 일정이 없습니다.</p>') + '</section>' +
+    '<section class="panel"><div class="row between"><h2>다가오는 7일 일정</h2></div>' + (week.length ? foldList(week, 5, 'weekMore', function (it) { return itemRow(it, true); }, 'wlist') : '<p class="muted" style="margin:0">다가오는 일정이 없습니다.</p>') + '</section>' +
     renderTodo();
 }
 function workCalendar() {
