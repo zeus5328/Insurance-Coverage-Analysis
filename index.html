@@ -1221,7 +1221,9 @@ tr.row-dbl:hover td .muted, .ctable tbody tr.crow:hover td .muted { color: var(-
   .wlist li > .what + *, .todo-list li > .what + * { margin-left: auto; }
   .work-cols { grid-template-columns: minmax(0, 1fr); }
   .panel > .row.between { flex-wrap: wrap; row-gap: 8px; }
-  .panel > .row.between > .row:has(.mini-search) { flex: 1 1 100%; flex-wrap: nowrap; }
+  .panel > .row.between:has(> .row .mini-search) { flex-wrap: nowrap; gap: 8px; }
+  .panel > .row.between:has(> .row .mini-search) > h2 { flex: none; white-space: nowrap; }
+  .panel > .row.between > .row:has(.mini-search) { flex: 1 1 auto; min-width: 0; flex-wrap: nowrap; gap: 6px; }
   .panel > .row.between .mini-search { flex: 1 1 auto !important; min-width: 0 !important; width: 0 !important; max-width: none !important; }
   .panel > .row.between > .row:has(.mini-search) > .btn { flex: none; }
   .auto-table thead { display: none; }
@@ -1851,7 +1853,7 @@ function saveLabel() {
 }
 
 // ===== 화면 상태 =====
-var ui = { view: 'work', wsub: 'home', calMonth: '', calDay: '', bdMonth: 0, evDate: '', evTime: '', evTitle: '', evType: '상담', evCid: '', tkTitle: '', tkDue: '', tkCid: '', lsub: 'list', nq: '', nMethod: '', ndDate: '', ndMethod: '전화', ndText: '', ndNext: '', pdfCand: {}, pdfBusy: {}, cid: null, tab: 'info', sub: 'me', csub: 'staff', isub: 'all', q: '', cq: '', iq: '', insFilter: '', filter: '', sort: 'name', armed: null, paste: {}, openPol: {} };
+var ui = { view: 'work', wsub: 'home', calMonth: '', calDay: '', bdMonth: 0, evDate: '', evTime: '', evTitle: '', evType: '상담', evCid: '', tkTitle: '', tkDue: '', tkCid: '', lsub: 'list', nq: '', nMethod: '', ndDate: '', ndMethod: '전화', ndText: '', ndNext: '', pdfCand: {}, pdfBusy: {}, cid: null, tab: 'info', sub: 'display', csub: 'staff', isub: 'all', q: '', cq: '', iq: '', insFilter: '', filter: '', sort: 'name', armed: null, paste: {}, openPol: {} };
 
 var collator = (typeof Intl !== 'undefined' && Intl.Collator) ? new Intl.Collator('ko', { numeric: true, sensitivity: 'base' }) : null;
 function byName(a, b) {
@@ -1946,15 +1948,15 @@ function render() {
 
 // ===== 화면 이동 (주소 # 으로 기억 → 뒤로가기 동작) =====
 var STEPS = [['info', '고객 정보'], ['policies', '계약 입력'], ['analysis', '보장분석'], ['plan', '정리·설계'], ['proposal', '제안서']];
-var SETTING_SUBS = [['me', '내 정보'], ['display', '화면'], ['rules', '분석 기준'], ['dict', '담보 사전'], ['products', '상품 관리'], ['data', '자료 관리']];
-var WORK_SUBS = [['home', '오늘'], ['calendar', '일정'], ['tasks', '할 일'], ['birthday', '기념일'], ['stats', '실적'], ['comm', '수수료']];
+var SETTING_SUBS = [['display', '화면 설정'], ['me', '내 정보'], ['rules', '분석 기준'], ['dict', '담보 사전'], ['products', '상품 관리'], ['data', '자료 관리']];
+var WORK_SUBS = [['home', '오늘'], ['calendar', '일정'], ['tasks', '할일'], ['birthday', '기념일'], ['stats', '실적'], ['comm', '수수료']];
 var OFFICE_SUBS = [['schedule', '지점 일정'], ['edu', '교육·행사'], ['staff', '직원 연락처'], ['branch', '지점·사업단']];
 var LIST_SUBS = [['list', '리스트'], ['contacts', '연락처'], ['family', '가족·가구'], ['notes', '상담 기록'], ['props', '제안 기록'], ['care', '관리 필요']];
 var INS_SUBS = [['all', '장기보험'], ['auto', '자동차보험'], ['fire', '화재보험'], ['insurer', '보험사 연락처']];
 function routeHash() {
   if (ui.view === 'work') return '#work-' + (ui.wsub || 'home');
   if (ui.view === 'office') return '#office-' + (ui.osub || 'schedule');
-  if (ui.view === 'settings') return '#settings-' + (ui.sub || 'me');
+  if (ui.view === 'settings') return '#settings-' + (ui.sub || 'display');
   if (ui.view === 'insurance') return '#ins-' + (ui.isub || 'all');
   if (ui.view === 'customer' && ui.cid) return '#c-' + ui.cid + '-' + (ui.tab || 'info');
   return ui.lsub && ui.lsub !== 'list' ? '#cust-' + ui.lsub : '#list';
@@ -1982,7 +1984,7 @@ function applyHash() {
   if ((m = h.match(/^#c-([A-Za-z0-9]+)-(info|policies|analysis|plan|proposal)$/)) && store.customers.some(function (c) { return c.id === m[1]; })) {
     ui.view = 'customer'; ui.cid = m[1]; ui.tab = m[2];
   } else if ((m = h.match(/^#settings(?:-(me|display|rules|dict|products|data))?$/))) {
-    ui.view = 'settings'; ui.sub = m[1] || 'me';
+    ui.view = 'settings'; ui.sub = m[1] || 'display';
   } else if ((h === '' || h === '#') && store.settings.params.startView === 'list') {
     ui.view = 'list'; ui.lsub = 'list';
   } else if ((m = h.match(/^#work(?:-(home|calendar|birthday|tasks|stats|comm|staff|branch))?$/)) || h === '#cust-todo' || h === '' || h === '#') {
@@ -2033,7 +2035,7 @@ function subbarHtml() {
   if (ui.view === 'work') { subs = WORK_SUBS; cur = ui.wsub || 'home'; act = 'goWork'; label = '업무 메뉴'; }
   else if (ui.view === 'office') { subs = OFFICE_SUBS; cur = ui.osub || 'schedule'; act = 'goOffice'; label = '지점 메뉴'; }
   else if (ui.view === 'list') { subs = LIST_SUBS; cur = ui.lsub || 'list'; act = 'goList'; label = '고객 메뉴'; }
-  else if (ui.view === 'settings') { subs = SETTING_SUBS; cur = ui.sub || 'me'; act = 'goSettings'; label = '설정 메뉴'; }
+  else if (ui.view === 'settings') { subs = SETTING_SUBS; cur = ui.sub || 'display'; act = 'goSettings'; label = '설정 메뉴'; }
   else if (ui.view === 'insurance') { subs = INS_SUBS; cur = (ui.isub === 'byins' || ui.isub === 'byowner') ? 'all' : (ui.isub || 'all'); act = 'goIns'; label = '보험 메뉴'; }
   else return '';
   return '<nav class="subbar" aria-label="' + label + '"><div class="subbar-in">' + subs.map(function (x) {
@@ -2652,7 +2654,7 @@ function renderProposal(c, an) {
 }
 
 function renderSettings() {
-  var s = store.settings, sub = ui.sub || 'me', body = '';
+  var s = store.settings, sub = ui.sub || 'display', body = '';
   if (sub === 'me') {
     var fcRoles = [['', '선택'], ['FC', 'FC'], ['팀장', '팀장'], ['지점장', '지점장'], ['단장', '단장']]; if (s.fc.role && !fcRoles.some(function (o) { return o[0] === s.fc.role; })) fcRoles.push([s.fc.role, s.fc.role]);
     var fcLine = fcLineText(s.fc);
@@ -3470,7 +3472,7 @@ function insurerTable() {
 function insurerPanel() {
   var s = store.settings, body = '';
   {
-    body = '<section class="panel"><div class="row between"><h2>보험사 ' + s.contacts.insurers.length + '곳</h2><div class="row"><button class="btn" data-act="assocInsurers" title="생명보험협회·손해보험협회 공개 자료로 빈 칸을 채우고, 협회 자료로 넣었던 칸은 새 자료로 바꿉니다. 직접 고친 칸은 그대로 둡니다">협회 번호로 채우기</button><button class="btn" data-act="pullInsurers">계약에 있는 보험사 불러오기</button><button class="btn primary" data-act="addInsurer">+ 보험사 추가</button></div></div>' +
+    body = '<section class="panel"><div class="row between"><h2>보험사 ' + s.contacts.insurers.length + '곳</h2><div class="row"><button class="btn" data-act="assocInsurers" title="생명보험협회·손해보험협회 공개 자료로 빈 칸을 채우고, 협회 자료로 넣었던 칸은 새 자료로 바꿉니다. 직접 고친 칸은 그대로 둡니다">협회 번호로 채우기</button><button class="btn" data-act="pullInsurers">계약에 있는 보험사 불러오기</button><button class="btn primary" data-act="addInsurer">+ 추가</button></div></div>' +
       '<div class="info">고객센터 번호와 주소는 생명보험협회·손해보험협회 회원사 안내에 공개된 내용으로 채웠습니다(2026년 11월 확인). 보상·사고 접수 번호와 담당자는 증권이나 보험사 홈페이지에서 확인해 넣으세요. 번호가 바뀔 수 있으니 중요한 연락 전에는 보험사 홈페이지에서 한 번 더 확인하세요. 직접 고친 칸은 "협회 번호로 채우기"를 눌러도 바뀌지 않습니다.</div>' +
       '<div class="ins-tools"><input type="search" id="icq" class="mini-search" placeholder="보험사·담당자·번호 검색" value="' + attr(ui.icq) + '" aria-label="보험사 검색">' +
         '<select data-scope="ui" data-k="icKind" id="ui-icKind" aria-label="구분">' + [['', '전체'], ['생명', '생명보험'], ['손해', '손해보험'], ['공제', '공제'], ['기타', '기타']].map(function (o) { return '<option value="' + o[0] + '"' + sel(ui.icKind || '', o[0]) + '>' + o[1] + '</option>'; }).join('') + '</select>' +
@@ -3592,15 +3594,14 @@ function renderByInsurer() {
   var arr = Object.keys(g).map(function (k2) { return g[k2]; }).sort(function (a, b) { return b.prem - a.prem || b.cnt - a.cnt; });
   var noCt = arr.filter(function (o) { return o.n !== '보험사 미입력' && !insContactOf(o.n); });
   return '<section class="panel"><div class="row between"><h2>보험사별 계약 ' + arr.length + '곳</h2><span class="muted">월 보험료가 많은 순</span></div>' +
-    '<div class="tablewrap"><table class="t ctab"><thead><tr><th>보험사</th><th>구분</th><th class="r">계약</th><th class="r">고객</th><th class="r">월보험료</th><th style="min-width:180px">비중</th><th class="r">갱신형</th><th class="r">90일 안 일정</th><th>고객센터</th><th></th></tr></thead><tbody>' +
+    '<div class="tablewrap"><table class="t ctab"><thead><tr><th>보험사</th><th>구분</th><th class="r">계약</th><th class="r">고객</th><th class="r">월보험료</th><th style="min-width:180px">비중</th><th class="r">갱신형</th><th class="r">90일 안 일정</th><th></th></tr></thead><tbody>' +
     arr.map(function (o) {
       var ct = o.n === '보험사 미입력' ? null : insContactOf(o.n), k = insurerKind(o.n) || (ct && ct.kind) || '', pct = tot ? Math.round(o.prem / tot * 1000) / 10 : 0;
       return '<tr><td><b>' + esc(o.n) + '</b></td><td>' + (k ? esc(INS_KIND_LABEL[k] || k) : '<span class="muted">–</span>') + '</td><td class="r num">' + o.cnt + '건</td><td class="r num">' + Object.keys(o.cust).length + '명</td><td class="r num">' + fmtWon(o.prem) + '</td>' +
         '<td><div class="sharebar"><i style="width:' + pct + '%"></i></div><span class="num muted">' + pct + '%</span></td><td class="r num">' + (o.renew || '–') + '</td><td class="r num">' + (o.soon ? '<span class="chip warn">' + o.soon + '건</span>' : '–') + '</td>' +
-        '<td style="white-space:nowrap">' + (ct && ct.call ? '<span class="num">' + esc(ct.call) + '</span> ' + telLink(ct.call) : '<span class="muted">' + (o.n === '보험사 미입력' ? '–' : '연락처 없음') + '</span>') + '</td>' +
         '<td><button class="btn ghost sm" data-act="insGoAll" data-id="' + attr(o.n === '보험사 미입력' ? '' : o.n) + '">계약 보기</button></td></tr>';
     }).join('') + '</tbody></table></div>' +
-    (noCt.length ? '<p class="muted" style="margin:0">보험사 연락처에 없는 이름 ' + noCt.length + '곳: ' + noCt.map(function (o) { return esc(o.n); }).join(', ') + ' — 계약에 적은 보험사 이름을 정확한 회사명(예: 삼성화재)으로 고치면 고객센터 번호가 연결됩니다.</p>' : '') + '</section>';
+    '</section>';
 }
 // ===== 장기보험 → 계약자별 계약 (고객 = 계약자 기준으로 묶음) =====
 function renderByOwner() {
@@ -3612,7 +3613,7 @@ function renderByOwner() {
     var pr = num(x.p.premium), k = polKind(x.p); o.cnt++; o.prem += pr; tot += pr;
     if (k === '생명') o.life += pr; else if (k === '손해') o.nonlife += pr;
     if (x.p.renewable) o.renew++; if (polMatch(x, 'soon')) o.soon++; if (polMatch(x, 'silson')) o.sil++; if (polMatch(x, 'nocov')) o.nocov++;
-    var nm = String(x.p.insurer || '').trim(); if (nm) o.ins[nm] = (o.ins[nm] || 0) + 1;
+    var nm = String(x.p.insurer || '').trim(); if (nm) { o.ins[nm] = (o.ins[nm] || 0) + 1; o.insP = o.insP || {}; o.insP[nm] = (o.insP[nm] || 0) + pr; }
   });
   var arr = Object.keys(g).map(function (k2) { return g[k2]; });
   var sk = ui.ownSort || 'prem';
@@ -3620,14 +3621,14 @@ function renderByOwner() {
   var none = store.customers.filter(function (c) { return !g[c.id]; });
   var sortBtn = function (k3, label) { return '<button class="todo' + (sk === k3 ? ' on' : '') + '" data-act="ownSort" data-id="' + k3 + '">' + label + '</button>'; };
   return '<section class="panel"><div class="row between"><h2>계약자별 계약 ' + arr.length + '명</h2><div class="todos">' + sortBtn('prem', '월 보험료 순') + sortBtn('cnt', '계약 수 순') + sortBtn('name', '이름 순') + '</div></div>' +
-    '<div class="tablewrap"><table class="t ctab"><thead><tr><th>계약자</th><th class="r">계약</th><th class="r">월보험료</th><th style="min-width:160px">비중</th><th>생명 · 손해</th><th>가입 보험사</th><th class="r">갱신형</th><th class="r">90일 안 일정</th><th class="r">실손 1·2세대</th><th class="r">담보 미입력</th><th></th></tr></thead><tbody>' +
+    '<div class="tablewrap"><table class="t ctab"><thead><tr><th>계약자</th><th class="r">계약</th><th class="r">월보험료</th><th style="min-width:160px">비중</th><th>생명 · 손해</th><th>대표 보험사</th><th class="r">갱신형</th><th class="r">90일 안 일정</th><th class="r">실손 1·2세대</th><th class="r">담보 미입력</th><th></th></tr></thead><tbody>' +
     arr.map(function (o) {
-      var pct = tot ? Math.round(o.prem / tot * 1000) / 10 : 0, insN = Object.keys(o.ins);
+      var pct = tot ? Math.round(o.prem / tot * 1000) / 10 : 0, insN = Object.keys(o.ins).sort(function (a, b) { return (o.insP[b] || 0) - (o.insP[a] || 0) || o.ins[b] - o.ins[a]; });
       var ln = o.prem ? Math.round(o.life / o.prem * 100) : 0, nl = o.prem ? Math.round(o.nonlife / o.prem * 100) : 0;
       return '<tr><td>' + custLink(o.c, 'policies') + (o.c.birth ? ' <small class="muted">' + ageOf(o.c.birth) + '세</small>' : '') + '</td><td class="r num">' + o.cnt + '건</td><td class="r num"><b>' + fmtWon(o.prem) + '</b></td>' +
         '<td><div class="sharebar"><i style="width:' + pct + '%"></i></div><span class="num muted">' + pct + '%</span></td>' +
         '<td class="num">' + (o.prem ? ln + '% · ' + nl + '%' : '<span class="muted">–</span>') + '</td>' +
-        '<td class="own-ins">' + (insN.length ? insN.slice(0, 4).map(function (n) { return esc(n) + (o.ins[n] > 1 ? ' <small class="muted">' + o.ins[n] + '</small>' : ''); }).join(', ') + (insN.length > 4 ? ' 외 ' + (insN.length - 4) + '곳' : '') : '<span class="muted">–</span>') + '</td>' +
+        '<td class="own-ins" title="' + attr(insN.join(', ')) + '">' + (insN.length ? esc(insN[0]) + (insN.length > 1 ? ' <small class="muted">외 ' + (insN.length - 1) + '곳</small>' : '') : '<span class="muted">–</span>') + '</td>' +
         '<td class="r num">' + (o.renew || '–') + '</td><td class="r num">' + (o.soon ? '<span class="chip warn">' + o.soon + '건</span>' : '–') + '</td>' +
         '<td class="r num">' + (o.sil ? '<span class="chip warn">' + o.sil + '건</span>' : '–') + '</td><td class="r num">' + (o.nocov ? '<span class="chip warn">' + o.nocov + '건</span>' : '–') + '</td>' +
         '<td><button class="btn ghost sm" data-act="ownGoAll" data-id="' + o.c.id + '">계약 보기</button></td></tr>';
@@ -3724,9 +3725,9 @@ function renderAutoPage() {
       '<td data-l="만기"><span class="chip' + (d != null && d < 0 ? ' warn' : d != null && d <= 30 ? ' warn' : '') + '">' + (d == null ? '–' : d < 0 ? (-d) + '일 지남' : dLabel(d)) + '</span></td>' +
       '<td data-l="운전자">' + esc(a.driver || '') + '<br><small class="muted">' + esc(a.minAge || '') + '</small></td><td class="r num" data-l="연 보험료">' + (num(a.premium) ? fmtWon(a.premium) : '<span class="muted">–</span>') + '</td>' +
       '<td data-l="점검"><span class="chip ' + (tone === 'ok' ? 'ok-chip' : 'warn') + '">' + (tone === 'ok' ? '양호' : '확인 ' + ch) + '</span></td></tr>';
-  }).join('') + '</tbody></table></div>' : '<div class="empty"><strong>' + (list.length ? '조건에 맞는 가입이 없습니다' : '아직 입력한 자동차보험이 없습니다') + '</strong><span>' + (list.length ? '위 숫자 칸을 다시 눌러 거르기를 푸세요.' : '"+ 가입 입력"으로 고객의 자동차보험을 넣으면 만기·담보 점검을 여기서 관리합니다.') + '</span></div>';
+  }).join('') + '</tbody></table></div>' : '<div class="empty"><strong>' + (list.length ? '조건에 맞는 가입이 없습니다' : '아직 입력한 자동차보험이 없습니다') + '</strong><span>' + (list.length ? '위 숫자 칸을 다시 눌러 거르기를 푸세요.' : '"+ 입력"으로 고객의 자동차보험을 넣으면 만기·담보 점검을 여기서 관리합니다.') + '</span></div>';
   return kpis + '<section class="panel"><div class="row between"><h2>자동차보험 가입 ' + list.length + '건</h2><div class="row" style="gap:6px"><input type="search" id="aq" class="mini-search" placeholder="고객·차량번호·보험사" value="' + attr(ui.aq || '') + '" aria-label="자동차보험 검색">' +
-    '<button class="btn ' + (ui.autoOpen ? '' : 'primary ') + 'sm" data-act="toggleBox" data-id="autoOpen" aria-expanded="' + !!ui.autoOpen + '">' + (ui.autoOpen ? '닫기' : '+ 가입 입력') + '</button></div></div>' + addBox +
+    '<button class="btn ' + (ui.autoOpen ? '' : 'primary ') + 'sm" data-act="toggleBox" data-id="autoOpen" aria-expanded="' + !!ui.autoOpen + '">' + (ui.autoOpen ? '닫기' : '+ 입력') + '</button></div></div>' + addBox +
     '<div id="aqWrap">' + table + '</div><p class="muted" style="margin:0">줄을 두 번 누르면 담보·특약을 고칠 수 있습니다. 만기 30일 안 가입은 업무 → 오늘의 "갱신·납입 완료 예정"에도 나옵니다.</p></section>' + autoGuide();
 }
 function autoGuide() {
@@ -3869,9 +3870,9 @@ function renderFirePage() {
       '<td class="r num" data-l="건물 / 가재·집기">' + (num(a.bldAmt) ? fmtMan(a.bldAmt) : '–') + ' / ' + (num(a.contAmt) + num(a.stockAmt) ? fmtMan(num(a.contAmt) + num(a.stockAmt)) : '–') + '</td>' +
       '<td class="r num" data-l="보험료">' + (num(a.premium) ? fmtWon(a.premium) + '<br><small class="muted">' + esc(a.cycle || '') + '</small>' : '<span class="muted">–</span>') + '</td>' +
       '<td data-l="점검"><span class="chip ' + (tone === 'ok' ? 'ok-chip' : 'warn') + '">' + (tone === 'ok' ? '양호' : '확인 ' + ch) + '</span></td></tr>';
-  }).join('') + '</tbody></table></div>' : '<div class="empty"><strong>' + (list.length ? '조건에 맞는 가입이 없습니다' : '아직 입력한 화재보험이 없습니다') + '</strong><span>' + (list.length ? '위 숫자 칸을 다시 눌러 거르기를 푸세요.' : '"+ 가입 입력"으로 고객의 화재보험을 넣으면 만기·의무보험·담보 점검을 여기서 관리합니다.') + '</span></div>';
+  }).join('') + '</tbody></table></div>' : '<div class="empty"><strong>' + (list.length ? '조건에 맞는 가입이 없습니다' : '아직 입력한 화재보험이 없습니다') + '</strong><span>' + (list.length ? '위 숫자 칸을 다시 눌러 거르기를 푸세요.' : '"+ 입력"으로 고객의 화재보험을 넣으면 만기·의무보험·담보 점검을 여기서 관리합니다.') + '</span></div>';
   return kpis + '<section class="panel"><div class="row between"><h2>화재보험 가입 ' + list.length + '건</h2><div class="row" style="gap:6px"><input type="search" id="fq" class="mini-search" placeholder="고객·주소·보험사" value="' + attr(ui.fq || '') + '" aria-label="화재보험 검색">' +
-    '<button class="btn ' + (ui.fireOpen ? '' : 'primary ') + 'sm" data-act="toggleBox" data-id="fireOpen" aria-expanded="' + !!ui.fireOpen + '">' + (ui.fireOpen ? '닫기' : '+ 가입 입력') + '</button></div></div>' + addBox +
+    '<button class="btn ' + (ui.fireOpen ? '' : 'primary ') + 'sm" data-act="toggleBox" data-id="fireOpen" aria-expanded="' + !!ui.fireOpen + '">' + (ui.fireOpen ? '닫기' : '+ 입력') + '</button></div></div>' + addBox +
     '<div id="fqWrap">' + table + '</div><p class="muted" style="margin:0">줄을 두 번 누르면 가입금액·특약을 고칠 수 있습니다. 만기 30일 안 가입은 업무 → 오늘의 "갱신·납입 완료 예정"에도 나옵니다.</p></section>' + fireGuide();
 }
 function fireGuide() {
@@ -4488,7 +4489,7 @@ function eduPanel() {
   return '<div class="kpis"><div class="kpi" style="cursor:default"><span class="k">다가오는 ' + (ui.eduT || '일정') + '</span><span class="v num">' + up.length + '<small>건</small></span></div>' +
     '<div class="kpi warn" style="cursor:default"><span class="k">다음 ' + (ui.eduT || '일정') + '</span><span class="v" style="font-size:15px">' + (next ? Number(next.date.slice(5, 7)) + '.' + Number(next.date.slice(8, 10)) + ' ' + esc(next.title) : '없음') + '</span></div>' +
     '<div class="kpi" style="cursor:default"><span class="k">다음 ' + (ui.eduT || '일정') + ' 참석</span><span class="v num">' + (next ? eduAttCount(next) + '<small> / ' + staff.length + '명</small>' : '–') + '</span></div></div>' +
-    '<section class="panel"><div class="row between"><h2>지점 일정 참석 체크</h2><button class="btn primary sm" data-act="orgNew" data-id="' + attr(ui.eduT || '교육') + '">+ 일정 추가</button></div>' + chips +
+    '<section class="panel"><div class="row between"><h2>지점 일정 참석 체크</h2><button class="btn primary sm" data-act="orgNew" data-id="' + attr(ui.eduT || '교육') + '">+ 추가</button></div>' + chips +
     (cards ? '<div class="edu-list">' + cards + '</div>' : '<div class="empty"><strong>' + (past ? '지난 일정이 없습니다' : '잡힌 일정이 없습니다') + '</strong><span>"+ 일정 추가"를 누르거나 지점 일정에서 넣으세요.</span></div>') +
     '<p class="muted" style="margin:0">일정을 누르면 펼쳐집니다. 체크하면 바로 저장되고, 지점 일정 목록에도 참석 인원이 보입니다.</p></section>';
 }
@@ -5165,7 +5166,7 @@ function doAction(el) {
       break;
     }
     case 'goCust': go('customer', { cid: id, tab: el.dataset.pid || 'info' }); break;
-    case 'settings': go('settings', { sub: ui.sub || 'me' }); break;
+    case 'settings': go('settings', { sub: ui.sub || 'display' }); break;
     case 'goSettings': go('settings', { sub: id || 'me' }); break;
     case 'goContacts': if (id === 'insurer') go('insurance', { isub: 'insurer' }); else if (id === 'cust') go('list', { lsub: 'contacts' }); else go('office', { osub: 'staff' }); break;
     case 'addNote': {
