@@ -2122,7 +2122,7 @@ var OFFICE_SUBS = [['notice', '공지'], ['schedule', '일정'], ['staff', '연�
 var OFFICE_TITLES = { schedule: '지점 일정', staff: '직원 연락처', sbd: '직원 생일' }; // 메뉴 이름은 짧게, 화면 제목은 그대로
 function officeSubs() { return team.info ? OFFICE_SUBS.concat([['team', '팀 현황']]) : OFFICE_SUBS; }
 var LIST_SUBS = [['list', '고객목록'], ['contacts', '연락처'], ['family', '가족·가구'], ['notes', '상담 기록'], ['props', '제안 기록'], ['care', '관리 필요']];
-var INS_SUBS = [['all', '장기'], ['auto', '자동차'], ['fire', '화재'], ['drv', '운전자'], ['insurer', '연락처'], ['guide', '가이드']];
+var INS_SUBS = [['all', '장기'], ['fire', '화재'], ['drv', '운전자'], ['auto', '자동차'], ['insurer', '연락처'], ['guide', '가이드']];
 // 서브메뉴는 짧은 이름, 페이지 제목은 원래 이름 (2026-11-03)
 var INS_TITLES = { all: '장기보험', auto: '자동차보험', fire: '화재보험', drv: '운전자보험', insurer: '보험사 연락처', guide: '보험가이드' };
 function routeHash() {
@@ -4416,9 +4416,19 @@ function insGuidePanel() {
       ['건물 구조', '철근콘크리트·조적·패널 등 구조, 층수, 면적, 준공 연도', '구조 급수에 따라 보험료가 달라집니다'],
       ['의무보험 해당 여부', '다중이용업소(음식점 등), 재난배상책임 대상 시설', '미가입 시 과태료가 있으니 먼저 확인'],
       ['가입금액', '건물·가재도구(집기·비품)·시설 금액', '실제 가치보다 낮으면 비례 보상될 수 있습니다'],
-      ['배상책임', '화재·누수로 남에게 준 피해 보상(가족·임차자 배상 등)', '화재보험 메뉴의 담보 안내 참고']]
+      ['배상책임', '화재·누수로 남에게 준 피해 보상(가족·임차자 배상 등)', '화재보험 메뉴의 담보 안내 참고']],
+    drv: [
+      ['피보험자', '운전하는 사람의 성명·생년월일·성별', '차가 아니라 사람에게 드는 보험이라 차를 바꿔도 이어집니다'],
+      ['주민등록번호', '청약 시스템에서 고객 본인 인증과 함께 입력', '<b>이 프로그램에는 저장하지 않습니다</b>'],
+      ['직업 · 운전 용도', '자가용인지, 영업용(택시·화물·버스 등)·업무용 운전인지', '운전 용도와 직업에 따라 가입 가능 여부·보험료가 달라집니다'],
+      ['이륜자동차 운전', '오토바이·배달 운전 여부', '별도로 묻는 항목입니다. 숨기면 보상이 안 될 수 있습니다'],
+      ['기존 운전자 보장', '다른 운전자보험, 장기보험 안의 운전자 특약 가입 여부', '교통사고처리지원금·변호사선임비용·벌금은 실제 손해만큼 보상해 여러 개 들어도 나눠서 받습니다'],
+      ['자동차보험 법률비용 특약', '자동차보험에 법률비용지원 특약이 있는지', '변호사선임비용과 겹치는지 확인 — 운전자보험 메뉴의 "고객별 운전자 담보" 참고'],
+      ['병력 · 투약', '상품에 따라 묻는 경우', '아래 "계약 전 알릴 의무" 참고'],
+      ['납입 정보 · 동의서', '자동이체 계좌·카드, 개인(신용)정보 동의', '장기보험과 같습니다'],
+      ['담보 선택', '교통사고처리지원금, 변호사선임비용, 벌금, 부상 치료비 등', '운전자보험 메뉴의 상담 안내 참고']]
   };
-  var tabs = '<div class="seg" role="tablist" aria-label="보험 종류">' + [['long', '장기보험(생명·손해)'], ['auto', '자동차보험'], ['fire', '화재보험']].map(function (o) { return '<button class="seg-btn' + (T === o[0] ? ' on' : '') + '" role="tab" aria-selected="' + (T === o[0]) + '" data-act="gdT" data-id="' + o[0] + '">' + o[1] + '</button>'; }).join('') + '</div>';
+  var tabs = '<div class="seg" role="tablist" aria-label="보험 종류">' + [['long', '장기'], ['fire', '화재'], ['drv', '운전자'], ['auto', '자동차']].map(function (o) { return '<button class="seg-btn' + (T === o[0] ? ' on' : '') + '" role="tab" aria-selected="' + (T === o[0]) + '" data-act="gdT" data-id="' + o[0] + '">' + o[1] + '</button>'; }).join('') + '</div>';
   var infoTable = '<div class="tablewrap"><table class="t gd-table"><thead><tr><th>항목</th><th>무엇을 받나</th><th>메모</th></tr></thead><tbody>' + info[T].map(function (r) { return tr(r[0], r[1], r[2]); }).join('') + '</tbody></table></div>';
   var disc = '<div class="tablewrap"><table class="t gd-table"><thead><tr><th>질문 기간</th><th>흔히 묻는 내용</th><th>예시</th></tr></thead><tbody>' +
     tr('최근 3개월', '진찰·검사·치료·투약(건강검진 포함)', '감기약 처방, 검진에서 위염 소견') +
