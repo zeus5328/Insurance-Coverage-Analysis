@@ -2102,6 +2102,8 @@ function saveLabel() {
 var ui = { view: 'work', wsub: 'home', calMonth: '', calDay: '', bdMonth: 0, evDate: '', evTime: '', evTitle: '', evType: '상담', evCid: '', tkTitle: '', tkDue: '', tkCid: '', lsub: 'list', nq: '', nMethod: '', ndDate: '', ndMethod: '전화', ndText: '', ndNext: '', pdfCand: {}, pdfBusy: {}, cid: null, tab: 'info', sub: 'display', csub: 'staff', isub: 'all', q: '', cq: '', iq: '', insFilter: '', filter: '', sort: 'name', armed: null, paste: {}, openPol: {} };
 
 var collator = (typeof Intl !== 'undefined' && Intl.Collator) ? new Intl.Collator('ko', { numeric: true, sensitivity: 'base' }) : null;
+// 가구 목록 가나다 순 (방금 만든 가구는 이름을 정할 수 있게 맨 위) (2026-11-04)
+function hhSorted() { var nw = ui.hhNew; return (store.settings.households || []).slice().sort(function (a, b) { return (b.id === nw) - (a.id === nw) || byName(a, b); }); }
 function byName(a, b) {
   var x = String(a.name || '').trim(), y = String(b.name || '').trim();
   if (!x && y) return 1;
@@ -2183,6 +2185,7 @@ function render() {
   var notice = site.notice ? '<div class="notice" role="alert">' + esc(site.notice) + '</div>' : '';
   if (isOffNow()) notice = '<div class="info offline-bar" role="status"><b>오프라인</b> · 인터넷에 연결되어 있지 않습니다. 바꾼 내용은 이 기기에 저장되고, 연결되면 서버에 자동으로 올라갑니다.</div>' + notice;
   if (ui.view === 'list' && site.localExtra && site.localExtra.length) notice += '<div class="notice" role="alert"><b>이 브라우저에만 저장된 고객 ' + site.localExtra.length + '명</b>이 있습니다 (' + esc(site.localExtra.map(function (c) { return c.name; }).slice(0, 5).join(', ')) + (site.localExtra.length > 5 ? ' 외' : '') + ').' + (cloud.on ? ' 내 계정으로 옮기면 다른 기기에서도 보입니다. 다른 FC의 고객이면 옮기지 마세요.' : ' 사이트로 옮겨야 다른 기기에서도 보입니다.') + '<div class="row" style="margin-top:8px"><button class="btn primary sm" data-act="moveLocal">' + (cloud.on ? '내 계정으로 옮기기' : '사이트로 옮기기') + '</button>' + (cloud.on ? '<button class="btn sm" data-act="skipLocal">옮기지 않기</button>' : '') + '</div></div>';
+  if (ui.hhNew && !(ui.view === 'list' && ui.lsub === 'family')) ui.hhNew = ''; // 가족 화면을 벗어나면 새 가구도 가나다 자리로
   var page = ui.view === 'work' ? renderWork() : ui.view === 'office' ? renderOffice() : ui.view === 'settings' ? renderSettings() : ui.view === 'customer' ? renderCustomer() : ui.view === 'insurance' ? renderInsurance() : (ui.lsub && ui.lsub !== 'list' ? renderListSub() : renderList());
   app.innerHTML = renderTop() + '<main class="main page-' + ui.view + '">' + notice + page + '</main>' + printModalHtml() + detailModalHtml();
   try { autoFold(); } catch (e) {}
@@ -2668,7 +2671,7 @@ function renderInfo(c) {
     lbl('주소', f('cust', 'address', c.address, { ph: '예: 고양시 일산동구 정발산로 24' }), 'span2') +
     lbl('월소득 (만원)', f('cust', 'income', c.income, { type: 'num', ph: '예: 450' })) +
     lbl('자녀 수', f('cust', 'children', c.children, { type: 'num' })) +
-    lbl('가구', f('cust', 'householdId', c.householdId || '', { type: 'select', options: [['', '없음']].concat(store.settings.households.map(function (h) { return [h.id, h.name || '이름 없는 가구']; })).concat([['__new', '+ 새 가구 만들기']]) })) +
+    lbl('가구', f('cust', 'householdId', c.householdId || '', { type: 'select', options: [['', '없음']].concat(hhSorted().map(function (h) { return [h.id, h.name || '이름 없는 가구']; })).concat([['__new', '+ 새 가구 만들기']]) })) +
     (c.householdId ? lbl('가구 내 관계', f('cust', 'relation', c.relation || '', { type: 'select', options: REL_OPTS })) : '') +
     '</div><div class="row checks">' +
     '<label class="check">' + f('cust', 'spouse', c.spouse, { type: 'check' }) + ' 배우자 있음</label>' +
@@ -4986,7 +4989,7 @@ function famCell(an, code) {
   return '<span class="fam-amt num">' + amt + '</span><span class="pill v-' + r.verdict + '">' + tag + '</span>';
 }
 function renderFamily() {
-  var H = store.settings.households, q = norm(ui.hq);
+  var H = hhSorted(), q = norm(ui.hq);
   ui.hhOpen = ui.hhOpen || {};
   var memOf = function (h) {
     return store.customers.filter(function (c) { return c.householdId === h.id; }).sort(function (a, b) {
@@ -6186,8 +6189,8 @@ function doAction(el) {
       if (ui.armed === 'delN:' + id) { var c4 = custById(el.dataset.pid); if (c4) { c4.notes = c4.notes.filter(function (x) { return x.id !== id; }); stampCustomer(c4); save(); } }
       else { ui.armed = 'delN:' + id; keepArm = true; }
       break;
-    case 'addHousehold': { var nh = { id: uid(), name: '새 가구 ' + (store.settings.households.length + 1) }; store.settings.households.unshift(nh); ui.hhOpen = ui.hhOpen || {}; ui.hhOpen[nh.id] = true; save(); toast('가구를 만들었습니다. 이름을 바꾸고 구성원을 추가하세요'); break; }
-    case 'hhToggle': ui.hhOpen = ui.hhOpen || {}; ui.hhOpen[id] = !ui.hhOpen[id]; break;
+    case 'addHousehold': { var nh = { id: uid(), name: '새 가구 ' + (store.settings.households.length + 1) }; store.settings.households.unshift(nh); ui.hhNew = nh.id; ui.hhOpen = ui.hhOpen || {}; ui.hhOpen[nh.id] = true; save(); toast('가구를 만들었습니다. 이름을 바꾸고 구성원을 추가하세요'); break; }
+    case 'hhToggle': ui.hhOpen = ui.hhOpen || {}; ui.hhOpen[id] = !ui.hhOpen[id]; if (!ui.hhOpen[id] && ui.hhNew === id) ui.hhNew = ''; break;
     case 'hhAll': ui.hhOpen = ui.hhOpen || {}; store.settings.households.forEach(function (h) { ui.hhOpen[h.id] = id === '1'; }); break;
     case 'hhRemove': { var rc = custById(id); if (rc) { rc.householdId = ''; rc.relation = ''; stampCustomer(rc); save(); toast((rc.name || '고객') + '님을 가구에서 뺐습니다'); } break; }
     case 'hhNewCust': {
