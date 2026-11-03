@@ -1400,6 +1400,17 @@ button.cal-btn { padding: 0; color: var(--ink-2); cursor: pointer; }
   .doc { border: none; padding: 0; max-width: none; }
   .doc section { break-inside: avoid; }
 }
+/* 2026-11-03 스타일 통일: 패널 머리줄은 좁으면 줄바꿈, 패널 머리줄 검색칸은 작은 버튼 높이, 구간 버튼(seg) 기본 크기 통일, 긴 안내 문구 줄바꿈 */
+.panel > .row.between { flex-wrap: wrap; row-gap: 8px; }
+.panel > .row.between > .row { flex-wrap: wrap; }
+.panel > .row.between input.mini-search { padding-top: 5px; padding-bottom: 5px; font-size: 13px; }
+.seg-btn { font-size: 13px; padding: 5px 12px; }
+.field-hint, .kind-help, p.muted { overflow-wrap: anywhere; }
+.field > span.field-hint, .field > .field-hint { white-space: normal; }
+.k-nt { background: #FBE7DA; color: #9A4510; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .k-nt { background: rgba(217,103,30,.22); color: #F2B08A; } }
+:root[data-theme="dark"] .k-nt { background: rgba(217,103,30,.22); color: #F2B08A; }
+.nt-sched .edu-body .nt-body { margin: 0 0 8px; white-space: normal; }
 </style>
 </head>
 <body>
@@ -2081,7 +2092,8 @@ function render() {
 var STEPS = [['info', '고객 정보'], ['policies', '계약 입력'], ['analysis', '보장분석'], ['plan', '정리·설계'], ['proposal', '제안서']];
 var SETTING_SUBS = [['display', '화면 설정'], ['me', '내 정보'], ['rules', '분석 기준'], ['dict', '담보 사전'], ['products', '상품 관리'], ['data', '자료 관리']];
 var WORK_SUBS = [['home', '오늘'], ['calendar', '일정'], ['tasks', '할 일'], ['birthday', '생일'], ['anniv', '기념일'], ['gifts', '선물'], ['stats', '실적'], ['comm', '수수료']];
-var OFFICE_SUBS = [['notice', '공지'], ['schedule', '지점 일정'], ['staff', '직원 연락처'], ['sbd', '직원 생일'], ['branch', '지점·사업단']];
+var OFFICE_SUBS = [['notice', '공지'], ['schedule', '일정'], ['staff', '연락처'], ['sbd', '생일'], ['branch', '지점·사업단']];
+var OFFICE_TITLES = { schedule: '지점 일정', staff: '직원 연락처', sbd: '직원 생일' }; // 메뉴 이름은 짧게, 화면 제목은 그대로
 function officeSubs() { return team.info ? OFFICE_SUBS.concat([['team', '팀 현황']]) : OFFICE_SUBS; }
 var LIST_SUBS = [['list', '고객목록'], ['contacts', '연락처'], ['family', '가족·가구'], ['notes', '상담 기록'], ['props', '제안 기록'], ['care', '관리 필요']];
 var INS_SUBS = [['all', '장기'], ['auto', '자동차'], ['fire', '화재'], ['drv', '운전자'], ['insurer', '연락처'], ['guide', '가이드']];
@@ -2558,7 +2570,7 @@ function renderPolicies(c) {
   var anyOpen = c.policies.some(polOpen);
   return '<section class="panel"><div class="row between"><h2>기존 계약 ' + c.policies.length + '건</h2><div class="row">' +
     (c.policies.length > 1 ? '<button class="btn ghost sm" data-act="allPol" data-id="' + (anyOpen ? '0' : '1') + '">' + (anyOpen ? '모두 접기' : '모두 펼치기') + '</button>' : '') +
-    '<button class="btn primary" data-act="addPolicy" title="계약 추가">+ 추가</button></div></div>' +
+    '<button class="btn primary sm" data-act="addPolicy" title="계약 추가">+ 추가</button></div></div>' +
     '<div class="info">담보명은 증권에 적힌 그대로 입력하세요. 아는 담보명은 표준담보로 자동 연결되고, 처음 보는 담보만 <b>표준담보</b>를 한 번 골라 주면 다음부터 자동으로 연결됩니다.' +
     '<div class="info-links">고객 가입내역 확인: <a href="https://www.credit4u.or.kr" target="_blank" rel="noopener noreferrer">내보험다보여</a> (보장 내역·실손 중복) · <a href="https://cont.insure.or.kr" target="_blank" rel="noopener noreferrer">내보험찾아줌</a> (계약 상태·숨은 보험금) — 고객 본인 인증으로 조회합니다.</div></div>' +
     (cards || '<div class="empty"><strong>입력된 계약이 없습니다</strong><span>증권을 보며 계약을 하나씩 추가하세요.</span></div>') + '</section>' + custNonLifePanel(c);
@@ -3628,7 +3640,7 @@ function insurerTable() {
 function insurerPanel() {
   var s = store.settings, body = '';
   {
-    body = '<section class="panel"><div class="row between"><h2>보험사 ' + s.contacts.insurers.length + '곳</h2><div class="row"><button class="btn" data-act="assocInsurers" title="생명보험협회·손해보험협회 공개 자료로 빈 칸을 채우고, 협회 자료로 넣었던 칸은 새 자료로 바꿉니다. 직접 고친 칸은 그대로 둡니다">협회 번호로 채우기</button><button class="btn" data-act="pullInsurers">계약에 있는 보험사 불러오기</button><button class="btn primary" data-act="addInsurer">+ 추가</button></div></div>' +
+    body = '<section class="panel"><div class="row between"><h2>보험사 ' + s.contacts.insurers.length + '곳</h2><div class="row"><button class="btn sm" data-act="assocInsurers" title="생명보험협회·손해보험협회 공개 자료로 빈 칸을 채우고, 협회 자료로 넣었던 칸은 새 자료로 바꿉니다. 직접 고친 칸은 그대로 둡니다">협회 번호로 채우기</button><button class="btn sm" data-act="pullInsurers">계약에 있는 보험사 불러오기</button><button class="btn primary sm" data-act="addInsurer">+ 추가</button></div></div>' +
       '<div class="info">고객센터 번호와 주소는 생명보험협회·손해보험협회 회원사 안내에 공개된 내용으로 채웠습니다(2026년 11월 확인). 보상·사고 접수 번호와 담당자는 증권이나 보험사 홈페이지에서 확인해 넣으세요. 번호가 바뀔 수 있으니 중요한 연락 전에는 보험사 홈페이지에서 한 번 더 확인하세요. 직접 고친 칸은 "협회 번호로 채우기"를 눌러도 바뀌지 않습니다.</div>' +
       '<div class="ins-tools"><input type="search" id="icq" class="mini-search" placeholder="보험사·담당자·번호 검색" value="' + attr(ui.icq) + '" aria-label="보험사 검색">' +
         '<select data-scope="ui" data-k="icKind" id="ui-icKind" aria-label="구분">' + [['', '전체'], ['생명', '생명보험'], ['손해', '손해보험'], ['공제', '공제'], ['기타', '기타']].map(function (o) { return '<option value="' + o[0] + '"' + sel(ui.icKind || '', o[0]) + '>' + o[1] + '</option>'; }).join('') + '</select>' +
@@ -3858,7 +3870,7 @@ function custNonLifePanel(c) {
   var row = function (kind, a, label, sub) { var d = daysUntil(a.end), tone = kind === 'auto' ? autoTone(a) : fireTone(a);
     return '<li class="row-dbl nl-row" data-dbl="' + kind + ':' + c.id + ':' + a.id + '" tabindex="0" title="두 번 누르면 상세 보기·수정"><span class="kchip ' + (kind === 'auto' ? 'k-ev' : 'k-tk') + '">' + (kind === 'auto' ? '자동차' : '화재') + '</span><b>' + esc(label) + '</b><span class="muted">' + esc(sub) + '</span>' +
       '<span class="chip' + (d != null && d <= 30 ? ' warn' : '') + '">' + (d == null ? '–' : d < 0 ? (-d) + '일 지남' : '만기 ' + dLabel(d)) + '</span><span class="chip ' + (tone === 'ok' ? 'ok-chip' : 'warn') + '">' + (tone === 'ok' ? '양호' : '점검') + '</span></li>'; };
-  return '<section class="panel"><div class="row between"><h2>자동차·화재보험 <span class="muted num">' + (au.length + fi.length) + '</span></h2><div class="row" style="gap:6px"><button class="btn sm" data-act="custAddAuto" data-id="' + c.id + '">+ 자동차보험</button><button class="btn sm" data-act="custAddFire" data-id="' + c.id + '">+ 화재보험</button></div></div>' +
+  return '<section class="panel"><div class="row between"><h2>자동차·화재보험 <span class="muted num">' + (au.length + fi.length) + '</span></h2><div class="row" style="gap:6px"><button class="btn primary sm" data-act="custAddAuto" data-id="' + c.id + '">+ 자동차보험</button><button class="btn primary sm" data-act="custAddFire" data-id="' + c.id + '">+ 화재보험</button></div></div>' +
     (au.length + fi.length ? '<ul class="nl-list">' + au.map(function (a) { return row('auto', a, autoLabel(a), [a.insurer, a.driver, num(a.premium) ? wonText(a.premium) : ''].filter(Boolean).join(' · ')); }).join('') +
       fi.map(function (a) { return row('fire', a, fireLabel(a), [a.insurer, String(a.role || '').replace(/ \(.*\)$/, ''), num(a.premium) ? wonText(a.premium) + ' ' + (a.cycle || '') : ''].filter(Boolean).join(' · ')); }).join('') + '</ul>'
       : '<p class="muted" style="margin:0">이 고객의 자동차·화재보험이 없습니다. 위 버튼으로 바로 추가하세요.</p>') + '</section>';
@@ -3909,7 +3921,7 @@ function polViewTabs(kind) {
 function annualPrem(kind, a) { return kind === 'fire' ? (a.cycle === '월납' ? num(a.premium) * 12 : num(a.premium)) : num(a.premium); }
 function polGroupPanel(kind, by) {
   var list = kind === 'auto' ? allAutos() : allFires(), tone = kind === 'auto' ? autoTone : fireTone, unit = kind === 'auto' ? '대' : '건', what = kind === 'auto' ? '차량' : '물건';
-  if (!list.length) return '<section class="panel"><div class="empty"><strong>아직 입력한 ' + (kind === 'auto' ? '자동차보험' : '화재보험') + '이 없습니다</strong><span>"전체 계약"에서 "+ 입력"으로 넣으면 ' + (by === 'ins' ? '보험사별' : '계약자별') + '로 모아 보여 줍니다.</span></div></section>';
+  if (!list.length) return '<section class="panel"><div class="empty"><strong>아직 입력한 ' + (kind === 'auto' ? '자동차보험' : '화재보험') + '이 없습니다</strong><span>"전체 계약"에서 "+ 추가"으로 넣으면 ' + (by === 'ins' ? '보험사별' : '계약자별') + '로 모아 보여 줍니다.</span></div></section>';
   var g = {}, tot = 0;
   list.forEach(function (x) {
     var key = by === 'ins' ? (String(x.a.insurer || '').trim() || '보험사 미입력') : x.c.id, pr = annualPrem(kind, x.a), d = daysUntil(x.a.end);
@@ -4091,9 +4103,9 @@ function renderAutoPage() {
       '<td data-l="만기"><span class="chip' + (d != null && d < 0 ? ' warn' : d != null && d <= 30 ? ' warn' : '') + '">' + (d == null ? '–' : d < 0 ? (-d) + '일 지남' : dLabel(d)) + '</span></td>' +
       '<td data-l="운전자">' + esc(a.driver || '') + '<br><small class="muted">' + esc(a.minAge || '') + '</small></td><td class="r num" data-l="연 보험료">' + (num(a.premium) ? fmtWon(a.premium) : '<span class="muted">–</span>') + '</td>' +
       '<td data-l="점검"><span class="chip ' + (tone === 'ok' ? 'ok-chip' : 'warn') + '">' + (tone === 'ok' ? '양호' : '확인 ' + ch) + '</span></td></tr>';
-  }).join('') + '</tbody></table></div>' : '<div class="empty"><strong>' + (list.length ? '조건에 맞는 가입이 없습니다' : '아직 입력한 자동차보험이 없습니다') + '</strong><span>' + (list.length ? '위 숫자 칸을 다시 눌러 거르기를 푸세요.' : '"+ 입력"으로 고객의 자동차보험을 넣으면 만기·담보 점검을 여기서 관리합니다.') + '</span></div>';
+  }).join('') + '</tbody></table></div>' : '<div class="empty"><strong>' + (list.length ? '조건에 맞는 가입이 없습니다' : '아직 입력한 자동차보험이 없습니다') + '</strong><span>' + (list.length ? '위 숫자 칸을 다시 눌러 거르기를 푸세요.' : '"+ 추가"으로 고객의 자동차보험을 넣으면 만기·담보 점검을 여기서 관리합니다.') + '</span></div>';
   return kpis + '<section class="panel"><div class="row between"><h2>자동차보험 가입 ' + list.length + '건</h2><div class="row" style="gap:6px"><input type="search" id="aq" class="mini-search" placeholder="고객·차량번호·보험사" value="' + attr(ui.aq || '') + '" aria-label="자동차보험 검색">' +
-    '<button class="btn ' + (ui.autoOpen ? '' : 'primary ') + 'sm" data-act="toggleBox" data-id="autoOpen" aria-expanded="' + !!ui.autoOpen + '">' + (ui.autoOpen ? '닫기' : '+ 입력') + '</button></div></div>' + addBox +
+    '<button class="btn ' + (ui.autoOpen ? '' : 'primary ') + 'sm" data-act="toggleBox" data-id="autoOpen" aria-expanded="' + !!ui.autoOpen + '">' + (ui.autoOpen ? '닫기' : '+ 추가') + '</button></div></div>' + addBox +
     '<div id="aqWrap">' + table + '</div><p class="muted" style="margin:0">줄을 두 번 누르면 담보·특약을 고칠 수 있습니다. 만기 30일 안 가입은 업무 → 오늘의 "갱신·납입 완료 예정"에도 나옵니다.</p></section>' + autoGuide();
 }
 function autoGuide() {
@@ -4238,9 +4250,9 @@ function renderFirePage() {
       '<td class="r num" data-l="건물 / 가재·집기">' + (num(a.bldAmt) ? fmtMan(a.bldAmt) : '–') + ' / ' + (num(a.contAmt) + num(a.stockAmt) ? fmtMan(num(a.contAmt) + num(a.stockAmt)) : '–') + '</td>' +
       '<td class="r num" data-l="보험료">' + (num(a.premium) ? fmtWon(a.premium) + '<br><small class="muted">' + esc(a.cycle || '') + '</small>' : '<span class="muted">–</span>') + '</td>' +
       '<td data-l="점검"><span class="chip ' + (tone === 'ok' ? 'ok-chip' : 'warn') + '">' + (tone === 'ok' ? '양호' : '확인 ' + ch) + '</span></td></tr>';
-  }).join('') + '</tbody></table></div>' : '<div class="empty"><strong>' + (list.length ? '조건에 맞는 가입이 없습니다' : '아직 입력한 화재보험이 없습니다') + '</strong><span>' + (list.length ? '위 숫자 칸을 다시 눌러 거르기를 푸세요.' : '"+ 입력"으로 고객의 화재보험을 넣으면 만기·의무보험·담보 점검을 여기서 관리합니다.') + '</span></div>';
+  }).join('') + '</tbody></table></div>' : '<div class="empty"><strong>' + (list.length ? '조건에 맞는 가입이 없습니다' : '아직 입력한 화재보험이 없습니다') + '</strong><span>' + (list.length ? '위 숫자 칸을 다시 눌러 거르기를 푸세요.' : '"+ 추가"으로 고객의 화재보험을 넣으면 만기·의무보험·담보 점검을 여기서 관리합니다.') + '</span></div>';
   return kpis + '<section class="panel"><div class="row between"><h2>화재보험 가입 ' + list.length + '건</h2><div class="row" style="gap:6px"><input type="search" id="fq" class="mini-search" placeholder="고객·주소·보험사" value="' + attr(ui.fq || '') + '" aria-label="화재보험 검색">' +
-    '<button class="btn ' + (ui.fireOpen ? '' : 'primary ') + 'sm" data-act="toggleBox" data-id="fireOpen" aria-expanded="' + !!ui.fireOpen + '">' + (ui.fireOpen ? '닫기' : '+ 입력') + '</button></div></div>' + addBox +
+    '<button class="btn ' + (ui.fireOpen ? '' : 'primary ') + 'sm" data-act="toggleBox" data-id="fireOpen" aria-expanded="' + !!ui.fireOpen + '">' + (ui.fireOpen ? '닫기' : '+ 추가') + '</button></div></div>' + addBox +
     '<div id="fqWrap">' + table + '</div><p class="muted" style="margin:0">줄을 두 번 누르면 가입금액·특약을 고칠 수 있습니다. 만기 30일 안 가입은 업무 → 오늘의 "갱신·납입 완료 예정"에도 나옵니다.</p></section>' + fireGuide();
 }
 function fireGuide() {
@@ -4330,7 +4342,7 @@ function productsPanel() {
     cards.forEach(function (h) { if (h.indexOf('<!--closed-->') === 0) bufP += h.slice(13); else { if (bufP) { outP += '<div class="prod-list">' + bufP + '</div>'; bufP = ''; } outP += h; } });
     if (bufP) outP += '<div class="prod-list">' + bufP + '</div>';
     cards = outP;
-    body = '<section class="panel"><div class="row between"><h2>자주 제안하는 상품 ' + store.settings.products.length + '개</h2><div class="row" style="gap:6px"><input type="search" id="pq" class="mini-search" placeholder="보험사·상품·담보 검색" value="' + attr(ui.pq || '') + '" aria-label="상품 검색"><button class="btn" data-act="seedProds" title="지운 참고 상품을 다시 넣습니다(이미 있는 상품은 그대로)">참고 상품 다시 넣기</button><button class="btn primary" data-act="addProd">+ 추가</button></div></div>' +
+    body = '<section class="panel"><div class="row between"><h2>자주 제안하는 상품 ' + store.settings.products.length + '개</h2><div class="row" style="gap:6px"><input type="search" id="pq" class="mini-search" placeholder="보험사·상품·담보 검색" value="' + attr(ui.pq || '') + '" aria-label="상품 검색"><button class="btn sm" data-act="seedProds" title="지운 참고 상품을 다시 넣습니다(이미 있는 상품은 그대로)">참고 상품 다시 넣기</button><button class="btn primary sm" data-act="addProd">+ 추가</button></div></div>' +
       '<div class="info">상품과 담보·보험료를 등록해 두면 고객 상세 → 정리·설계 → 신규 설계에서 "상품 불러오기"로 한 번에 넣을 수 있습니다. <b>참고 상품</b>은 보험저널 "2025 올해의 보험상품" 등 공개 자료에 나온 현장 인기 상품입니다. 상품명만 실제이고 담보·금액은 그 상품군에서 흔한 예시 구성이므로, 실제 가입설계서를 보고 담보·금액·보험료를 고쳐 쓰세요. 쓰지 않는 상품은 지우면 됩니다.</div>' +
       (cards || '<div class="empty"><strong>등록한 상품이 없습니다</strong></div>') + '</section>';
   return body;
@@ -4893,15 +4905,30 @@ function orgSchedulePanel() {
   var t = today(), all = orgEvents().slice().sort(function (a, b) { return (a.date + (a.time || '')).localeCompare(b.date + (b.time || '')); });
   var staff = store.settings.contacts.staff.slice().sort(function (a, b) { return (STAFF_ROLES.indexOf(a.role) + 99) % 99 - (STAFF_ROLES.indexOf(b.role) + 99) % 99 || byName(a, b); });
   var F = ui.orgF || '', T = ui.orgT || '', up = all.filter(function (e) { return e.date >= t; }), past = all.filter(function (e) { return e.date < t; }).reverse();
-  var list = (F === 'past' ? past : up).filter(function (e) { return !T || e.type === T; });
+  // 지점 공지도 함께 표시: 게시 중인 공지는 '다가오는 일정'에, 게시가 끝난 공지는 '지난 일정'에 (공지 날짜 기준)
+  var nts = noticeList().filter(function (n) { return n.date; }).map(function (n) { return { nt: n, id: 'nt:' + n.id, date: n.date, time: '', type: '공지' }; });
+  if (team.info && team.notices && team.notices.length) { var TRd = teamNoticeRead(); team.notices.forEach(function (n) { if (n.date) nts.push({ nt: { id: n.id, date: n.date, title: n.title, body: n.body, cat: n.cat, imp: n.imp, pin: n.pin, until: n.until, read: !!TRd[n.id], author: n.author_name }, tm: true, id: 'tn:' + n.id, date: n.date, time: '', type: '공지' }); }); }
+  var ntUp = nts.filter(function (x) { return x.date >= t || noticeActive(x.nt); }), ntPast = nts.filter(function (x) { return x.date < t && !noticeActive(x.nt); });
+  var byDT = function (a, b) { return (a.date + (a.time || '')).localeCompare(b.date + (b.time || '')); };
+  var upAll = up.concat(ntUp).sort(byDT), pastAll = past.concat(ntPast).sort(byDT).reverse();
+  var list = (F === 'past' ? pastAll : upAll).filter(function (e) { return !T || e.type === T; });
   var week = up.filter(function (e) { var d = daysUntil(e.date); return d != null && d <= 7; }).length, next = up.filter(function (e) { return !T || e.type === T; })[0];
-  var cntT = {}; (F === 'past' ? past : up).forEach(function (e) { cntT[e.type] = (cntT[e.type] || 0) + 1; });
-  var chips = '<div class="todos">' + [['', '다가오는 일정 ' + up.length], ['past', '지난 일정 ' + past.length]].map(function (o) { return '<button class="todo' + (F === o[0] ? ' on' : '') + '" data-act="orgF" data-id="' + o[0] + '">' + o[1] + '</button>'; }).join('') +
-    '<span class="org-sep"></span>' + [''].concat(ORG_TYPES).filter(function (x) { return !x || cntT[x] || T === x; }).map(function (x) { return '<button class="todo' + (T === x ? ' on' : '') + '" data-act="orgT" data-id="' + x + '">' + (x || '전체') + (x && cntT[x] ? ' <b>' + cntT[x] + '</b>' : '') + '</button>'; }).join('') + '</div>';
+  var cntT = {}; (F === 'past' ? pastAll : upAll).forEach(function (e) { cntT[e.type] = (cntT[e.type] || 0) + 1; });
+  var chips = '<div class="todos">' + [['', '다가오는 일정 ' + upAll.length], ['past', '지난 일정 ' + pastAll.length]].map(function (o) { return '<button class="todo' + (F === o[0] ? ' on' : '') + '" data-act="orgF" data-id="' + o[0] + '">' + o[1] + '</button>'; }).join('') +
+    '<span class="org-sep"></span>' + [''].concat(ORG_TYPES, ['공지']).filter(function (x) { return !x || cntT[x] || T === x; }).map(function (x) { return '<button class="todo' + (T === x ? ' on' : '') + '" data-act="orgT" data-id="' + x + '">' + (x || '전체') + (x && cntT[x] ? ' <b>' + cntT[x] + '</b>' : '') + '</button>'; }).join('') + '</div>';
   var lastM = '', openId = ui.eduOpenId === '-' ? '' : (ui.eduOpenId || (F !== 'past' && next ? next.id : ''));
   var cards = list.slice(0, 200).map(function (e) {
     var m = e.date.slice(0, 7), head = '';
     if (m !== lastM) { lastM = m; head = '<div class="org-month">' + Number(m.slice(0, 4)) + '년 ' + Number(m.slice(5)) + '월</div>'; }
+    if (e.nt) {
+      var ntc = e.nt, nOpen = openId === e.id, nAct = noticeActive(ntc), nb = String(ntc.body || '');
+      return head + '<div class="edu-card nt-sched' + (nOpen ? ' open' : '') + (nAct ? '' : ' past') + '"><button class="edu-head" data-act="eduToggle" data-id="' + e.id + '" aria-expanded="' + nOpen + '">' +
+        '<span class="org-date num"><b>' + Number(e.date.slice(5, 7)) + '.' + Number(e.date.slice(8, 10)) + '</b> <small>(' + orgWd(e.date) + ')</small></span><span class="org-time num">공지</span>' +
+        '<span class="kchip k-nt">' + (e.tm ? '팀 공지' : esc(ntc.cat || '공지')) + '</span><span class="edu-title">' + (ntc.pin ? '📌 ' : '') + '<b>' + esc(ntc.title || '제목 없음') + '</b>' + (ntc.imp ? ' <span class="chip warn">중요</span>' : '') + (ntc.read ? '' : ' <span class="nt-new">새 글</span>') + '</span>' +
+        '<span class="edu-count">' + (ntc.until ? '게시 끝 <b class="num">' + Number(ntc.until.slice(5, 7)) + '.' + Number(ntc.until.slice(8, 10)) + '</b>' : (nAct ? '게시 중' : '')) + '</span><span class="chev">' + (nOpen ? '▾' : '▸') + '</span></button>' +
+        (nOpen ? '<div class="edu-body">' + (nb ? '<p class="nt-body">' + esc(nb).replace(/\n/g, '<br>') + '</p>' : '<p class="muted" style="margin:0">내용이 없습니다.</p>') +
+          '<div class="row edu-actions">' + (e.tm && ntc.author ? '<span class="muted">' + esc(ntc.author) + ' · 팀 공지</span>' : '') + '<span class="spacer"></span><button class="btn ghost sm" data-act="' + (e.tm ? 'tnRead' : 'ntRead') + '" data-id="' + ntc.id + '">' + (ntc.read ? '안 읽음으로' : '읽음') + '</button>' + (e.tm ? '' : '<button class="btn sm" data-act="openNotice" data-id="' + ntc.id + '">공지 수정</button>') + '<button class="btn ghost sm" data-act="goOffice" data-id="notice">공지에서 보기</button></div></div>' : '') + '</div>';
+    }
     var a = e.att || {}, n = eduAttCount(e), d = daysUntil(e.date), open = openId === e.id, del = ui.armed === 'delOrg:' + e.id;
     var who = staff.map(function (x) { var on = !!a[x.id]; return '<label class="chk-chip' + (on ? ' on' : '') + '"><input type="checkbox" data-act="eduAtt" data-pid="' + e.id + '" data-id="' + x.id + '"' + (on ? ' checked' : '') + '>' + esc(x.name || '이름 없음') + (x.role ? ' <small class="muted">' + esc(x.role) + '</small>' : '') + '</label>'; }).join('');
     var names = staff.filter(function (x) { return a[x.id]; }).map(function (x) { return x.name || '이름 없음'; });
@@ -4919,8 +4946,8 @@ function orgSchedulePanel() {
     '<div class="kpi" style="cursor:default"><span class="k">다음 일정' + (T ? ' (' + esc(T) + ')' : '') + '</span><span class="v" style="font-size:15px">' + (next ? Number(next.date.slice(5, 7)) + '.' + Number(next.date.slice(8, 10)) + ' ' + esc(next.title) + ' <small>참석 ' + eduAttCount(next) + '/' + staff.length + '</small>' : '없음') + '</span></div>' +
     '<button class="kpi" data-act="goWork" data-id="calendar"><span class="k">업무 → 일정 달력</span><span class="v" style="font-size:15px">달력에서 보기 ›</span></button></div>' +
     '<section class="panel"><div class="row between"><h2>지점 일정</h2><button class="btn primary sm" data-act="orgNew" data-id="' + attr(T || '조회') + '">+ 추가</button></div>' + chips +
-    (cards ? '<div class="edu-list">' + cards + '</div>' : '<div class="empty"><strong>' + (F === 'past' ? '지난 지점 일정이 없습니다' : '다가오는 지점 일정이 없습니다') + '</strong><span>"+ 추가"로 조회·회의·교육·시상·회식 일정을 넣으세요.</span></div>') +
-    '<p class="muted" style="margin:0">일정을 누르면 펼쳐져 직원 참석을 체크하고(바로 저장), 일정 수정·삭제를 할 수 있습니다. 가장 가까운 일정은 자동으로 펼쳐집니다. 지점 일정은 업무 → 일정 달력에도 함께 보입니다.</p></section>';
+    (cards ? '<div class="edu-list">' + cards + '</div>' : '<div class="empty"><strong>' + (F === 'past' ? '지난 지점 일정이 없습니다' : '다가오는 지점 일정이 없습니다') + '</strong><span>"+ 추가"로 조회·회의·교육·시상·회식 일정을 넣으세요. 지점 → 공지에 쓴 공지도 여기에 함께 보입니다.</span></div>') +
+    '<p class="muted" style="margin:0">일정을 누르면 펼쳐져 직원 참석을 체크하고(바로 저장), 일정 수정·삭제를 할 수 있습니다. 가장 가까운 일정은 자동으로 펼쳐집니다. 지점 → 공지의 공지도 공지 날짜에 함께 나오고(게시 중이면 다가오는 일정, 게시가 끝나면 지난 일정), 누르면 내용을 보고 수정할 수 있습니다. 지점 일정은 업무 → 일정 달력에도 함께 보입니다.</p></section>';
 }
 // ===== 지점 → 공지: 지점 공지 메모 (FC 본인 계정에 저장) =====
 // settings.notices = [{ id, date, title, body, cat, imp(중요), pin(고정), until(게시 끝, 선택), read, sample? }]
@@ -5042,7 +5069,7 @@ function celebPanel() {
   var noBd = [store.customers.length - custs.length ? '고객 ' + (store.customers.length - custs.length) + '명' : '', store.settings.contacts.staff.length - staff.length ? '직원 ' + (store.settings.contacts.staff.length - staff.length) + '명' : ''].filter(Boolean).join(' · ');
   var monthH = '<section class="panel"><div class="row between"><h2>월별 ' + (T === 'bd' ? '생일' : T === 'an' ? '기념일' : '생일·기념일') + '</h2><div class="row" style="gap:6px"><button class="btn sm" data-act="annivNew">+ 기념일 추가</button><button class="btn primary sm" data-act="bdAdd" title="고객·직원·지인 생일 입력">+ 추가</button></div></div>' + tabs +
     (rows ? '<div class="tablewrap"><table class="t ctab an-table"><thead><tr><th>이름</th><th>구분</th><th>처음 날짜</th><th>올해 날짜</th><th>남은 날</th><th>나이·주년</th><th>상령일</th><th>연락처</th><th></th></tr></thead><tbody>' + rows + '</tbody></table></div>' : '<p class="muted" style="margin:0">' + m + '월에는 표시할 ' + (T === 'bd' ? '생일이' : '기념일이') + ' 없습니다.</p>') + miss +
-    '<p class="muted" style="margin:0">위에서 종류(전체·생일·기념일)와 대상(전체·고객·직원·외)을 고릅니다. 직원·지인·기념일 줄은 두 번 누르면 수정하고, 고객 생일은 고객 정보에서 바꿉니다. 음력은 해마다 양력 날짜로 계산합니다. 상령일(보험나이 +1)은 고객 생년월일 기준입니다.' + (noBd ? ' 생일 정보가 없는 ' + noBd + '은 표시되지 않습니다.' : '') + '</p></section>';
+    '<p class="muted" style="margin:0">위에서 종류(전체·생일·기념일)와 대상(전체·고객·직원 — 직원에는 지인·기타도 함께)을 고릅니다. 직원·지인·기념일 줄은 두 번 누르면 수정하고, 고객 생일은 고객 정보에서 바꿉니다. 음력은 해마다 양력 날짜로 계산합니다. 상령일(보험나이 +1)은 고객 생년월일 기준입니다.' + (noBd ? ' 생일 정보가 없는 ' + noBd + '은 표시되지 않습니다.' : '') + '</p></section>';
   var msgH = '<section class="panel"><h2>축하 문자 문구</h2><div class="grid-form dm-grid">' + lbl('생일 ({이름}, {FC})', f('param', 'bdMsg', store.settings.params.bdMsg, { type: 'textarea' })) + lbl('기념일 ({이름}, {기념일}, {FC})', f('param', 'anMsg', store.settings.params.anMsg || AN_MSG, { type: 'textarea' })) + '</div>' +
     '<p class="muted" style="margin:0">"축하 문자"를 누르면 휴대폰 문자 앱이 이 문구로 열립니다. 보내기는 FC가 직접 누릅니다.</p></section>';
   return upH + monthH + msgH;
@@ -5089,7 +5116,7 @@ function annivPanel() {
   }).join('');
   // 생일 화면과 같은 구조: 30일 안 기념일 → 월별 기념일 → 축하 문자 문구
   var up = A.map(function (a) { return { a: a, nx: annivNext(a) }; }).filter(function (o) { return o.nx && o.nx.days <= 30 && anShow(o.a); }).sort(function (a, b) { return a.nx.days - b.nx.days; });
-  var upH = '<section class="panel"><div class="row between"><h2>30일 안 기념일 ' + up.length + '건 <small class="muted">(고객 ' + up.filter(function (o) { return o.a.who === 'c'; }).length + ' · 직원 ' + up.filter(function (o) { return o.a.who === 's'; }).length + ' · 외 ' + up.filter(function (o) { return o.a.who !== 'c' && o.a.who !== 's'; }).length + ')</small></h2>' + whoSeg('anW', AW, [['', '전체', A.length], ['c', '고객', A.filter(function (a) { return a.who === 'c'; }).length], ['o', '직원·외', A.filter(function (a) { return a.who !== 'c'; }).length]]) + '</div>' +
+  var upH = '<section class="panel"><div class="row between"><h2>30일 안 기념일 ' + up.length + '건 <small class="muted">(고객 ' + up.filter(function (o) { return o.a.who === 'c'; }).length + ' · 직원 ' + up.filter(function (o) { return o.a.who !== 'c'; }).length + ')</small></h2>' + whoSeg('anW', AW, [['', '전체', A.length], ['c', '고객', A.filter(function (a) { return a.who === 'c'; }).length], ['o', '직원', A.filter(function (a) { return a.who !== 'c'; }).length]]) + '</div>' +
     (up.length ? '<ul class="wlist">' + foldCut(up, 5, 'anUpMore').map(function (o) {
       var a = o.a, c = a.who === 'c' ? custById(a.cid) : null, st = a.who === 's' ? store.settings.contacts.staff.filter(function (y) { return y.id === a.sid; })[0] : null, phone = c ? c.phone : st ? st.phone : '', ph = String(phone || '').replace(/[^\d+]/g, '');
       var whoCls = a.who === 's' ? 'who-s">직원' : a.who === 'e' ? 'who-e">지인' : 'who-c">고객';
@@ -5226,7 +5253,7 @@ function eventForm(dateDefault) {
 function renderOffice() {
   if (ui.osub === 'dine' || ui.osub === 'edu') ui.osub = 'schedule'; // 예전 행사·참석체크 메뉴 → 지점 일정으로 합침
   var sub = ['notice', 'schedule', 'branch', 'staff', 'sbd'].indexOf(ui.osub) >= 0 || (ui.osub === 'team' && team.info) ? ui.osub : 'notice', body = sub === 'team' ? teamStatsPanel() : sub === 'notice' ? teamNoticeSection() + noticePanel() : sub === 'branch' ? branchPanel() : sub === 'staff' ? staffPanel() : sub === 'sbd' ? staffBdPanel() : orgSchedulePanel();
-  return subPage('지점', officeSubs(), sub, 'goOffice', '지점 메뉴', body);
+  return subPage('지점', officeSubs(), sub, 'goOffice', '지점 메뉴', body, OFFICE_TITLES);
 }
 function renderWork() {
   if (ui.booting) return '<div class="panel"><div class="empty"><strong>불러오는 중입니다…</strong></div></div>';
@@ -5339,6 +5366,7 @@ function autoFold() {
   main.querySelectorAll('table.t').forEach(function (tb) {
     if (tb.closest('.dmodal, details, .gd-table, .auto-guide') || tb.classList.contains('gd-table') || tb.classList.contains('auto-guide') || tb.classList.contains('no-fold')) return;
     var body = tb.tBodies[0]; if (!body) return;
+    var w0 = tb.closest('.tablewrap') || tb, n0 = w0.nextElementSibling; if (n0 && n0.classList.contains('more-btn')) return; // 자체 더보기·접기가 있는 표(생일·기념일 월별)는 두 번 접지 않음
     var rows = [].slice.call(body.rows), mainRows = rows.filter(function (r) { return !/drv-detail|br-form/.test(r.className); });
     var key = base + '|t' + (idx++);
     if (mainRows.length <= AUTOFOLD_TABLE) return;
@@ -5396,15 +5424,15 @@ function workBirthday() {
     .concat(staffWithBd().map(function (x) { return { s: x, nb: nextBirthday(x) }; }).filter(function (o) { return o.nb; }))
     .concat(friendsWithBd().map(function (x) { return { f: x, nb: nextBirthday(x) }; }).filter(function (o) { return o.nb; }))
     .filter(function (x) { return x.nb.days <= 30 && (x.c ? showC : x.s ? showS : showF); }).sort(function (a, b) { return a.nb.days - b.nb.days; });
-  return '<section class="panel"><div class="row between"><h2>30일 안 생일 ' + upcoming.length + '명 <small class="muted">(고객 ' + upcoming.filter(function (x) { return x.c; }).length + ' · 직원 ' + upcoming.filter(function (x) { return x.s; }).length + ' · 외 ' + upcoming.filter(function (x) { return x.f; }).length + ')</small></h2>' + whoSeg('bdW', W, [['', '전체', withBd.length + sWith.length + fWith.length], ['c', '고객', withBd.length], ['o', '직원·외', sWith.length + fWith.length]]) + '</div>' +
+  return '<section class="panel"><div class="row between"><h2>30일 안 생일 ' + upcoming.length + '명 <small class="muted">(고객 ' + upcoming.filter(function (x) { return x.c; }).length + ' · 직원 ' + upcoming.filter(function (x) { return !x.c; }).length + ')</small></h2>' + whoSeg('bdW', W, [['', '전체', withBd.length + sWith.length + fWith.length], ['c', '고객', withBd.length], ['o', '직원', sWith.length + fWith.length]]) + '</div>' +
     (upcoming.length ? '<ul class="wlist">' + foldCut(upcoming, 5, 'bdUpMore').map(function (x) {
       if (x.f) { var fph = String(x.f.phone || '').replace(/[^\d+]/g, ''); return '<li class="row-dbl" data-dbl="friend:' + x.f.id + '" tabindex="0" title="두 번 누르면 수정"><span class="kchip k-bd">' + dLabel(x.nb.days) + '</span><span class="who who-e">' + esc(x.f.rel || '지인') + '</span><span class="what">' + esc(x.f.name || '이름 없음') + ' · ' + Number(x.nb.date.slice(5, 7)) + '월 ' + Number(x.nb.date.slice(8, 10)) + '일' + (x.f.bdCal === 'lunar' ? ' (' + esc(bdDesc(x.f)) + ')' : '') + (x.f.memo ? ' · ' + esc(String(x.f.memo).slice(0, 20)) : '') + '</span>' + (fph ? '<a class="btn sm tel" href="sms:' + attr(fph) + '?body=' + encodeURIComponent(bdText({ name: x.f.name })) + '">축하 문자</a>' : '') + '<button class="btn ghost sm" data-act="openFriend" data-id="' + x.f.id + '">수정</button>' + '</li>'; }
       if (x.s) return '<li class="row-dbl" data-dbl="staff:' + x.s.id + '" tabindex="0" title="두 번 누르면 수정"><span class="kchip k-bd">' + dLabel(x.nb.days) + '</span><span class="who who-s">직원</span><span class="what">' + esc(x.s.name || '직원') + ' · ' + Number(x.nb.date.slice(5, 7)) + '월 ' + Number(x.nb.date.slice(8, 10)) + '일' + (x.s.bdCal === 'lunar' ? ' (' + esc(bdDesc(x.s)) + ')' : '') + (x.s.role || x.s.dept ? ' · ' + esc([x.s.role, x.s.dept].filter(Boolean).join(' · ')) : '') + '</span>' + (x.s.phone ? telLink(x.s.phone) : '') + '<button class="btn ghost sm" data-act="openStaffBd" data-id="' + x.s.id + '">수정</button>' + '</li>';
       return '<li class="row-dbl" data-dbl="custbd:' + x.c.id + '" tabindex="0" title="두 번 누르면 수정"><span class="kchip k-bd">' + dLabel(x.nb.days) + '</span><span class="who who-c">고객</span><span class="what">' + esc(x.c.name || '고객') + ' · ' + Number(x.nb.date.slice(5, 7)) + '월 ' + Number(x.nb.date.slice(8, 10)) + '일' + (x.c.bdCal === 'lunar' ? ' (' + esc(bdDesc(x.c)) + ')' : '') + (x.nb.age != null ? ' · 만 ' + x.nb.age + '세' : '') + '</span>' + custLink(x.c, 'info', '고객 보기') + (x.c.phone ? telLink(x.c.phone) : '') + '<button class="btn ghost sm" data-act="openCustBd" data-id="' + x.c.id + '">수정</button>' + '</li>'; }).join('') + '</ul>' + foldMore(upcoming, 5, 'bdUpMore', '명') : '<p class="muted" style="margin:0">30일 안에 생일인 고객·직원이 없습니다.</p>') + '</section>' +
     '<section class="panel"><div class="row between"><h2>월별 생일</h2><button class="btn primary sm" data-act="bdAdd" title="고객·직원·지인 생일 입력">+ 추가</button></div>' + tabs +
-    (rows ? '<div class="tablewrap"><table class="t ctab"><thead><tr><th>이름</th><th>실제 생일</th><th>올해 양력</th><th>남은 날</th><th>나이</th><th>상령일 (보험나이 +1)</th><th>연락처</th><th></th></tr></thead><tbody>' + rows + '</tbody></table></div>' + foldMore(list, 5, 'bdMonMore', '명') : '<p class="muted" style="margin:0">' + m + '월 생일인 ' + (W === 'c' ? '고객이' : W === 'o' ? '직원·외 사람이' : '사람이') + ' 없습니다.</p>') +
+    (rows ? '<div class="tablewrap"><table class="t ctab"><thead><tr><th>이름</th><th>실제 생일</th><th>올해 양력</th><th>남은 날</th><th>나이</th><th>상령일 (보험나이 +1)</th><th>연락처</th><th></th></tr></thead><tbody>' + rows + '</tbody></table></div>' + foldMore(list, 5, 'bdMonMore', '명') : '<p class="muted" style="margin:0">' + m + '월 생일인 ' + (W === 'c' ? '고객이' : W === 'o' ? '직원·지인이' : '사람이') + ' 없습니다.</p>') +
     (store.customers.length > withBd.length || store.settings.contacts.staff.length > sWith.length ? '<p class="muted" style="margin:0">생일 정보가 없는 ' + [store.customers.length > withBd.length ? '고객 ' + (store.customers.length - withBd.length) + '명' : '', store.settings.contacts.staff.length > sWith.length ? '직원 ' + (store.settings.contacts.staff.length - sWith.length) + '명' : ''].filter(Boolean).join(' · ') + '은 표시되지 않습니다.</p>' : '') +
-    '<p class="muted" style="margin:0">위의 전체·고객·직원·외 중 하나를 골라 볼 수 있습니다. "+ 추가"를 누르면 고객·직원·지인·기타 중에서 골라 생일을 넣고, 줄을 두 번 누르면 수정합니다. 실제 생일을 따로 넣은 고객은 그 날짜로, 없으면 생년월일(주민번호) 날짜로 표시합니다. 음력 생일은 해마다 양력 날짜가 바뀌어 자동으로 계산합니다. 나이·상령일은 생년월일 기준입니다.' + (DANGI ? '' : ' <b>이 브라우저는 음력 변환을 지원하지 않습니다. 최신 크롬·사파리로 열어 주세요.</b>') + '</p></section>' +
+    '<p class="muted" style="margin:0">위의 전체·고객·직원 중 하나를(직원에는 지인·기타도 함께 보입니다) 골라 볼 수 있습니다. "+ 추가"를 누르면 고객·직원·지인·기타 중에서 골라 생일을 넣고, 줄을 두 번 누르면 수정합니다. 실제 생일을 따로 넣은 고객은 그 날짜로, 없으면 생년월일(주민번호) 날짜로 표시합니다. 음력 생일은 해마다 양력 날짜가 바뀌어 자동으로 계산합니다. 나이·상령일은 생년월일 기준입니다.' + (DANGI ? '' : ' <b>이 브라우저는 음력 변환을 지원하지 않습니다. 최신 크롬·사파리로 열어 주세요.</b>') + '</p></section>' +
     '<section class="panel"><h2>축하 문자 문구</h2>' + lbl('문구 ({이름}, {FC}는 자동으로 바뀝니다)', f('param', 'bdMsg', store.settings.params.bdMsg, { type: 'textarea' })) +
     '<p class="muted" style="margin:0">"축하 문자"를 누르면 휴대폰 문자 앱이 이 문구로 열립니다. 보내기는 FC가 직접 누릅니다. 상령일은 생일에서 6개월이 지나 보험나이가 한 살 오르는 날로, 그 전에 가입하면 보험료가 낮을 수 있습니다.</p></section>';
 }
@@ -7073,7 +7101,7 @@ function teamLoad(force) {
     ]).then(function (x) {
       x.forEach(function (y) { if (y && y.error) throw y.error; });
       team.info = x[0].data ? { id: x[0].data.id, name: x[0].data.name, code: x[0].data.code, role: r.data.role } : null;
-      team.members = x[1].data || []; team.notices = x[2].data || []; team.stats = x[3].data || [];
+      var arr = function (v) { return Array.isArray(v) ? v : []; }; team.members = arr(x[1].data); team.notices = arr(x[2].data); team.stats = arr(x[3].data);
     });
   }).then(function () { team.loaded = true; team.loading = false; team.err = ''; team.at = Date.now(); teamStatsSoon(true); render(); },
     function (e) { team.loaded = true; team.loading = false; team.err = teamErr(e); team.at = Date.now(); render(); });
