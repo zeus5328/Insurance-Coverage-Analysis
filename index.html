@@ -231,7 +231,7 @@ textarea { min-height: 76px; resize: vertical; }
 .cust-form .form-foot { border-top: 1px solid var(--line); padding-top: 18px; }
 @media (max-width: 700px) { .cust-form { padding: 18px 16px; gap: 20px; } .cust-form .grid-form { row-gap: 18px; } }
 .field-err { font-size: 12px; color: var(--danger); font-weight: 600; }
-.auth-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding-block: 32px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.auth-wrap { min-height: calc(100vh / var(--zf, 1)); display: flex; align-items: center; justify-content: center; padding-block: 32px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
 .auth-card { width: 100%; max-width: 420px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 32px 28px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 10px 30px rgba(23,34,56,.08); }
 .auth-card h1 { margin: 4px 0 0; font-size: 22px; letter-spacing: -0.02em; }
 .auth-card p { margin: 0; }
@@ -1305,7 +1305,7 @@ tr.row-dbl { cursor: pointer; }
 tr.row-dbl:hover td { background: var(--surface-2); }
 tr.row-dbl:focus { outline: 2px solid var(--accent); outline-offset: -2px; }
 .dmodal { position: fixed; inset: 0; z-index: 60; background: rgba(15, 23, 42, .45); display: flex; align-items: center; justify-content: center; padding: 16px; }
-.dm-box { background: var(--surface); border-radius: var(--radius, 14px); width: min(720px, 100%); max-height: calc(100vh - 32px); display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,.25); }
+.dm-box { background: var(--surface); border-radius: var(--radius, 14px); width: min(720px, 100%); max-height: calc((100vh - 32px) / var(--zf, 1)); display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,.25); }
 .dm-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 18px 20px 10px; border-bottom: 1px solid var(--line); }
 .dm-head h2 { margin: 0 0 2px; font-size: 17px; }
 .dm-body { padding: 16px 20px; overflow-y: auto; }
@@ -1395,7 +1395,7 @@ tr.row-dbl:hover td .muted, .ctable tbody tr.crow:hover td .muted { color: var(-
   .qa-grid, .org-grid, .comm-grid { grid-template-columns: 1fr 1fr; }
   .qa-grid .qa-btns .row { flex-wrap: wrap; }
   .cal-add { padding: 10px; }
-  .dm-box, .dm-box.dm-wide { width: 100%; max-height: 92vh; }
+  .dm-box, .dm-box.dm-wide { width: 100%; max-height: calc(92vh / var(--zf, 1)); }
   .dm-body { padding: 14px; }
   .dm-grid3 { grid-template-columns: minmax(0, 1fr); }
   .dm-grid3 .span2, .dm-grid3 .span3 { grid-column: 1; }
@@ -2193,7 +2193,7 @@ function applyTheme() {
 }
 applyTheme();
 setInterval(function () { if (getThemeKey() === 'time') applyTheme(); }, 60000);
-function applyZoom() { var z = UI_ZOOM[zoomKeyNow()] || 1; if (document.documentElement.style.zoom !== String(z)) document.documentElement.style.zoom = z === 1 ? '' : z; }
+function applyZoom() { var z = UI_ZOOM[zoomKeyNow()] || 1, de = document.documentElement; if (de.style.zoom !== String(z)) de.style.zoom = z === 1 ? '' : z; de.style.setProperty('--zf', String(z)); } // --zf: 화면 높이(vh) 기준 크기를 글자 크기 배율로 나눠 창이 화면 밖으로 넘치지 않게
 function render() {
   applyZoom(); applyTheme();
   var app = document.getElementById('app');
@@ -3476,6 +3476,8 @@ document.addEventListener('keydown', function (e) {
 });
 
 function prodById(id) { return store.settings.products.filter(function (x) { return x.id === id; })[0]; }
+// 문자 앱 열기: 아이폰·아이패드는 sms:번호&body=, 그 밖(안드로이드 등)은 sms:번호?body= 를 알아듣는다 (2026-11-04)
+var SMS_SEP = (/iPhone|iPad|iPod/.test(navigator.userAgent) || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1)) ? '&' : '?';
 function smsLink(v) { var d = String(v || '').replace(/[^\d+]/g, ''); return d ? '<a class="btn sm" href="sms:' + attr(d) + '" aria-label="' + attr(v) + '로 문자">문자</a>' : ''; }
 function telLink(v) { var d = String(v || '').replace(/[^\d+]/g, ''); return d ? '<a class="btn sm tel" href="tel:' + attr(d) + '" aria-label="' + attr(v) + '로 전화">전화</a>' : ''; }
 function subPage(title, subs, cur, act, label, body, titles) {
@@ -4789,23 +4791,31 @@ function lastContactDate(c) {
 }
 // ----- 실제 생일 (양력·음력) -----
 // 음력 → 양력 변환은 브라우저의 한국 음력 달력(Intl 'dangi', 한국천문연구원 방식과 같은 계산)을 쓴다. 인터넷 연결이 필요 없다.
-var DANGI = (function () {
+// 브라우저마다(크롬·사파리) 결과 모양이 조금씩 달라 너그럽게 읽는다: 연도는 relatedYear가 없으면 양력 날짜와 음력 월로 계산, 윤달은 bis·leap·윤 표시 (2026-11-04)
+function lunarParts(f, d) {
+  var ry = '', yr = '', mo = '', dy = '';
+  f.formatToParts(d).forEach(function (x) { if (x.type === 'relatedYear') ry = x.value; else if (x.type === 'year') yr = x.value; else if (x.type === 'month') mo = x.value; else if (x.type === 'day') dy = x.value; });
+  var m = parseInt(String(mo).replace(/[^0-9]/g, ''), 10), dd = parseInt(String(dy).replace(/[^0-9]/g, ''), 10), leap = /bis|leap|윤|閏/i.test(mo);
+  var y = parseInt(String(ry).replace(/[^0-9]/g, ''), 10);
+  if (!(y > 1000)) { var y2 = parseInt(String(yr).replace(/[^0-9]/g, ''), 10); y = y2 > 1000 ? y2 : d.getUTCFullYear() - (m >= 11 && d.getUTCMonth() <= 1 ? 1 : 0); }
+  return m >= 1 && m <= 12 && dd >= 1 && dd <= 30 ? { y: y, m: m, d: dd, leap: leap } : null;
+}
+function lunarFmt(cal) {
   try {
-    var f = new Intl.DateTimeFormat('en-u-ca-dangi', { year: 'numeric', month: 'numeric', day: 'numeric', timeZone: 'UTC' });
-    var t = f.formatToParts(new Date(Date.UTC(2026, 1, 17)));
-    var ok = t.some(function (x) { return x.type === 'relatedYear' && x.value === '2026'; }) && t.some(function (x) { return x.type === 'month' && x.value === '1'; });
-    return ok ? f : null;
+    var f = new Intl.DateTimeFormat('en-u-ca-' + cal, { year: 'numeric', month: 'numeric', day: 'numeric', timeZone: 'UTC' });
+    if (f.resolvedOptions().calendar !== cal) return null;
+    var a = lunarParts(f, new Date(Date.UTC(2026, 1, 17))), b = lunarParts(f, new Date(Date.UTC(2025, 6, 25))); // 2026 설날 = 음력 1.1 · 2025.7.25 = 음력 윤6.1
+    return a && a.y === 2026 && a.m === 1 && a.d === 1 && !a.leap && b && b.m === 6 && b.d === 1 && b.leap ? f : null;
   } catch (e) { return null; }
-})();
+}
+var DANGI = lunarFmt('dangi') || lunarFmt('chinese'); // 한국 음력이 없으면 중국 음력(대부분 날짜가 같음)
 var lunarCache = {};
 function lunarYearMap(y) { // 양력 y년의 날짜 → '음력년-월(윤이면 L)-일'
   if (lunarCache[y]) return lunarCache[y];
   var map = {};
   if (DANGI) for (var d = new Date(Date.UTC(y, 0, 1)); d.getUTCFullYear() === y; d.setUTCDate(d.getUTCDate() + 1)) {
-    var ry = '', mo = '', dy = '';
-    DANGI.formatToParts(d).forEach(function (x) { if (x.type === 'relatedYear' || x.type === 'year') ry = ry || x.value; if (x.type === 'month') mo = x.value; if (x.type === 'day') dy = x.value; });
-    var leap = /bis/.test(mo); mo = parseInt(mo, 10);
-    map[ry + '-' + mo + (leap ? 'L' : '') + '-' + parseInt(dy, 10)] = d.toISOString().slice(0, 10);
+    var lp = lunarParts(DANGI, d); if (!lp) continue;
+    map[lp.y + '-' + lp.m + (lp.leap ? 'L' : '') + '-' + lp.d] = d.toISOString().slice(0, 10);
   }
   return (lunarCache[y] = map);
 }
@@ -5405,7 +5415,7 @@ function annivPanel() {
       '<td class="num" data-l="처음 날짜">' + orig + '</td><td class="num" data-l="올해 날짜">' + Number(x.d.slice(5, 7)) + '월 ' + Number(x.d.slice(8, 10)) + '일</td>' +
       '<td data-l="남은 날"><span class="chip' + (n != null && n >= 0 && n <= 7 ? ' warn' : '') + '">' + (n != null && n < 0 && nx ? '지남 · 다음 ' + dLabel(nx.days) : dLabel(n)) + '</span></td>' +
       '<td class="num" data-l="주년·나이">' + ext + '</td><td class="num" data-l="연락처">' + (phone ? esc(phone) : '<span class="muted">연락처 없음</span>') + '</td>' +
-      '<td style="white-space:nowrap">' + (ph ? '<a class="btn sm tel" href="sms:' + attr(ph) + '?body=' + encodeURIComponent(msg) + '">축하 문자</a> ' : '') + (c ? '<button class="btn sm" data-act="giftNew" data-id="' + c.id + '" data-k="' + attr(gOcc) + '">선물 기록</button> ' : '') + (isA ? '<button class="btn ghost sm" data-act="openAnniv" data-id="' + x.a.id + '">수정</button>' : '') + '</td></tr>';
+      '<td style="white-space:nowrap">' + (ph ? '<a class="btn sm tel" href="sms:' + attr(ph) + SMS_SEP + 'body=' + encodeURIComponent(msg) + '">축하 문자</a> ' : '') + (c ? '<button class="btn sm" data-act="giftNew" data-id="' + c.id + '" data-k="' + attr(gOcc) + '">선물 기록</button> ' : '') + (isA ? '<button class="btn ghost sm" data-act="openAnniv" data-id="' + x.a.id + '">수정</button>' : '') + '</td></tr>';
   }).join('');
   // 생일 화면과 같은 구조: 30일 안 기념일 → 월별 기념일 → 축하 문자 문구
   var up = A.map(function (a) { return { a: a, nx: annivNext(a) }; }).filter(function (o) { return o.nx && o.nx.days <= 30 && anShow(o.a); }).sort(function (a, b) { return a.nx.days - b.nx.days; });
@@ -5414,7 +5424,7 @@ function annivPanel() {
       var a = o.a, c = a.who === 'c' ? custById(a.cid) : null, st = a.who === 's' ? store.settings.contacts.staff.filter(function (y) { return y.id === a.sid; })[0] : null, phone = c ? c.phone : st ? st.phone : '', ph = String(phone || '').replace(/[^\d+]/g, '');
       var whoCls = a.who === 's' ? 'who-s">직원' : a.who === 'e' ? 'who-e">지인' : 'who-c">고객';
       return '<li class="row-dbl" data-dbl="anniv:' + a.id + '" tabindex="0" title="두 번 누르면 수정"><span class="kchip k-anniv">' + dLabel(o.nx.days) + '</span><span class="who ' + whoCls + '</span><span class="what">' + esc(annivWho(a)) + ' · ' + Number(o.nx.date.slice(5, 7)) + '월 ' + Number(o.nx.date.slice(8, 10)) + '일 · ' + esc(a.type || '기념일') + esc(annivYears(a, o.nx.date)) + '</span>' +
-        (c ? custLink(c, 'info') : '') + (ph ? '<a class="btn sm tel" href="sms:' + attr(ph) + '?body=' + encodeURIComponent(annivMsg(a, o.nx.date)) + '">축하 문자</a>' : '') + '<button class="btn ghost sm" data-act="openAnniv" data-id="' + a.id + '">수정</button></li>'; }).join('') + '</ul>' + foldMore(up, 5, 'anUpMore')
+        (c ? custLink(c, 'info') : '') + (ph ? '<a class="btn sm tel" href="sms:' + attr(ph) + SMS_SEP + 'body=' + encodeURIComponent(annivMsg(a, o.nx.date)) + '">축하 문자</a>' : '') + '<button class="btn ghost sm" data-act="openAnniv" data-id="' + a.id + '">수정</button></li>'; }).join('') + '</ul>' + foldMore(up, 5, 'anUpMore')
       : '<p class="muted" style="margin:0">30일 안에 다가오는 기념일이 없습니다.</p>') + '</section>';
   var hasWed = {}; A.forEach(function (a) { if (a.type === '결혼기념일' && a.who === 'c' && a.cid) hasWed[a.cid] = 1; });
   var noWed = store.customers.filter(function (c) { return c.spouse && !hasWed[c.id]; }).sort(byName);
@@ -5702,27 +5712,29 @@ function workBirthday() {
       return '<tr class="row-dbl" data-dbl="friend:' + y.id + '" tabindex="0" title="두 번 누르면 수정"><td><span class="who who-e">' + esc(y.rel || '지인') + '</span> <b>' + esc(y.name || '이름 없음') + '</b></td><td class="num">' + esc(bdDesc(y)) + '</td>' +
         '<td class="num">' + Number(o.d.slice(5, 7)) + '월 ' + Number(o.d.slice(8, 10)) + '일</td><td>' + (nbf ? '<span class="chip' + (nbf.days <= 7 ? ' warn' : '') + '">' + dLabel(nbf.days) + '</span>' : '–') + '</td>' +
         '<td class="num">' + (agef > 0 ? '만 ' + agef + '세' : '<span class="muted">–</span>') + '</td><td class="num"><span class="muted">–</span></td><td class="num">' + (y.phone ? esc(y.phone) : '<span class="muted">연락처 없음</span>') + '</td>' +
-        '<td style="white-space:nowrap">' + (phf ? '<a class="btn sm tel" href="sms:' + attr(phf) + '?body=' + encodeURIComponent(bdText({ name: y.name })) + '">축하 문자</a> ' : '') + '<button class="btn ghost sm" data-act="openFriend" data-id="' + y.id + '">수정</button></td></tr>'; }
+        '<td style="white-space:nowrap">' + (phf ? '<a class="btn sm tel" href="sms:' + attr(phf) + SMS_SEP + 'body=' + encodeURIComponent(bdText({ name: y.name })) + '">축하 문자</a> ' : '') + '<button class="btn ghost sm" data-act="openFriend" data-id="' + y.id + '">수정</button></td></tr>'; }
     if (o.s) { var x = o.s, nbs = nextBirthday(x), phs = String(x.phone || '').replace(/[^\d+]/g, ''), age = num(x.bdYear) ? Number(o.d.slice(0, 4)) - num(x.bdYear) : 0;
       return '<tr class="row-dbl" data-dbl="staff:' + x.id + '" tabindex="0" title="두 번 누르면 수정"><td><span class="who who-s">직원</span> <b>' + esc(x.name || '이름 없음') + '</b>' + (x.role ? ' <small class="muted">' + esc(x.role) + '</small>' : '') + '</td><td class="num">' + esc(bdDesc(x)) + '</td>' +
         '<td class="num">' + Number(o.d.slice(5, 7)) + '월 ' + Number(o.d.slice(8, 10)) + '일</td><td>' + (nbs ? '<span class="chip' + (nbs.days <= 7 ? ' warn' : '') + '">' + dLabel(nbs.days) + '</span>' : '–') + '</td>' +
         '<td class="num">' + (age > 0 ? '만 ' + age + '세' : '<span class="muted">–</span>') + '</td><td class="num"><span class="muted">–</span></td><td class="num">' + (x.phone ? esc(x.phone) : '<span class="muted">연락처 없음</span>') + '</td>' +
-        '<td style="white-space:nowrap">' + (phs ? '<a class="btn sm tel" href="sms:' + attr(phs) + '?body=' + encodeURIComponent(bdText({ name: x.name })) + '">축하 문자</a> ' : '') + bdEventBtn('s', x) + ' ' + '<button class="btn ghost sm" data-act="openStaffBd" data-id="' + x.id + '">수정</button>' + '</td></tr>'; }
+        '<td style="white-space:nowrap">' + (phs ? '<a class="btn sm tel" href="sms:' + attr(phs) + SMS_SEP + 'body=' + encodeURIComponent(bdText({ name: x.name })) + '">축하 문자</a> ' : '') + bdEventBtn('s', x) + ' ' + '<button class="btn ghost sm" data-act="openStaffBd" data-id="' + x.id + '">수정</button>' + '</td></tr>'; }
     var c = o.c, nb = nextBirthday(c), sd = sangDate(c), ph = String(c.phone || '').replace(/[^\d+]/g, '');
     return '<tr class="row-dbl" data-dbl="custbd:' + c.id + '" tabindex="0" title="두 번 누르면 수정"><td><span class="who who-c">고객</span> ' + custLink(c, 'info') + '</td><td class="num">' + esc(bdDesc(c)) + '</td>' +
       '<td class="num">' + Number(c._bdThis.slice(5, 7)) + '월 ' + Number(c._bdThis.slice(8, 10)) + '일</td>' +
       '<td>' + (nb ? '<span class="chip' + (nb.days <= 7 ? ' warn' : '') + '">' + dLabel(nb.days) + '</span>' : '–') + '</td>' +
       '<td class="num">' + (c.birth ? '만 ' + ageOf(c.birth) + '세' : '<span class="muted">생년월일 없음</span>') + '</td><td class="num">' + (sd ? esc(sd.date) + ' <span class="muted">(' + dLabel(sd.days) + ')</span>' : '–') + '</td>' +
       '<td class="num">' + (c.phone ? esc(c.phone) : '<span class="muted">연락처 없음</span>') + '</td>' +
-      '<td style="white-space:nowrap">' + (ph ? '<a class="btn sm tel" href="sms:' + attr(ph) + '?body=' + encodeURIComponent(bdText(c)) + '">축하 문자</a> ' : '') + bdEventBtn('c', c) + ' ' + '<button class="btn ghost sm" data-act="openCustBd" data-id="' + c.id + '">수정</button>' + '</td></tr>';
+      '<td style="white-space:nowrap">' + (ph ? '<a class="btn sm tel" href="sms:' + attr(ph) + SMS_SEP + 'body=' + encodeURIComponent(bdText(c)) + '">축하 문자</a> ' : '') + bdEventBtn('c', c) + ' ' + '<button class="btn ghost sm" data-act="openCustBd" data-id="' + c.id + '">수정</button>' + '</td></tr>';
   }).join('');
-  var upcoming = store.customers.filter(hasBirthday).map(function (c) { return { c: c, nb: nextBirthday(c) }; })
+  var upcoming = store.customers.filter(hasBirthday).map(function (c) { return { c: c, nb: nextBirthday(c) }; }).filter(function (o) { return o.nb; }) // 음력 변환이 안 되는 브라우저에서 고객 한 명 때문에 화면 전체가 멈추던 것 막음 (2026-11-04)
     .concat(staffWithBd().map(function (x) { return { s: x, nb: nextBirthday(x) }; }).filter(function (o) { return o.nb; }))
     .concat(friendsWithBd().map(function (x) { return { f: x, nb: nextBirthday(x) }; }).filter(function (o) { return o.nb; }))
     .filter(function (x) { return x.nb.days <= 30 && (x.c ? showC : x.s ? showS : showF); }).sort(function (a, b) { return a.nb.days - b.nb.days; });
-  return '<section class="panel"><div class="row between"><h2>30일 안 생일 ' + upcoming.length + '명 <small class="muted">(고객 ' + upcoming.filter(function (x) { return x.c; }).length + ' · 직원 ' + upcoming.filter(function (x) { return !x.c; }).length + ')</small></h2>' + whoSeg('bdW', W, [['', '전체', withBd.length + sWith.length + fWith.length], ['c', '고객', withBd.length], ['o', '직원', sWith.length + fWith.length]]) + '</div>' +
+  var lunarN = DANGI ? 0 : store.customers.concat(store.settings.contacts.staff || [], friendList()).filter(function (x) { return x.bdCal === 'lunar' && num(x.bdMonth); }).length;
+  return (lunarN ? '<div class="notice">이 브라우저는 음력 날짜 계산을 지원하지 않아 음력 생일 ' + lunarN + '명을 날짜에 표시하지 못했습니다. 브라우저(사파리·크롬)를 최신으로 업데이트하거나 다른 브라우저로 열어 보세요.</div>' : '') +
+    '<section class="panel"><div class="row between"><h2>30일 안 생일 ' + upcoming.length + '명 <small class="muted">(고객 ' + upcoming.filter(function (x) { return x.c; }).length + ' · 직원 ' + upcoming.filter(function (x) { return !x.c; }).length + ')</small></h2>' + whoSeg('bdW', W, [['', '전체', withBd.length + sWith.length + fWith.length], ['c', '고객', withBd.length], ['o', '직원', sWith.length + fWith.length]]) + '</div>' +
     (upcoming.length ? '<ul class="wlist">' + foldCut(upcoming, 5, 'bdUpMore').map(function (x) {
-      if (x.f) { var fph = String(x.f.phone || '').replace(/[^\d+]/g, ''); return '<li class="row-dbl" data-dbl="friend:' + x.f.id + '" tabindex="0" title="두 번 누르면 수정"><span class="kchip k-bd">' + dLabel(x.nb.days) + '</span><span class="who who-e">' + esc(x.f.rel || '지인') + '</span><span class="what">' + esc(x.f.name || '이름 없음') + ' · ' + Number(x.nb.date.slice(5, 7)) + '월 ' + Number(x.nb.date.slice(8, 10)) + '일' + (x.f.bdCal === 'lunar' ? ' (' + esc(bdDesc(x.f)) + ')' : '') + (x.f.memo ? ' · ' + esc(String(x.f.memo).slice(0, 20)) : '') + '</span>' + (fph ? '<a class="btn sm tel" href="sms:' + attr(fph) + '?body=' + encodeURIComponent(bdText({ name: x.f.name })) + '">축하 문자</a>' : '') + '<button class="btn ghost sm" data-act="openFriend" data-id="' + x.f.id + '">수정</button>' + '</li>'; }
+      if (x.f) { var fph = String(x.f.phone || '').replace(/[^\d+]/g, ''); return '<li class="row-dbl" data-dbl="friend:' + x.f.id + '" tabindex="0" title="두 번 누르면 수정"><span class="kchip k-bd">' + dLabel(x.nb.days) + '</span><span class="who who-e">' + esc(x.f.rel || '지인') + '</span><span class="what">' + esc(x.f.name || '이름 없음') + ' · ' + Number(x.nb.date.slice(5, 7)) + '월 ' + Number(x.nb.date.slice(8, 10)) + '일' + (x.f.bdCal === 'lunar' ? ' (' + esc(bdDesc(x.f)) + ')' : '') + (x.f.memo ? ' · ' + esc(String(x.f.memo).slice(0, 20)) : '') + '</span>' + (fph ? '<a class="btn sm tel" href="sms:' + attr(fph) + SMS_SEP + 'body=' + encodeURIComponent(bdText({ name: x.f.name })) + '">축하 문자</a>' : '') + '<button class="btn ghost sm" data-act="openFriend" data-id="' + x.f.id + '">수정</button>' + '</li>'; }
       if (x.s) return '<li class="row-dbl" data-dbl="staff:' + x.s.id + '" tabindex="0" title="두 번 누르면 수정"><span class="kchip k-bd">' + dLabel(x.nb.days) + '</span><span class="who who-s">직원</span><span class="what">' + esc(x.s.name || '직원') + ' · ' + Number(x.nb.date.slice(5, 7)) + '월 ' + Number(x.nb.date.slice(8, 10)) + '일' + (x.s.bdCal === 'lunar' ? ' (' + esc(bdDesc(x.s)) + ')' : '') + (x.s.role || x.s.dept ? ' · ' + esc([x.s.role, x.s.dept].filter(Boolean).join(' · ')) : '') + '</span>' + (x.s.phone ? telLink(x.s.phone) : '') + '<button class="btn ghost sm" data-act="openStaffBd" data-id="' + x.s.id + '">수정</button>' + '</li>';
       return '<li class="row-dbl" data-dbl="custbd:' + x.c.id + '" tabindex="0" title="두 번 누르면 수정"><span class="kchip k-bd">' + dLabel(x.nb.days) + '</span><span class="who who-c">고객</span><span class="what">' + esc(x.c.name || '고객') + ' · ' + Number(x.nb.date.slice(5, 7)) + '월 ' + Number(x.nb.date.slice(8, 10)) + '일' + (x.c.bdCal === 'lunar' ? ' (' + esc(bdDesc(x.c)) + ')' : '') + (x.nb.age != null ? ' · 만 ' + x.nb.age + '세' : '') + '</span>' + custLink(x.c, 'info', '고객 보기') + (x.c.phone ? telLink(x.c.phone) : '') + '<button class="btn ghost sm" data-act="openCustBd" data-id="' + x.c.id + '">수정</button>' + '</li>'; }).join('') + '</ul>' + foldMore(upcoming, 5, 'bdUpMore', '명') : '<p class="muted" style="margin:0">30일 안에 생일인 고객·직원이 없습니다.</p>') + '</section>' +
     '<section class="panel"><div class="row between"><h2>월별 생일</h2><button class="btn primary sm" data-act="bdAdd" title="고객·직원·지인 생일 입력">+ 추가</button></div>' + tabs +
