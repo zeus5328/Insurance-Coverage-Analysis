@@ -1411,6 +1411,32 @@ button.cal-btn { padding: 0; color: var(--ink-2); cursor: pointer; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .k-nt { background: rgba(217,103,30,.22); color: #F2B08A; } }
 :root[data-theme="dark"] .k-nt { background: rgba(217,103,30,.22); color: #F2B08A; }
 .nt-sched .edu-body .nt-body { margin: 0 0 8px; white-space: normal; }
+/* 2026-11-03 기기별 점검: 모바일 패널 머리줄 검색칸·고객 머리줄·달력 막대·태블릿 숫자칸·터치 영역 */
+@media (max-width: 760px) {
+  /* 검색칸과 버튼이 같은 줄에 있으면 검색칸이 찌그러지므로: 검색칸은 한 줄 전체, 버튼은 그 아래 오른쪽 */
+  .panel > .row.between:has(> .row > .mini-search + *), .panel > .row.between:has(> .row > * + .mini-search), .panel > .row.between:has(> .ins-tools .mini-search) { flex-wrap: wrap; }
+  .panel > .row.between > .row:is(:has(> .mini-search + *), :has(> * + .mini-search)) { flex: 1 1 100%; flex-wrap: wrap; justify-content: flex-end; }
+  .panel > .row.between > .row:is(:has(> .mini-search + *), :has(> * + .mini-search)) > .mini-search { flex: 1 1 100% !important; width: auto !important; order: -1; }
+  .panel > .row.between > .ins-tools:has(.mini-search) { flex: 1 1 100%; flex-wrap: wrap; }
+  .panel > .row.between > .ins-tools .mini-search { flex: 1 1 100% !important; width: auto !important; max-width: none !important; order: -1; }
+  .chead-main { align-items: center; }
+  .chead-main h1 { flex: 1 1 auto; min-width: 0; }
+  .chead .facts { flex: 1 1 100%; order: 3; gap: 6px; }
+}
+@media (max-width: 600px) {
+  .cal-grid:not(.week) .cal-item { font-size: 0; height: 6px; padding: 0; border-radius: 3px; }
+  .cal-grid:not(.week) .cal-cell { min-height: 58px; }
+}
+@media (min-width: 761px) and (max-width: 1100px) {
+  .kpis { grid-template-columns: repeat(auto-fit, minmax(128px, 1fr)); gap: 12px; }
+}
+@media (pointer: coarse) {
+  .check-btn { position: relative; }
+  .check-btn::before { content: ''; position: absolute; inset: -9px; }
+  .qchip { min-height: 30px; padding-left: 11px; padding-right: 11px; }
+  .chead .back { padding: 8px 0; }
+  input[type="checkbox"], input[type="radio"] { width: 18px; height: 18px; }
+}
 </style>
 </head>
 <body>
