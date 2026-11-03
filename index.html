@@ -5387,11 +5387,11 @@ function bdText(c) {
 // 표·카드·목록 모두 5개(2026-11-03 사용자 요청). 이미 자체 접기가 있는 목록(foldList·foldCut)은 줄 수가 적어 그대로 지나간다.
 // 제외: 고객 상세(입력 화면)·설정·일정 달력·오늘(자체 접기)·가족·가구(보장 비교표)·상세 창·안내 표. 검색으로 표 일부만 다시 그릴 때는 접지 않고 다 보여 준다.
 var AUTOFOLD_TABLE = 5, AUTOFOLD_LIST = 5;
-// 보험·고객 메뉴: PC에서는 더보기 없이 전부 보이고, 모바일(폭 760px 이하)에서만 5개씩 접는다.
+// 보험·고객·지점 메뉴: PC에서는 더보기 없이 전부 보이고, 모바일(폭 760px 이하)에서만 5개씩 접는다.
 function foldMobile() { return (window.innerWidth || document.documentElement.clientWidth || 1024) <= 760; }
 var _foldMob = foldMobile();
-window.addEventListener('resize', function () { var m = foldMobile(); if (_foldMob === null) { _foldMob = m; return; } if (m !== _foldMob) { _foldMob = m; if (ui.view === 'insurance' || ui.view === 'list') try { render(); } catch (e) {} } });
-function autoFoldSkip() { return ui.view === 'customer' || ui.view === 'settings' || (ui.view === 'work' && (ui.wsub === 'calendar' || ui.wsub === 'home' || ui.wsub === 'stats')) || (ui.view === 'insurance' && (ui.isub === 'guide' || !foldMobile())) || (ui.view === 'list' && !foldMobile()) || ui.booting || ui.auth; }
+window.addEventListener('resize', function () { var m = foldMobile(); if (_foldMob === null) { _foldMob = m; return; } if (m !== _foldMob) { _foldMob = m; if (ui.view === 'insurance' || ui.view === 'list' || ui.view === 'office') try { render(); } catch (e) {} } });
+function autoFoldSkip() { return ui.view === 'customer' || ui.view === 'settings' || (ui.view === 'work' && (ui.wsub === 'calendar' || ui.wsub === 'home' || ui.wsub === 'stats')) || (ui.view === 'insurance' && (ui.isub === 'guide' || !foldMobile())) || (ui.view === 'list' && !foldMobile()) || (ui.view === 'office' && !foldMobile()) || ui.booting || ui.auth; }
 function autoFold() {
   if (autoFoldSkip()) return;
   var main = document.querySelector('#app main'); if (!main) return;
