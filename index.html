@@ -2936,7 +2936,7 @@ function renderSettings() {
     var fcRoles = [['', '선택'], ['FC', 'FC'], ['팀장', '팀장'], ['지점장', '지점장'], ['단장', '단장']]; if (s.fc.role && !fcRoles.some(function (o) { return o[0] === s.fc.role; })) fcRoles.push([s.fc.role, s.fc.role]);
     var fcLine = fcLineText(s.fc);
     var miss = [!s.fc.name && '이름', !s.fc.phone && '연락처', !s.fc.org && '소속'].filter(Boolean);
-    body = renderAccountSection() + teamSection() + offlineSection() + passkeySection() + '<section class="panel"><h2>FC 정보 <span class="muted">제안서·축하 문자에 표시됩니다</span></h2><div class="grid-form">' +
+    body = renderAccountSection() + teamSection() + passkeySection() + '<section class="panel"><h2>FC 정보 <span class="muted">제안서·축하 문자에 표시됩니다</span></h2><div class="grid-form">' +
       lbl('이름', f('fc', 'name', s.fc.name, { ph: '예: 홍길동' })) + lbl('직급', f('fc', 'role', s.fc.role || '', { type: 'select', options: fcRoles })) +
       lbl('연락처', f('fc', 'phone', s.fc.phone, { ph: '예: 010-1234-5678', inputmode: 'tel', kind: 'phone' })) + lbl('이메일', f('fc', 'email', s.fc.email || '', { type: 'email', ph: 'name@company.com' })) + lbl('설계사 등록번호 (선택)', f('fc', 'regNo', s.fc.regNo || '', { ph: '넣으면 제안서에 표시' })) +
       lbl('소속', f('fc', 'org', s.fc.org, { ph: '예: ABA금융서비스' })) + lbl('사업단·지사', f('fc', 'branch', s.fc.branch, { kind: 'branch', ph: '눌러서 목록에서 선택' })) + lbl('지점', f('fc', 'unit', s.fc.unit || '', { ph: '예: 일산지점 (없으면 비워 두세요)' })) +
@@ -3049,7 +3049,7 @@ function renderSettings() {
     body = '<div class="kpis">' + stat('고객', store.customers.length + '<small>명</small>') + stat('계약', nPol + '<small>건</small>') + stat('상담 기록', nNote + '<small>건</small>') +
       stat('일정 · 할 일', s.events.length + ' · ' + s.tasks.length) + stat('직원 · 보험사 연락처', s.contacts.staff.length + ' · ' + s.contacts.insurers.length) + stat('자료 크기', kb + '<small>KB</small>') + '</div>' +
       '<div class="' + (lbDays == null || lbDays > 30 ? 'notice warn-box' : 'info') + '">' + (lb ? '마지막 백업: <b>' + esc(lb) + '</b> (' + (lbDays === 0 ? '오늘' : lbDays + '일 전') + ')' + (lbDays > 30 ? ' — 한 달이 넘었습니다. 백업 파일을 새로 받아 두세요.' : '') : '아직 이 기기에서 백업 파일을 받은 적이 없습니다. 아래 "백업 파일 내보내기"로 받아 두세요.') + '</div>' +
-      localMergePanel() + historyPanel() + renderFilesSection() +
+      localMergePanel() + historyPanel() + renderFilesSection() + offlineSection() + // 오프라인 모드는 자료 관리에서 (2026-11-04, 내 정보에서 옮김)
       '<section class="panel"><h2>백업 (내 컴퓨터로)</h2><div class="info">' + (site.on ? '서버·사이트 저장과 별도로, 전체 자료를 내 컴퓨터에 파일로 받아 둘 수 있습니다.' : '모든 고객·계약·설정은 이 브라우저에만 저장됩니다. 브라우저 기록을 지우거나 다른 컴퓨터로 옮기면 사라지므로 백업 파일로 내보내 두세요.') + ' 백업 파일에는 고객 개인정보가 들어 있으니 안전한 곳에 보관하세요.</div>' +
       '<div class="row"><button class="btn primary" data-act="exportJson">백업 파일 내보내기</button><label class="btn" for="importFile">백업 파일 불러오기</label><input type="file" id="importFile" accept=".json,application/json" hidden>' +
       '</div></section>' +
@@ -7616,7 +7616,7 @@ function teamStatsPanel() {
 // ===== 오프라인 모드 =====
 // 로그인 상태에서 인터넷이 끊겨도 계속 쓴다. 자료 사본을 이 기기(IndexedDB)에 두고, 연결되면 못 올린 것만 서버에 올린다.
 // 사본 = { uid, email, meta, store(JSON), cache(JSON: 서버에 올라간 상태), at }. store와 cache가 다른 고객·설정이 '올릴 것'.
-// 로그아웃하면 사본을 지운다. 설정 → 내 정보에서 기기별로 끌 수 있다(끄면 사본 삭제).
+// 로그아웃하면 사본을 지운다. 설정 → 자료 관리에서 기기별로 끌 수 있다(끄면 사본 삭제).
 var OFF_DB = 'fcp-offline', OFF_ST = 'kv', offTimer = null, offDbP = null;
 function offIdb() {
   if (offDbP) return offDbP;
