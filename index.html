@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>/* 화면 밝기를 그림 그리기 전에 먼저 적용 (기기가 다크 모드여도 고른 밝기로 바로 열림) */(function(){var k='light';try{k=localStorage.getItem('fcp-theme')||'light';}catch(e){}if(k==='time'){var h=new Date().getHours();k=h>=7&&h<19?'light':'dark';}if(k!=='dark')k='light';document.documentElement.setAttribute('data-theme',k);})();</script>
 <title>보장설계 매니저</title>
 <style>
 /* 글꼴: 페이퍼로지(Paperlogy) 4Regular·6SemiBold·7Bold 원본 woff2를 파일 안에 넣었습니다.
@@ -2129,32 +2130,8 @@ function toast(msg) {
 
 // ===== 렌더링 =====
 var UI_ZOOM = { s: 0.92, m: 1, l: 1.1, xl: 1.2 };
-function getZoomKey() { try { return localStorage.getItem('fcp-zoom') || 'auto'; } catch (e) { return 'auto'; } }
-// 글자 크기 자동(기기 설정) (2026-11-04): 화면 폭으로 기기를 나누고, 휴대폰·PC의 글자 크기 설정을 한 단계까지 반영
-var ZOOM_LEVELS = ['s', 'm', 'l', 'xl'], ZOOM_LABEL = { s: '작게', m: '보통', l: '크게', xl: '아주 크게' };
-function zoomDevice() {
-  var w = window.innerWidth || 1280, coarse = false; try { coarse = matchMedia('(pointer: coarse)').matches; } catch (e) {}
-  if (w < 760) return 'mobile';
-  if (w < 1280 && coarse) return 'tablet';
-  return 'desktop';
-}
-function sysTextScale() { // iPhone·iPad는 [설정 → 디스플레이 → 텍스트 크기], 그 밖의 기기는 브라우저 기본 글자 크기(16px 기준)
-  var r = 1;
-  try {
-    var d = document.createElement('div'); d.style.cssText = 'position:absolute;visibility:hidden;left:-9999px;top:0';
-    document.body.appendChild(d);
-    var ios = /iPhone|iPad|iPod/.test(navigator.userAgent) || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
-    if (ios && window.CSS && CSS.supports && CSS.supports('font', '-apple-system-body')) { d.style.font = '-apple-system-body'; r = parseFloat(getComputedStyle(d).fontSize) / 17; }
-    else { d.style.fontSize = 'medium'; r = parseFloat(getComputedStyle(d).fontSize) / 16; }
-    d.remove();
-  } catch (e) { r = 1; }
-  return r > 0 && isFinite(r) ? r : 1;
-}
-function autoZoomKey() {
-  var base = zoomDevice() === 'tablet' ? 2 : 1, sc = sysTextScale(), step = sc >= 1.12 ? 1 : sc <= 0.9 ? -1 : 0; // 태블릿은 "크게", 그 밖엔 "보통"에서 시작
-  return ZOOM_LEVELS[Math.max(0, Math.min(3, base + step))];
-}
-function zoomKeyNow() { var k = getZoomKey(); return k === 'auto' ? autoZoomKey() : k; }
+function getZoomKey() { var k = 'm'; try { k = localStorage.getItem('fcp-zoom') || 'm'; } catch (e) {} return UI_ZOOM[k] ? k : 'm'; } // 예전 'auto' 저장값은 보통으로 (2026-11-04 자동 제거)
+function zoomKeyNow() { return getZoomKey(); }
 // 화면 밝기: auto = 기기 설정 따라, time = 시간대(07~19시 주간), light = 주간, dark = 야간 (이 기기에만 저장)
 // 명함 이미지: 긴 변 1200px 이하 JPEG로 줄여 settings.fc.card(data URL)에 저장 — 계정 동기화 용량을 작게
 function readFcCard(file) {
@@ -2179,13 +2156,12 @@ function readFcCard(file) {
 // 표시 순서: 소속(회사 사업단 지점) · 담당: 직급 이름 · 연락처 · 이메일
 function fcLineText(fc) { return [[fc.org, fc.branch, fc.unit].filter(Boolean).join(' '), fc.name ? '담당: ' + (fc.role || 'FC') + ' ' + fc.name : '', fc.regNo ? '등록번호 ' + fc.regNo : '', fc.phone, fc.email].filter(Boolean).join(' · '); }
 function fcOffice(fc) { return [fc.unitTel ? '지점 ☎ ' + fc.unitTel : '', fc.fax ? '팩스 ' + fc.fax : '', fc.addr || ''].filter(Boolean).join(' · '); }
-function getThemeKey() { try { return localStorage.getItem('fcp-theme') || 'auto'; } catch (e) { return 'auto'; } }
+function getThemeKey() { var k = 'light'; try { k = localStorage.getItem('fcp-theme') || 'light'; } catch (e) {} return k === 'time' || k === 'dark' ? k : 'light'; } // 자동(기기 설정) 제거(2026-11-04): 예전 'auto' 저장값·처음 쓰는 기기는 주간
 var THEME_DAY_FROM = 7, THEME_DAY_TO = 19;
 function themeNow() {
   var k = getThemeKey();
   if (k === 'light' || k === 'dark') return k;
-  if (k === 'time') { var h = new Date().getHours(); return h >= THEME_DAY_FROM && h < THEME_DAY_TO ? 'light' : 'dark'; }
-  return '';
+  var h = new Date().getHours(); return h >= THEME_DAY_FROM && h < THEME_DAY_TO ? 'light' : 'dark'; // time
 }
 function applyTheme() {
   var t = themeNow(), de = document.documentElement;
@@ -2982,23 +2958,22 @@ function renderSettings() {
   } else if (sub === 'display') {
     var zk = getZoomKey(), sv = s.params.startView || 'work';
     var opt = function (act, val, cur, label, sub2) { return '<button class="opt-card' + (cur === val ? ' on' : '') + '" data-act="' + act + '" data-id="' + val + '" aria-pressed="' + (cur === val) + '"><b>' + label + '</b>' + (sub2 ? '<small>' + sub2 + '</small>' : '') + '</button>'; };
-    var tk = getThemeKey(), sysDark = window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches;
+    var tk = getThemeKey();
     body = '<section class="panel"><h2>화면 밝기 <span class="muted">이 기기에만 적용됩니다</span></h2><div class="opt-row">' +
-      opt('setTheme', 'auto', tk, '자동 (기기 설정)', '지금 ' + (sysDark ? '야간' : '주간') + ' · 휴대폰·PC 설정 따라') + opt('setTheme', 'time', tk, '자동 (시간대)', THEME_DAY_FROM + '시~' + THEME_DAY_TO + '시 주간, 그 밖엔 야간') +
+      opt('setTheme', 'time', tk, '자동 (시간대)', THEME_DAY_FROM + '시~' + THEME_DAY_TO + '시 주간, 그 밖엔 야간') +
       opt('setTheme', 'light', tk, '☀ 주간 모드', '밝은 바탕') + opt('setTheme', 'dark', tk, '☾ 야간 모드', '어두운 바탕') + '</div>' +
-      '<p class="muted" style="margin:0">자동(기기 설정)은 휴대폰·컴퓨터의 다크 모드 설정을 그대로 따릅니다. 자동(시간대)은 시계를 보고 저절로 바뀝니다.</p></section>' +
-      '<section class="panel"><h2>글자 크기 <span class="muted">이 기기에만 적용됩니다</span></h2><div class="opt-row">' +
-      opt('setZoom', 'auto', zk, '자동 (기기 설정)', '지금 ' + ({ mobile: '모바일', tablet: '태블릿', desktop: '데스크탑' }[zoomDevice()]) + ' · ' + ZOOM_LABEL[autoZoomKey()]) +
-      opt('setZoom', 's', zk, '작게', '데스크탑 큰 모니터') + opt('setZoom', 'm', zk, '보통', '데스크탑·노트북 · 모바일') + opt('setZoom', 'l', zk, '크게', '태블릿') + opt('setZoom', 'xl', zk, '아주 크게', '크게 보기 · 발표용') + '</div>' +
-      '<div class="tablewrap"><table class="t zoom-table"><thead><tr><th>기기</th><th>화면 폭</th><th>자동일 때 크기</th></tr></thead><tbody>' +
-        '<tr><td><b>모바일</b></td><td class="num">760px 미만</td><td>보통</td></tr>' +
-        '<tr><td><b>태블릿</b></td><td class="num">760 ~ 1279px (터치 화면)</td><td>크게</td></tr>' +
-        '<tr><td><b>데스크탑 · 노트북</b></td><td class="num">1280px 이상, 또는 마우스로 쓰는 화면</td><td>보통</td></tr></tbody></table></div>' +
-      '<p class="muted" style="margin:0">자동은 기기 크기에 맞춘 뒤, 휴대폰·PC의 글자 크기 설정(아이폰·아이패드는 설정 → 디스플레이 및 밝기 → 텍스트 크기, 컴퓨터는 브라우저 글꼴 크기)을 크게 해 두었으면 한 단계 크게, 작게 해 두었으면 한 단계 작게 보여줍니다. 화면을 돌리거나 창 크기를 바꾸면 다시 맞춥니다. 직접 고른 크기는 이 브라우저에 기억되고, 맥에서는 ⌘ + / ⌘ − 로도 바꿀 수 있습니다.</p></section>' +
+      '<p class="muted" style="margin:0">처음에는 주간 모드로 시작합니다. 자동(시간대)은 시계를 보고 저절로 바뀝니다. 고른 밝기는 이 기기의 이 브라우저에만 기억됩니다.</p></section>' +
       '<section class="panel"><h2>첫 화면</h2><div class="opt-row">' + opt('setStart', 'work', sv, '업무 · 오늘', '오늘 일정·할 일·연락할 고객') + opt('setStart', 'list', sv, '고객 · 목록', '고객 목록부터') + opt('setStart', 'ins', sv, '보험 · 장기', '전체 계약 모아보기') + opt('setStart', 'office', sv, '지점 · 공지', '팀·지점 공지부터') + '</div>' +
       '<p class="muted" style="margin:0">프로그램을 열 때 처음 보이는 화면입니다. 왼쪽 위 "보장설계 매니저"를 누르면 언제든 오늘 업무로 갑니다.</p></section>' +
       '<section class="panel"><h2>일정 달력 기본 보기</h2><div class="opt-row">' + opt('setCalDef', 'month', s.params.calView === 'week' ? 'week' : 'month', '월간', '한 달을 한눈에') + opt('setCalDef', 'week', s.params.calView === 'week' ? 'week' : 'month', '주간', '이번 주를 자세히') + '</div>' +
-      '<p class="muted" style="margin:0">업무 → 일정을 열 때 처음 보이는 보기입니다. 화면에서 월간·주간을 바꾸면 그 화면을 보는 동안에는 바꾼 보기가 유지됩니다.</p></section>';
+      '<p class="muted" style="margin:0">업무 → 일정을 열 때 처음 보이는 보기입니다. 화면에서 월간·주간을 바꾸면 그 화면을 보는 동안에는 바꾼 보기가 유지됩니다.</p></section>' +
+      '<section class="panel"><h2>글자 크기 <span class="muted">이 기기에만 적용됩니다</span></h2><div class="opt-row">' +
+      opt('setZoom', 's', zk, '작게', '데스크탑 큰 모니터') + opt('setZoom', 'm', zk, '보통', '데스크탑·노트북 · 모바일') + opt('setZoom', 'l', zk, '크게', '태블릿') + opt('setZoom', 'xl', zk, '아주 크게', '크게 보기 · 발표용') + '</div>' +
+      '<div class="tablewrap"><table class="t zoom-table"><thead><tr><th>기기</th><th>화면 폭</th><th>권장 크기</th></tr></thead><tbody>' +
+        '<tr><td><b>모바일</b></td><td class="num">760px 미만</td><td>보통</td></tr>' +
+        '<tr><td><b>태블릿</b></td><td class="num">760 ~ 1279px (터치 화면)</td><td>크게</td></tr>' +
+        '<tr><td><b>데스크탑 · 노트북</b></td><td class="num">1280px 이상</td><td>보통 (큰 모니터는 작게)</td></tr></tbody></table></div>' +
+      '<p class="muted" style="margin:0">고른 크기는 이 기기의 이 브라우저에만 기억됩니다. 처음에는 보통으로 시작합니다. 맥에서는 ⌘ + / ⌘ − 로도 바꿀 수 있습니다.</p></section>';
   } else if (sub === 'rules') {
     var benchRows = STANDARDS.map(function (st) {
       var b = s.bench[st.code], cells = '';
@@ -3422,7 +3397,6 @@ document.addEventListener('input', function (e) {
   var r = parseDateInput(dpInp.value); if (r.ok && r.iso) { dpYM = r.iso.slice(0, 7); dpRefresh(); }
 });
 window.addEventListener('resize', dpClose);
-window.addEventListener('resize', function () { if (getZoomKey() === 'auto') applyZoom(); }); // 자동이면 화면을 돌리거나 창 크기를 바꿀 때 다시 맞춤
 window.addEventListener('scroll', function () { var o = document.querySelector('.dp'); if (o && dpInp && !o.classList.contains('sheet')) dpPlace(o, dpInp); }, true);
 function closeInsPop() { var o = document.querySelector('.ins-pop'); if (o) o.remove(); insInp = null; }
 function placeInsPop(pop, inp) {
