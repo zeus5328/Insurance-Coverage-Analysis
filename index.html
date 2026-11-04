@@ -1548,6 +1548,17 @@ button.cal-btn { padding: 0; color: var(--ink-2); cursor: pointer; }
 .tg-more { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); margin-bottom: 8px; }
 .tg-msg { display: flex; flex-direction: column; gap: 4px; margin: 4px 0 10px; }
 .tg-msg textarea { min-height: 64px; }
+.news-head { flex-wrap: wrap; gap: 8px; }
+.news-seg { flex-wrap: wrap; max-width: 100%; }
+.news-at { font-size: 12px; }
+.news-list { list-style: none; margin: 0; padding: 0; }
+.news-list li { padding: 12px 0; border-bottom: 1px solid var(--line); }
+.news-list li:last-child { border-bottom: 0; }
+.news-title { font-weight: 600; color: var(--ink); text-decoration: none; line-height: 1.45; }
+.news-title:hover { text-decoration: underline; }
+.news-desc { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.news-meta { display: flex; gap: 10px; align-items: center; margin-top: 4px; font-size: 12px; color: var(--ink-3); flex-wrap: wrap; }
+@media (max-width: 520px) { .news-seg { display: flex; overflow-x: auto; flex-wrap: nowrap; width: 100%; } .news-seg .seg-btn { flex: none; } }
 .rel-cyc { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; white-space: nowrap; }
 .rel-cyc select { width: auto; min-width: 0; padding-top: 6px; padding-bottom: 6px; }
 .rel-table td.rel-act { white-space: nowrap; }
@@ -2407,8 +2418,8 @@ function render() {
 var STEPS = [['info', '고객 정보'], ['policies', '계약 입력'], ['analysis', '보장분석'], ['plan', '정리·설계'], ['proposal', '제안서']];
 var SETTING_SUBS = [['me', '내정보'], ['license', '라이선스'], ['account', '계정설정'], ['display', '화면설정'], ['data', '자료관리'], ['rules', '분석기준'], ['dict', '담보사전'], ['products', '상품관리']];
 var WORK_SUBS = [['home', '오늘'], ['calendar', '일정'], ['tasks', '할 일'], ['birthday', '생일'], ['anniv', '기념일'], ['gifts', '선물'], ['stats', '실적'], ['comm', '수수료']];
-var OFFICE_SUBS = [['notice', '공지'], ['schedule', '일정'], ['staff', '직원'], ['branch', '지점·사업단']]; // 직원 생일은 업무 → 생일(직원)로 합침(2026-11-03)
-var OFFICE_TITLES = { schedule: '지점 일정', staff: '직원 연락처', sbd: '직원 생일' }; // 메뉴 이름은 짧게, 화면 제목은 그대로
+var OFFICE_SUBS = [['notice', '공지'], ['news', '뉴스'], ['schedule', '일정'], ['staff', '직원'], ['branch', '지점·사업단']]; // 직원 생일은 업무 → 생일(직원)로 합침(2026-11-03)
+var OFFICE_TITLES = { news: '보험 뉴스', schedule: '지점 일정', staff: '직원 연락처', sbd: '직원 생일' }; // 메뉴 이름은 짧게, 화면 제목은 그대로
 function officeSubs() { return team.info ? OFFICE_SUBS.concat([['team', '팀 현황']]) : OFFICE_SUBS; }
 var LIST_SUBS = [['list', '고객목록'], ['contacts', '관계'], ['family', '가구'], ['notes', '상담'], ['props', '제안']]; // 관리 필요는 고객목록 숫자 칸으로 합침(2026-11-03)
 var LIST_TITLES = { list: '고객목록', contacts: '고객 관계', family: '가구', notes: '상담 기록', props: '제안 기록' }; // 메뉴 이름은 짧게, 화면 제목은 그대로(2026-11-03)
@@ -2456,7 +2467,7 @@ function applyHash() {
   } else if ((m = h.match(/^#work(?:-(home|calendar|birthday|anniv|gifts|tasks|stats|comm|staff|branch))?$/)) || h === '#cust-gifts' || h === '#cust-todo' || h === '' || h === '#') {
     ui.view = 'work'; ui.wsub = (m && m[1]) || (h === '#cust-gifts' ? 'gifts' : 'home');
     if (ui.wsub === 'staff' || ui.wsub === 'branch') { ui.view = 'office'; ui.osub = ui.wsub; ui.wsub = 'home'; } // 예전 주소
-  } else if ((m = h.match(/^#office(?:-(notice|schedule|edu|dine|staff|sbd|branch|team))?$/))) {
+  } else if ((m = h.match(/^#office(?:-(notice|news|schedule|edu|dine|staff|sbd|branch|team))?$/))) {
     ui.view = 'office'; ui.osub = m[1] === 'edu' || m[1] === 'dine' ? 'schedule' : (m[1] || 'notice');
     if (ui.osub === 'sbd') { ui.view = 'work'; ui.wsub = 'birthday'; ui.bdW = 'o'; } // 예전 지점 → 직원 생일
   } else if ((m = h.match(/^#cust-(notes|props|family|care|contacts)$/))) {
@@ -5894,9 +5905,69 @@ function eventForm(dateDefault) {
     lbl('내용', f('ui', 'evTitle', ui.evTitle || '', { ph: '예: 김민수 고객 보장분석 상담 (카페)' }), 'g-title') +
     '<div class="field"><span>&nbsp;</span><button class="btn primary ev-btn" data-act="addEvent">일정 추가</button></div></div>';
 }
+// ===== 지점 → 뉴스: 네이버 뉴스 검색 (Supabase 서버 기능 'news' 경유, 2026-11-04) =====
+// 키(NAVER_CLIENT_ID/SECRET)는 Supabase 비밀값에만 있다. 앱은 정해진 주제(topic)만 보내고 고객 정보는 보내지 않는다.
+var NEWS_TOPICS = [['all', '전체'], ['silson', '실손'], ['auto', '자동차'], ['life', '생명'], ['nonlife', '손해'], ['fc', '설계사'], ['fss', '감독·제도']];
+var NEWS_LINKS = [['금융감독원', 'https://www.fss.or.kr'], ['금융위원회', 'https://www.fsc.go.kr'], ['생명보험협회', 'https://www.klia.or.kr'], ['손해보험협회', 'https://www.knia.or.kr']];
+var news = { cache: {}, busy: '', err: {} };
+var NEWS_ERR = {
+  login: '로그인한 상태에서만 뉴스를 볼 수 있습니다.',
+  offline: '지금은 오프라인이라 뉴스를 불러올 수 없습니다. 인터넷이 연결되면 "새로고침"을 누르세요.',
+  not_configured: '아직 네이버 뉴스 키가 서버에 등록되지 않았습니다. 관리자가 Supabase → Edge Functions → Secrets에 NAVER_CLIENT_ID와 NAVER_CLIENT_SECRET을 넣으면 바로 보입니다.',
+  auth: '네이버 키가 맞지 않습니다. Supabase에 넣은 Client ID·Client Secret을 다시 확인하세요.',
+  limit: '오늘 뉴스 조회 한도를 넘었습니다. 내일 다시 시도하세요.',
+  nofn: '뉴스 서버 기능을 찾지 못했습니다. 관리자에게 알려 주세요.',
+  network: '뉴스를 불러오지 못했습니다. 인터넷 연결을 확인하고 "새로고침"을 눌러 보세요.'
+};
+function newsLoad(tp, force) {
+  if (news.busy) return;
+  var c = news.cache[tp]; if (c && !force && Date.now() - c.t < 10 * 60 * 1000) return;
+  if (!cloud.on || !cloud.client) { news.err[tp] = 'login'; return; }
+  if (cloud.offline || navigator.onLine === false) { news.err[tp] = 'offline'; return; }
+  var cfg = getCloudConfig(); if (!cfg) { news.err[tp] = 'login'; return; }
+  news.busy = tp; news.err[tp] = '';
+  cloud.client.auth.getSession().then(function (r) {
+    var tok = r && r.data && r.data.session && r.data.session.access_token; if (!tok) throw new Error('login');
+    return fetch(cfg.url + '/functions/v1/news?topic=' + encodeURIComponent(tp), { headers: { Authorization: 'Bearer ' + tok, apikey: cfg.anonKey } });
+  }).then(function (res) {
+    if (res.status === 404) throw new Error('nofn'); if (res.status === 401) throw new Error('login');
+    return res.json();
+  }).then(function (d) {
+    if (!d || d.error) throw new Error((d && d.error) || 'network');
+    news.cache[tp] = { t: Date.now(), items: d.items || [], at: d.at || '' };
+  }).catch(function (e) { var m = e && e.message; news.err[tp] = NEWS_ERR[m] ? m : 'network'; })
+    .then(function () { news.busy = ''; if (ui.view === 'office' && ui.osub === 'news') render(); });
+}
+function newsAgo(iso) {
+  if (!iso) return ''; var m = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
+  if (isNaN(m)) return ''; if (m < 1) return '방금'; if (m < 60) return m + '분 전'; if (m < 1440) return Math.floor(m / 60) + '시간 전';
+  var d = Math.floor(m / 1440); return d < 7 ? d + '일 전' : iso.slice(0, 10).replace(/-/g, '.');
+}
+function newsHost(u) { try { return new URL(u).hostname.replace(/^www\./, ''); } catch (e) { return ''; } }
+function renderNews() {
+  var tp = ui.newsT || 'all', c = news.cache[tp], err = news.err[tp], busy = news.busy === tp;
+  if (!c && !err && !busy) setTimeout(function () { newsLoad(tp); render(); }, 0);
+  var seg = '<div class="seg news-seg" role="tablist">' + NEWS_TOPICS.map(function (t) { return '<button class="seg-btn' + (tp === t[0] ? ' on' : '') + '" role="tab" aria-selected="' + (tp === t[0]) + '" data-act="newsTopic" data-id="' + t[0] + '">' + t[1] + '</button>'; }).join('') + '</div>';
+  var items = c ? c.items : [], lim = ui.newsAll ? items.length : 20;
+  var list = busy && !c ? '<div class="empty"><strong>뉴스를 불러오는 중…</strong></div>'
+    : err && !c ? '<div class="empty"><strong>뉴스를 보여 줄 수 없습니다</strong><span>' + esc(NEWS_ERR[err] || NEWS_ERR.network) + '</span></div>'
+    : !items.length ? '<div class="empty"><strong>새 기사가 없습니다</strong><span>다른 주제를 눌러 보세요.</span></div>'
+    : '<ul class="news-list">' + items.slice(0, lim).map(function (it, i) {
+      return '<li><a class="news-title" href="' + attr(it.link) + '" target="_blank" rel="noopener noreferrer">' + esc(it.title) + '</a>' +
+        (it.desc ? '<p class="news-desc">' + esc(it.desc) + '</p>' : '') +
+        '<div class="news-meta"><span>' + esc(newsHost(it.link)) + '</span><span>' + esc(newsAgo(it.date)) + '</span><button class="link-btn" data-act="newsCopy" data-id="' + i + '">링크 복사</button></div></li>'; }).join('') + '</ul>' +
+      (items.length > 20 ? '<button class="btn sm more-btn" data-act="toggleBox" data-id="newsAll">' + (ui.newsAll ? '접기 ▲' : '더보기 (' + (items.length - 20) + '건 더) ▼') + '</button>' : '');
+  var q = (NEWS_TOPICS.filter(function (t) { return t[0] === tp; })[0] || [])[1];
+  return '<section class="panel"><div class="row between news-head">' + seg + '<div class="row" style="gap:8px"><span class="muted news-at">' + (busy ? '불러오는 중…' : c ? newsAgo(new Date(c.t).toISOString()) + ' 갱신' : '') + '</span>' +
+    '<button class="btn sm" data-act="newsRefresh"' + (busy ? ' disabled' : '') + '>새로고침</button></div></div>' +
+    (err && c ? '<div class="notice">' + esc(NEWS_ERR[err] || NEWS_ERR.network) + ' (아래는 마지막으로 불러온 기사입니다)</div>' : '') + list +
+    '<p class="muted" style="margin:0">네이버 뉴스 검색에서 "' + esc(q || '전체') + '" 주제의 최신 기사를 보여 줍니다. 제목을 누르면 언론사 기사가 새 창으로 열립니다. 기사 내용과 저작권은 각 언론사에 있습니다.</p></section>' +
+    '<section class="panel"><h2>보험 관련 기관 바로가기</h2><div class="row news-links" style="gap:8px;flex-wrap:wrap">' + NEWS_LINKS.map(function (l) { return '<a class="btn sm" href="' + attr(l[1]) + '" target="_blank" rel="noopener noreferrer">' + esc(l[0]) + '</a>'; }).join('') + '</div>' +
+    '<p class="muted" style="margin:0">보도자료·제도 변경은 각 기관 홈페이지에서 확인하세요.</p></section>';
+}
 function renderOffice() {
   if (ui.osub === 'dine' || ui.osub === 'edu') ui.osub = 'schedule'; // 예전 행사·참석체크 메뉴 → 지점 일정으로 합침
-  var sub = ['notice', 'schedule', 'branch', 'staff'].indexOf(ui.osub) >= 0 || (ui.osub === 'team' && team.info) ? ui.osub : 'notice', body = sub === 'team' ? teamStatsPanel() : sub === 'notice' ? teamJoinHint() + teamNoticeSection() + noticePanel() : sub === 'branch' ? branchPanel() : sub === 'staff' ? staffPanel() : teamJoinHint() + orgSchedulePanel();
+  var sub = ['notice', 'news', 'schedule', 'branch', 'staff'].indexOf(ui.osub) >= 0 || (ui.osub === 'team' && team.info) ? ui.osub : 'notice', body = sub === 'team' ? teamStatsPanel() : sub === 'news' ? renderNews() : sub === 'notice' ? teamJoinHint() + teamNoticeSection() + noticePanel() : sub === 'branch' ? branchPanel() : sub === 'staff' ? staffPanel() : teamJoinHint() + orgSchedulePanel();
   return subPage('지점', officeSubs(), sub, 'goOffice', '지점 메뉴', body, OFFICE_TITLES);
 }
 function renderWork() {
@@ -6708,6 +6779,9 @@ function doAction(el) {
       break;
     }
     case 'licPdfDown': licPdfDown(id); return;
+    case 'newsTopic': ui.newsT = id; ui.newsAll = false; break;
+    case 'newsRefresh': { var nt0 = ui.newsT || 'all'; news.err[nt0] = ''; newsLoad(nt0, true); break; }
+    case 'newsCopy': { var nc = news.cache[ui.newsT || 'all'], ni = nc && nc.items[Number(id)]; if (ni) copyText(ni.title + '\n' + ni.link, '기사 링크를 복사했습니다'); return; }
     case 'relTab': ui.relTab = id; ui.armed = null; break;
     case 'rcDone': { var rc = custById(id); if (!rc) break; var td0 = today(); rc.notes = rc.notes || [];
       rc.notes.forEach(function (n) { if (n.next && !n.done && n.next <= td0) n.done = true; });
