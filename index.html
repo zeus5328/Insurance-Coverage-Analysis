@@ -1151,7 +1151,7 @@ td.ltel .btn.sm { padding: 1px 7px; margin-left: 2px; }
   .prop-table tr { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; padding: 12px 2px; border-bottom: 1px solid var(--line); }
   .prop-table td { border: 0 !important; padding: 0 !important; white-space: normal !important; text-align: left !important; min-width: 0 !important; }
   .prop-table td[data-l]::before { content: attr(data-l); display: block; font-size: 11px; color: var(--ink-3); margin-bottom: 2px; }
-  .prop-table td.prop-go { align-self: end; justify-self: end; grid-column: 2; }
+  .prop-table td.prop-go { grid-column: 1 / -1; justify-self: start; display: flex; flex-wrap: wrap; gap: 6px; }
 }
 @media (max-width: 600px) { .panel > .row.between.fam-headrow { flex-wrap: wrap !important; } .fam-headrow > .row { flex: 1 1 100% !important; } }
 @media (max-width: 600px) {
@@ -1548,6 +1548,49 @@ button.cal-btn { padding: 0; color: var(--ink-2); cursor: pointer; }
 .tg-more { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); margin-bottom: 8px; }
 .tg-msg { display: flex; flex-direction: column; gap: 4px; margin: 4px 0 10px; }
 .tg-msg textarea { min-height: 64px; }
+.hh-line { margin: -4px 0 0; font-size: 12.5px; }
+.fam-sum .fam-meta, .fam-sum .fam-names { min-width: 0; max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
+.hh-sug-list { list-style: none; margin: 0; padding: 0; }
+.hh-sug-list li { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.hh-sug-list li:last-child { border-bottom: 0; }
+.hh-contact { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; padding: 8px 12px; border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--surface-2); font-size: 13px; }
+.hh-doc { font-size: 13px; margin-top: 6px; }
+.doc-hh { margin-top: 18px; }
+.pipe { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.pipe-st { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); font: inherit; font-size: 13px; color: var(--ink-2); cursor: pointer; }
+.pipe-st b { font-size: 16px; color: var(--ink); }
+.pipe-st:hover { border-color: var(--ok); }
+.pipe-st.on { border-color: var(--ink); background: var(--ink); color: var(--surface); }
+.pipe-st.on b { color: var(--surface); }
+.pipe-3 b { color: var(--ok); }
+.pipe-5 b { color: var(--accent); }
+.pipe-arrow { color: var(--ink-3); font-size: 18px; }
+.pipe-sep { width: 1px; height: 28px; background: var(--line); margin: 0 6px; }
+.prop-table td.prop-go { white-space: nowrap; }
+.prop-table td.prop-go .btn { margin-right: 4px; }
+.reason-list li { grid-template-columns: 130px 1fr 28px; }
+@media (max-width: 520px) { .pipe-arrow, .pipe-sep { display: none; } .pipe-st { padding: 6px 10px; } }
+.note-tpls { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 2px 0 6px; font-size: 12px; }
+.note-tpls .qchip { font-size: 12.5px; padding: 3px 10px; }
+.note-stats { display: grid; grid-template-columns: 3fr 2fr; gap: 20px; }
+.note-stats h2 { margin: 0 0 10px; font-size: 15px; }
+@media (max-width: 760px) { .note-stats { grid-template-columns: 1fr; } }
+.nbar-wrap { display: flex; align-items: flex-end; gap: 6px; height: 110px; }
+.nbar-col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 3px; min-width: 0; }
+.nbar { display: block; width: 100%; max-width: 30px; background: var(--accent); border-radius: 4px 4px 0 0; min-height: 2px; opacity: .85; }
+.nbar-v { font-size: 11px; color: var(--ink-2); }
+.nbar-l { font-size: 10.5px; color: var(--ink-3); white-space: nowrap; }
+.tbar-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.tbar-list li { display: grid; grid-template-columns: 64px 1fr 28px; gap: 8px; align-items: center; font-size: 13px; }
+.tbar { height: 10px; background: var(--surface-2); border-radius: 5px; overflow: hidden; }
+.tbar span { display: block; height: 100%; background: var(--ok); border-radius: 5px; }
+.tl-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.tl-list li { display: grid; grid-template-columns: 84px 52px 1fr; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--line); font-size: 13px; align-items: baseline; }
+.tl-d { color: var(--ink-3); }
+.tl-k { font-size: 11px; font-weight: 700; border-radius: 999px; padding: 1px 6px; text-align: center; background: var(--surface-2); color: var(--ink-2); }
+.tl-상담 { background: var(--accent-soft); color: var(--accent-ink); }
+.tl-제안 { background: var(--ok-soft); color: var(--ink); }
+@media (max-width: 520px) { .tl-list li { grid-template-columns: 76px 1fr; } .tl-t { grid-column: 1 / -1; } }
 .news-head { flex-wrap: wrap; gap: 8px; }
 .news-seg { flex-wrap: wrap; max-width: 100%; }
 .news-at { font-size: 12px; }
@@ -2038,12 +2081,12 @@ function generateDemoData(opt) {
   kid.policies = kid.policies.filter(function (p2) { return !/운전자|종신/.test(p2.product); }).slice(0, 2);
   custs.push(kid);
   while (custs.length < nCust) custs.push(randomSampleCustomer()); // 입력한 인원만큼 고객 추가
-  var h1 = { id: uid(), name: custs[0].name.replace(' (예시)', '') + ' 가구 (예시)', sample: true }, h2 = { id: uid(), name: custs[1].name.replace(' (예시)', '') + ' 가구 (예시)', sample: true };
+  var h1 = { id: uid(), name: custs[0].name.replace(' (예시)', '') + ' 가구 (예시)', sample: true, onDoc: true }, h2 = { id: uid(), name: custs[1].name.replace(' (예시)', '') + ' 가구 (예시)', sample: true };
   S.households.push(h1, h2); made.hh = 2;
   custs[0].householdId = h1.id; custs[0].relation = '본인'; custs[6].householdId = h1.id; custs[6].relation = '배우자';
   custs[1].householdId = h2.id; custs[1].relation = '본인'; custs[7].householdId = h2.id; custs[7].relation = '배우자'; kid.householdId = h2.id; kid.relation = '자녀';
   // 상담 기록·다음 연락일 (지난 것·오늘·다가오는 것 섞어서)
-  var topics = ['보장분석 요청, 증권 사진 받기로 함', '실손 전환 문의', '갱신 보험료 인상 상담', '자녀 보험 문의', '암 진단비 보강 제안', '배우자 보장 같이 점검하기로 함'];
+  var topics = ['보장분석 요청, 증권 사진 받기로 함', '실손 전환 문의', '갱신 보험료 인상 상담', '자녀 보험 문의', '암 진단비 보강 제안', '배우자 보장 같이 점검하기로 함', '보험금 청구 서류 안내 (병원 영수증)', '안부 연락, 이사 예정이라고 함', '계약 체결 완료, 증권 전달', '생일 축하 안부'];
   custs.forEach(function (c, k) {
     c.notes = [];
     var n1 = R(1, 3);
@@ -2058,7 +2101,7 @@ function generateDemoData(opt) {
     var c = custs[k]; if (!c.policies.length) return;
     var a1 = analyze(c, S), s1 = suggest(c, S, a1), r1 = applyPlan(c, S, s1), a2 = analyze(c, S, r1.after);
     var d = new Date(now.getTime() - R(0, Math.max(0, now.getDate() - 1)) * 864e5); // 이번 달 실적에 잡히게
-    c.snapshots = [{ result: ['성사', '진행 중', '보류', '거절'][j], at: isoDate(d) + ' ' + pad(R(9, 19)) + ':' + pad(R(0, 59)), before: a1.premium, after: a2.premium, shortBefore: a1.counts.short, shortAfter: a2.counts.short, rows: a1.rows.map(function (r) { return { code: r.code, cur: r.cur, verdict: r.verdict }; }) }];
+    c.snapshots = [{ result: ['성사', '검토 중', '보류', '거절'][j], reason: ['', '', '가족 반대', '보험료 부담'][j], at: isoDate(d) + ' ' + pad(R(9, 19)) + ':' + pad(R(0, 59)), before: a1.premium, after: a2.premium, shortBefore: a1.counts.short, shortAfter: a2.counts.short, rows: a1.rows.map(function (r) { return { code: r.code, cur: r.cur, verdict: r.verdict }; }) }];
   });
   // 계약 상태 예시: 해지 1건·납입유예 1건 (보험 → 장기의 "실효·해지"·"납입유예" 거르기, 계약 입력의 상태 칸)
   (function () { var c6 = custs[6], c7 = custs[7];
@@ -2066,7 +2109,7 @@ function generateDemoData(opt) {
     if (c7 && c7.policies.length) c7.policies[0].status = '유예'; })();
   // 오래된 진행 중 제안 예시 (고객 → 제안의 "진행 중 14일 지남")
   (function () { var c = custs[6]; if (!c || !c.policies.length) return; var a1 = analyze(c, S), s1 = suggest(c, S, a1), r1 = applyPlan(c, S, s1), a2 = analyze(c, S, r1.after), d = new Date(now.getTime() - R(18, 30) * 864e5);
-    c.snapshots = (c.snapshots || []).concat([{ result: '진행 중', at: isoDate(d) + ' ' + pad(R(9, 19)) + ':' + pad(R(0, 59)), before: a1.premium, after: a2.premium, shortBefore: a1.counts.short, shortAfter: a2.counts.short, rows: a1.rows.map(function (r) { return { code: r.code, cur: r.cur, verdict: r.verdict }; }) }]); })();
+    c.snapshots = (c.snapshots || []).concat([{ result: '제안함', at: isoDate(d) + ' ' + pad(R(9, 19)) + ':' + pad(R(0, 59)), before: a1.premium, after: a2.premium, shortBefore: a1.counts.short, shortAfter: a2.counts.short, rows: a1.rows.map(function (r) { return { code: r.code, cur: r.cur, verdict: r.verdict }; }) }]); })();
   // 관계 화면 예시: 소개 관계·연락 주기·오래 연락 안 한 고객 (2026-11-04)
   (function () {
     if (custs[2]) custs[2].refBy = custs[0].id; if (custs[3]) custs[3].refBy = custs[0].id; if (custs[5]) custs[5].refBy = custs[2].id;
@@ -2075,6 +2118,9 @@ function generateDemoData(opt) {
     custs[0].cycle = 30; if (custs[1]) custs[1].cycle = 30; // VIP 예시
     custs.forEach(function (c, k) { if (k >= 2 && k % 3 === 2 && k !== 5) { var back = R(95, 200); (c.notes || []).forEach(function (n) { n.date = dayISO(-back - R(0, 60)); n.next = ''; n.done = true; }); } }); // 오래 연락 안 함
     if (custs[custs.length - 1] && custs.length > 9) custs[custs.length - 1].notes = []; // 연락 기록 없음
+    // 가구 예시: 같은 상세 주소(묶기 추천)·가구원 빠짐·제안서 가구 보장
+    if (custs[3] && custs[4]) { custs[3].address = '고양시 일산서구 예시로 123, 101동 1001호 (예시)'; custs[4].address = '고양시 일산서구 예시로 123, 101동 1001호 (예시)'; }
+    custs[0].children = Math.max(num(custs[0].children), 1); custs[0].spouse = true; // h1(부부)에 자녀 1명이 빠진 것으로 보임
   })();
   custs.forEach(function (c) { c.sample = true; stampCustomer(c); store.customers.push(c); }); made.cust = custs.length;
   // 2) 직원 4명 (생일 포함, 지점은 ABA 목록에서) — 전화번호는 실제 번호와 겹치지 않게 비움
@@ -3126,7 +3172,7 @@ function renderProposal(c, an) {
     return '<tr><td>' + esc(stdName(a.code)) + '</td><td class="r">' + fmtMan(a.amount) + '</td><td class="r">' + fmtWon(a.premium) + '</td><td>' + esc(a.note || '') + '</td></tr>';
   }).join('');
   var snaps = (c.snapshots || []).slice(-5).reverse().map(function (s) {
-    return '<li class="num">' + esc(s.at) + ' · 정리 전 월 ' + fmtWon(s.before) + ' → 후 ' + fmtWon(s.after) + ' · 부족 ' + s.shortBefore + ' → ' + s.shortAfter + ' · ' + esc(s.result || '진행 중') + '</li>';
+    return '<li class="num">' + esc(s.at) + ' · 정리 전 월 ' + fmtWon(s.before) + ' → 후 ' + fmtWon(s.after) + ' · 부족 ' + s.shortBefore + ' → ' + s.shortAfter + ' · ' + esc(snapStage(s)) + '</li>';
   }).join('');
   return '<div class="row no-print"><button class="btn primary" data-act="openPrint">인쇄하기</button><button class="btn" data-act="snapshot">현재 분석 기록 남기기</button>' +
     '<span class="muted">미리보기를 확인한 뒤 프린터로 출력하거나 PDF 파일로 저장할 수 있습니다.</span></div>' +
@@ -3143,7 +3189,7 @@ function renderProposal(c, an) {
     (res.removed.length ? '<p class="callout" style="margin:10px 0 0">해지검토 계약은 해지 시 해지환급금이 납입보험료보다 적을 수 있고, 새 계약은 건강 상태에 따라 가입이 거절되거나 조건이 붙을 수 있으며 면책·감액 기간이 새로 적용됩니다. 새 계약 성립 후 기존 계약 해지 여부를 결정하시기 바랍니다. 기존 계약이 부당하게 소멸된 경우 소멸일부터 6개월 안에 기존 계약의 부활을 청구하고 새 계약을 취소할 수 있습니다(보험업법 제97조).</p>' : '') + '</section>' +
     switchTable(c, res) +
     '<section><h2>3. 신규 설계</h2>' + (addRows ? '<table class="num"><thead><tr><th>담보</th><th class="r">보장금액</th><th class="r">월보험료</th><th>상품·메모</th></tr></thead><tbody>' + addRows + '</tbody></table>' : '<p>추가 설계 없음</p>') + '</section>' +
-    (fc.card && fc.cardOnDoc !== false ? '<section class="doc-card"><h2>담당 FC</h2><div class="doc-card-row"><img class="doc-card-img" src="' + attr(fc.card) + '" alt="담당 FC 명함"><div class="doc-card-txt">' + (fc.name ? '<b>' + esc((fc.role || 'FC') + ' ' + fc.name) + '</b>' : '') + '<span>' + esc([[fc.org, fc.branch, fc.unit].filter(Boolean).join(' '), fc.phone, fc.email].filter(Boolean).join(' · ')) + '</span>' + (fcOffice(fc) ? '<span>' + esc(fcOffice(fc)) + '</span>' : '') + '<span class="muted">궁금한 점은 언제든 연락 주세요.</span></div></div></section>' : '') +
+    hhDocSection(c) + (fc.card && fc.cardOnDoc !== false ? '<section class="doc-card"><h2>담당 FC</h2><div class="doc-card-row"><img class="doc-card-img" src="' + attr(fc.card) + '" alt="담당 FC 명함"><div class="doc-card-txt">' + (fc.name ? '<b>' + esc((fc.role || 'FC') + ' ' + fc.name) + '</b>' : '') + '<span>' + esc([[fc.org, fc.branch, fc.unit].filter(Boolean).join(' '), fc.phone, fc.email].filter(Boolean).join(' · ')) + '</span>' + (fcOffice(fc) ? '<span>' + esc(fcOffice(fc)) + '</span>' : '') + '<span class="muted">궁금한 점은 언제든 연락 주세요.</span></div></div></section>' : '') +
     '<p class="fine">본 자료는 고객님의 기존 보험 계약을 바탕으로 작성한 상담 참고 자료이며, 보험 가입·해지를 확정하는 문서가 아닙니다. 권장 금액은 상담 기준표에 따른 참고값입니다. 실제 보장 내용은 각 보험사의 약관이 우선하며, 최종 가입·해지 결정은 고객님 본인이 하십니다. 기존 계약을 해지하고 새 계약에 가입하는 경우 보험업법에 따른 비교 안내를 받으실 수 있습니다.</p>' +
     '</article>';
 }
@@ -5075,9 +5121,10 @@ function renderNotesPanel(c) {
     (nx ? '<span class="pill ' + (daysUntil(nx.next) < 0 ? 'v-short' : 'v-ok') + '">다음 연락 ' + esc(nx.next) + ' · ' + dLabel(daysUntil(nx.next)) + '</span>' : '<span class="muted">다음 연락일이 없습니다</span>') + '</div>' +
     '<div class="form-grid nd-grid">' + lbl('상담일', f('ui', 'ndDate', ui.ndDate || today(), { type: 'date' })) +
     lbl('방법', f('ui', 'ndMethod', ui.ndMethod || '전화', { type: 'select', options: NOTE_METHODS.map(function (m) { return [m, m]; }) })) +
+    lbl('주제', f('ui', 'ndTopic', ui.ndTopic || '', { type: 'select', options: [['', '자동']].concat(NOTE_TOPICS.map(function (x) { return [x, x]; })) })) +
     lbl('상담 내용', f('ui', 'ndText', ui.ndText || '', { ph: '예: 실손 중복 설명, 다음 주 증권 사진 받기로 함' }), 'g-title') +
     lbl('다음 연락일', f('ui', 'ndNext', ui.ndNext || '', { type: 'date', quick: true })) +
-    '<div class="field"><span>&nbsp;</span><button class="btn primary" data-act="addNote">기록 추가</button></div></div>' +
+    '<div class="field"><span>&nbsp;</span><button class="btn primary" data-act="addNote">기록 추가</button></div></div>' + noteTplChips('nd') +
     (rows ? '<div class="tablewrap"><table class="t"><thead><tr><th>상담일</th><th>방법</th><th>내용</th><th>다음 연락일</th><th></th></tr></thead><tbody>' + rows + '</tbody></table></div>' : '') + '</section>';
 }
 
@@ -5090,14 +5137,18 @@ function renderListSub() {
   else if (sub === 'notes') { var nAll = [], nCnt = {}; store.customers.forEach(function (c) { (c.notes || []).forEach(function (n) { nAll.push(n); nCnt[n.method] = (nCnt[n.method] || 0) + 1; }); });
     // 요약 칸(누르면 거르기)·기간 칩·+ 추가 (2026-11-03)
     var nTm = today().slice(0, 7), nMonth = nAll.filter(function (n) { return String(n.date || '').slice(0, 7) === nTm; }).length;
-    var nLate = nAll.filter(function (n) { return n.next && !n.done && daysUntil(n.next) < 0; }).length, nSoon = nAll.filter(function (n) { var d = n.next && !n.done ? daysUntil(n.next) : null; return d != null && d >= 0 && d <= 7; }).length;
+    var nLm = (function () { var d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - 1); return isoDate(d).slice(0, 7); })(), nLast = nAll.filter(function (n) { return String(n.date || '').slice(0, 7) === nLm; }).length;
+    var nThis = nAll.filter(function (n) { return String(n.date || '').slice(0, 7) === nTm; }), nFace = nThis.filter(function (n) { return n.method === '대면'; }).length, nCall = nThis.filter(function (n) { return n.method === '전화' || n.method === '문자'; }).length;
     var nk = function (key, k2, label, v, tone) { var on = (ui[k2] || '') === key; return '<button class="kpi' + (on ? ' on' : '') + (tone && v ? ' ' + tone : '') + '" data-act="uiPick" data-k="' + k2 + '" data-id="' + key + '"><span class="k">' + label + '</span><span class="v num">' + v + '<small>건</small></span></button>'; };
-    body = '<div class="kpis">' + nk('this', 'nP', '이번 달 상담', nMonth) + nk('late', 'nF', '다음 연락 지남', nLate, 'warn') + nk('soon', 'nF', '7일 안 연락 예정', nSoon) + '</div>' +
+    if (ui.nF) ui.nF = ''; // 연락 예정 거르기는 고객 → 관계로 옮김 (2026-11-04)
+    body = '<div class="kpis">' + nk('this', 'nP', '이번 달 상담', nMonth).replace('<small>건</small>', '<small>건 · 지난달 ' + nLast + '</small>') + nk('대면', 'nMethod', '이번 달 대면', nFace) + nk('전화', 'nMethod', '이번 달 전화·문자', nCall) +
+      '<button class="kpi" data-act="goList" data-id="contacts"><span class="k">연락할 차례 보기</span><span class="v" style="font-size:15px">고객 → 관계 ›</span></button></div>' + noteStats(nAll) +
       '<section class="panel"><div class="row between"><h2>상담 기록 <span id="nqCnt">' + notesFiltered().length + '</span>건</h2><div class="row" style="gap:6px">' +
       '<input type="search" id="nq" class="mini-search" placeholder="고객·내용 검색" value="' + attr(ui.nq) + '" aria-label="상담 기록 검색"><button class="btn primary sm" data-act="noteAddOpen">+ 추가</button></div></div>' +
+      '<div class="todos">' + [['', '모든 주제']].concat(NOTE_TOPICS.map(function (t) { return [t, t]; })).map(function (o) { var on = (ui.nTopic || '') === o[0]; return '<button class="todo' + (on ? ' on' : '') + '" data-act="uiPick" data-k="nTopic" data-id="' + attr(o[0]) + '">' + esc(o[1]) + '</button>'; }).join('') + '</div>' +
       (nAll.length ? '<div class="todos">' + [['', '전체', nAll.length]].concat(NOTE_METHODS.filter(function (m) { return nCnt[m] || ui.nMethod === m; }).map(function (m) { return [m, m, nCnt[m] || 0]; })).map(function (o) { var on = (ui.nMethod || '') === o[0]; return '<button class="todo' + (on ? ' on' : '') + '" data-act="uiPick" data-k="nMethod" data-id="' + attr(o[0]) + '">' + esc(o[1]) + ' <b>' + o[2] + '</b></button>'; }).join('') +
         '<span class="org-sep"></span>' + NOTE_PERIODS.map(function (o) { var on = (ui.nP || '') === o[0]; return '<button class="todo' + (on ? ' on' : '') + '" data-act="uiPick" data-k="nP" data-id="' + o[0] + '">' + o[1] + '</button>'; }).join('') + '</div>' : '') +
-      '<div id="nqWrap">' + renderAllNotes() + '</div><p class="muted" style="margin:0">다음 연락일이 있는 기록은 "연락 완료"를 누르면 업무 → 오늘의 연락 할 일에서 빠집니다. 고객 이름을 누르면 고객 정보와 상담 기록 전체를 볼 수 있습니다.</p></section>'; }
+      '<div id="nqWrap">' + renderAllNotes() + '</div><p class="muted" style="margin:0">상담 화면은 "무슨 이야기를 했는지" 기록하는 곳입니다. 누구에게 연락할 차례인지는 고객 → 관계에서 봅니다. 다음 연락일을 넣으면 일정 달력과 업무 → 오늘의 연락 할 일에도 자동으로 나옵니다.</p></section>' + noteTimelinePanel(); }
   else if (sub === 'contacts') body = renderRelation(); // 관계: 연락할 차례·안내 대상·소개 (2026-11-04, 예전 연락처)
   else if (sub === 'props') body = renderProps();
   else if (sub === 'family') body = renderFamily();
@@ -5310,6 +5361,48 @@ function renderTodo() {
     todoCard('개인정보 동의', num(P.consentMonths) ? '미동의·만료 30일 안' : '미동의 (보유 기간 미설정)', srt(consent), '확인할 동의가 없습니다.', 'tmConsent') +
     '</div>';
 }
+// ===== 상담: 주제·빠른 기록·활동 통계·고객 타임라인 (2026-11-04) =====
+var NOTE_TOPICS = ['안부', '보장분석', '청구', '갱신', '계약', '민원', '기타'];
+var NOTE_TPLS = [['안부', '안부', '안부 연락. 특이사항 없음'], ['보장분석', '보장분석 설명', '보장분석 결과 설명, 부족 담보 안내'], ['청구', '청구 안내', '보험금 청구 서류·절차 안내'], ['갱신', '갱신 안내', '갱신 보험료·조건 안내'], ['계약', '계약 체결', '계약 체결 완료']];
+function noteTopic(n) { // 주제를 고르지 않은 예전 기록은 내용으로 짐작
+  if (n.topic) return n.topic; var t = String(n.text || '');
+  return /청구|보험금/.test(t) ? '청구' : /갱신/.test(t) ? '갱신' : /체결|청약|계약/.test(t) ? '계약' : /분석|보장|설계|제안/.test(t) ? '보장분석' : /민원|불만/.test(t) ? '민원' : /안부|인사|축하/.test(t) ? '안부' : '기타';
+}
+function noteTplChips(pfx) {
+  return '<div class="note-tpls"><span class="muted">빠른 기록</span>' + NOTE_TPLS.map(function (t, i) { return '<button type="button" class="qchip" data-act="noteTpl" data-pid="' + pfx + '" data-id="' + i + '">' + t[1] + '</button>'; }).join('') + '</div>';
+}
+function noteStats(nAll) {
+  // 최근 8주 상담 수 + 이번 달 주제별
+  var t0 = new Date(); t0 = new Date(t0.getFullYear(), t0.getMonth(), t0.getDate()); var dow = (t0.getDay() + 6) % 7; var mon = new Date(t0.getTime() - dow * 864e5);
+  var weeks = []; for (var w = 7; w >= 0; w--) { var st = new Date(mon.getTime() - w * 7 * 864e5); weeks.push({ s: isoDate(st), e: isoDate(new Date(st.getTime() + 6 * 864e5)), n: 0 }); }
+  var tm = today().slice(0, 7), tops = {};
+  nAll.forEach(function (n) { var d = String(n.date || ''); weeks.forEach(function (wk) { if (d >= wk.s && d <= wk.e) wk.n++; }); if (d.slice(0, 7) === tm) { var tp = noteTopic(n); tops[tp] = (tops[tp] || 0) + 1; } });
+  var mx = Math.max.apply(null, weeks.map(function (w) { return w.n; }).concat([1]));
+  var bars = '<div class="nbar-wrap" role="img" aria-label="최근 8주 상담 수">' + weeks.map(function (wk, i) { return '<div class="nbar-col"><span class="nbar-v num">' + wk.n + '</span><span class="nbar" style="height:' + Math.round(wk.n / mx * 64) + 'px"></span><span class="nbar-l">' + (i === 7 ? '이번 주' : wk.s.slice(5).replace('-', '.')) + '</span></div>'; }).join('') + '</div>';
+  var tk = NOTE_TOPICS.filter(function (t) { return tops[t]; }), tmx = Math.max.apply(null, tk.map(function (t) { return tops[t]; }).concat([1]));
+  var tbars = tk.length ? '<ul class="tbar-list">' + tk.sort(function (a, b) { return tops[b] - tops[a]; }).map(function (t) { return '<li><button class="link-btn" data-act="uiPick" data-k="nTopic" data-id="' + t + '">' + t + '</button><span class="tbar"><span style="width:' + Math.round(tops[t] / tmx * 100) + '%"></span></span><b class="num">' + tops[t] + '</b></li>'; }).join('') + '</ul>' : '<p class="muted" style="margin:0">이번 달 상담 기록이 아직 없습니다.</p>';
+  return '<section class="panel note-stats"><div class="ns-col"><h2>최근 8주 상담 수</h2>' + bars + '</div><div class="ns-col"><h2>이번 달 주제</h2>' + tbars + '</div></section>';
+}
+function custTimeline(c) {
+  var ev = [];
+  (c.notes || []).forEach(function (n) { if (n.date) ev.push({ d: n.date, k: '상담', t: noteTopic(n) + ' · ' + (n.method || '') + ' — ' + (n.text || '') }); });
+  (c.snapshots || []).forEach(function (s) { ev.push({ d: String(s.at || '').slice(0, 10), k: '제안', t: snapStage(s) + ' · 월 ' + fmtWon(s.before) + ' → ' + fmtWon(s.after) + (s.reason ? ' · 사유: ' + s.reason : '') }); });
+  (c.policies || []).forEach(function (p) { if (p.start) ev.push({ d: p.start, k: '계약', t: [p.insurer, p.product].filter(Boolean).join(' ') + (p.status && p.status !== '유지' ? ' (' + p.status + ')' : '') }); });
+  (c.autos || []).forEach(function (a) { if (a.start) ev.push({ d: a.start, k: '자동차', t: [a.insurer, a.carModel].filter(Boolean).join(' ') + ' 가입' }); });
+  (c.fires || []).forEach(function (a) { if (a.start) ev.push({ d: a.start, k: '화재', t: [a.insurer, a.kind].filter(Boolean).join(' ') + ' 가입' }); });
+  ev.sort(function (a, b) { return String(b.d).localeCompare(String(a.d)); });
+  return ev;
+}
+function noteTimelinePanel() {
+  var C = store.customers.slice().sort(byName), cid = custById(ui.tlCid || '') ? ui.tlCid : '';
+  var sel = f('ui', 'tlCid', cid, { type: 'select', options: [['', '고객을 고르세요']].concat(C.map(function (c) { return [c.id, c.name || '이름 없음']; })), aria: '타임라인 볼 고객' });
+  var body = '';
+  if (cid) { var c = custById(cid), ev = custTimeline(c), lim = ui.tlAll ? ev.length : 15;
+    body = ev.length ? '<ol class="tl-list">' + ev.slice(0, lim).map(function (e) { return '<li><span class="tl-d num">' + esc(String(e.d).replace(/-/g, '.')) + '</span><span class="tl-k tl-' + e.k + '">' + e.k + '</span><span class="tl-t">' + esc(e.t) + '</span></li>'; }).join('') + '</ol>' +
+      (ev.length > 15 ? '<button class="btn sm more-btn" data-act="toggleBox" data-id="tlAll">' + (ui.tlAll ? '접기 ▲' : '더보기 (' + (ev.length - 15) + '건 더) ▼') + '</button>' : '') + '<div class="row" style="gap:6px">' + custLink(c, 'info', '고객 정보 열기') + '</div>'
+      : '<p class="muted" style="margin:0">이 고객은 아직 상담·제안·계약 기록이 없습니다.</p>'; }
+  return '<section class="panel"><div class="row between"><h2>고객 타임라인</h2><div style="min-width:180px">' + sel + '</div></div>' + (body || '<p class="muted" style="margin:0">고객을 고르면 상담·제안·계약을 날짜순으로 한 줄에 이어서 보여 줍니다.</p>') + '</section>';
+}
 var NOTE_PERIODS = [['', '모든 기간'], ['this', '이번 달'], ['last', '지난 달'], ['3m', '최근 3개월']];
 function notePeriodOk(d) {
   var P = ui.nP || ''; if (!P) return true; d = String(d || ''); var t = today(), tm = t.slice(0, 7);
@@ -5323,6 +5416,7 @@ function notesFiltered() {
   store.customers.forEach(function (c) { (c.notes || []).forEach(function (n) { all.push({ c: c, n: n }); }); });
   return all.filter(function (x) {
     if (ui.nMethod && x.n.method !== ui.nMethod) return false;
+    if (ui.nTopic && noteTopic(x.n) !== ui.nTopic) return false;
     if (!notePeriodOk(x.n.date)) return false;
     var dn = x.n.next && !x.n.done ? daysUntil(x.n.next) : null;
     if (ui.nF === 'late' && !(dn != null && dn < 0)) return false;
@@ -5335,41 +5429,67 @@ function renderAllNotes() {
   if (!any) return '<div class="empty"><strong>상담 기록이 없습니다</strong><span>위 "+ 추가"나 고객 상세 → 고객 정보 아래 "상담 기록"에서 남길 수 있습니다.</span></div>';
   var list = notesFiltered().sort(function (a, b) { if (ui.nF) return String(a.n.next).localeCompare(String(b.n.next)); return String(b.n.date).localeCompare(String(a.n.date)); });
   if (!list.length) return '<div class="empty"><strong>조건에 맞는 기록이 없습니다</strong></div>';
-  return '<div class="tablewrap"><table class="t ctab note-table"><thead><tr><th>상담일</th><th>고객</th><th>방법</th><th>내용</th><th>다음 연락일</th><th></th></tr></thead><tbody>' + list.map(function (x) {
+  return '<div class="tablewrap"><table class="t ctab note-table"><thead><tr><th>상담일</th><th>고객</th><th>방법</th><th>주제</th><th>내용</th><th>다음 연락일</th><th></th></tr></thead><tbody>' + list.map(function (x) {
     var dn = x.n.next && !x.n.done ? daysUntil(x.n.next) : null;
-    return '<tr><td class="num" data-l="상담일">' + esc(x.n.date) + '</td><td data-l="고객">' + custLink(x.c, 'info') + '</td><td data-l="방법">' + esc(x.n.method) + '</td><td class="wrap" data-l="내용">' + esc(x.n.text) + '</td><td class="num" data-l="다음 연락일">' + (x.n.next ? esc(x.n.next) + (x.n.done ? ' <span class="chip">완료</span>' : ' <span class="chip' + (dn < 0 ? ' warn' : '') + '">' + dLabel(dn) + '</span>') : '–') + '</td>' +
+    return '<tr><td class="num" data-l="상담일">' + esc(x.n.date) + '</td><td data-l="고객">' + custLink(x.c, 'info') + '</td><td data-l="방법">' + esc(x.n.method) + '</td><td data-l="주제"><span class="chip">' + esc(noteTopic(x.n)) + '</span></td><td class="wrap" data-l="내용">' + esc(x.n.text) + '</td><td class="num" data-l="다음 연락일">' + (x.n.next ? esc(x.n.next) + (x.n.done ? ' <span class="chip">완료</span>' : ' <span class="chip' + (dn < 0 ? ' warn' : '') + '">' + dLabel(dn) + '</span>') : '–') + '</td>' +
       '<td class="note-go">' + (x.n.next ? '<button class="btn sm' + (x.n.done ? ' ghost' : ' tel') + '" data-act="noteDone" data-pid="' + x.c.id + '" data-id="' + x.n.id + '">' + (x.n.done ? '완료 취소' : '연락 완료') + '</button>' : '') + '</td></tr>';
   }).join('') + '</tbody></table></div>';
 }
-var RESULTS = ['진행 중', '성사', '보류', '거절'];
+// 제안 진행 단계 (2026-11-04): 예전 '진행 중'은 '제안함'으로 읽는다
+var STAGES = ['제안함', '검토 중', '청약', '성사', '보류', '거절'], STAGE_OPEN = { '제안함': 1, '검토 중': 1, '청약': 1 };
+var RESULTS = STAGES; // 예전 이름(다른 곳 호환)
+var PROP_REASONS = ['보험료 부담', '기존 계약 유지', '연락 안 됨', '다른 설계사 선택', '가족 반대', '건강 문제(인수 거절)', '기타'];
+function snapStage(s) { var r = s && s.result; return !r || r === '진행 중' ? '제안함' : r; }
+function propSmsText(c, s) {
+  var d = num(s.after) - num(s.before);
+  return (c.name || '고객') + '님, 제안드린 보장 정리 요약입니다.\n월 보험료 ' + fmtWon(s.before) + ' → ' + fmtWon(s.after) + (d ? ' (' + (d > 0 ? '+' : '') + fmtWon(d) + ')' : '') +
+    '\n부족한 보장 ' + s.shortBefore + '개 → ' + s.shortAfter + '개\n궁금하신 점 편하게 연락 주세요. ' + (store.settings.fc.name || '담당 FC') + ' 드림';
+}
 function renderProps() {
   var all = [];
-  store.customers.forEach(function (c) { (c.snapshots || []).forEach(function (sn, i) { all.push({ c: c, s: sn, i: i }); }); });
+  store.customers.forEach(function (c) { (c.snapshots || []).forEach(function (sn, i) { all.push({ c: c, s: sn, i: i, st: snapStage(sn) }); }); });
   if (!all.length) return '<section class="panel"><div class="empty"><strong>제안 기록이 없습니다</strong><span>고객 상세 → 제안서에서 "현재 분석 기록 남기기"를 누르면 여기에 모입니다.</span></div></section>';
   all.sort(function (a, b) { return String(b.s.at).localeCompare(String(a.s.at)); });
-  var cnt = {}; RESULTS.forEach(function (r) { cnt[r] = 0; }); all.forEach(function (x) { cnt[x.s.result || '진행 중'] = (cnt[x.s.result || '진행 중'] || 0) + 1; });
-  // 검색·결과 거르기·성사율·경과일 (2026-11-03)
-  var ago = function (x) { var d = daysUntil(String(x.s.at || '').slice(0, 10)); return d == null ? null : -d; };
-  var stale = function (x) { var g = ago(x); return (x.s.result || '진행 중') === '진행 중' && g != null && g > 14; };
-  var nStale = all.filter(stale).length, R = ui.prR || '', q = norm(ui.prq || '');
-  var list = all.filter(function (x) { if (R === 'stale') { if (!stale(x)) return false; } else if (R && (x.s.result || '진행 중') !== R) return false; return !q || norm(x.c.name).indexOf(q) >= 0; });
-  var rate = all.length ? Math.round(cnt['성사'] / all.length * 100) : 0;
-  var kp = function (key, label, v, tone) { var on = R === key; return '<button class="kpi' + (on ? ' on' : '') + (tone && v ? ' ' + tone : '') + '" data-act="uiPick" data-k="prR" data-id="' + key + '"><span class="k">' + label + '</span><span class="v num">' + v + '<small>건</small></span></button>'; };
-  var kpis = '<div class="kpis">' + RESULTS.map(function (r) { return kp(r, r, cnt[r]); }).join('') + kp('stale', '진행 중 14일 지남', nStale, 'warn') +
-    '<div class="kpi" style="cursor:default"><span class="k">성사율</span><span class="v num">' + rate + '<small>% · ' + cnt['성사'] + '/' + all.length + '건</small></span></div></div>';
+  var cnt = {}; STAGES.forEach(function (r) { cnt[r] = 0; }); all.forEach(function (x) { cnt[x.st] = (cnt[x.st] || 0) + 1; });
+  var ago = function (x) { var d = daysUntil(String(x.s.stageAt || x.s.at || '').slice(0, 10)); return d == null ? null : -d; };
+  var stale = function (x) { var g = ago(x); return STAGE_OPEN[x.st] && g != null && g > 14; };
+  var tm = today().slice(0, 7), won = all.filter(function (x) { return x.st === '성사' && String(x.s.stageAt || x.s.at || '').slice(0, 7) === tm; });
+  var wonDiff = won.reduce(function (t, x) { return t + num(x.s.after) - num(x.s.before); }, 0), closed = cnt['성사'] + cnt['거절'] + cnt['보류'];
+  var rate = closed ? Math.round(cnt['성사'] / closed * 100) : 0, nOpen = all.filter(function (x) { return STAGE_OPEN[x.st]; }).length, nStale = all.filter(stale).length;
+  var R = ui.prR || '', q = norm(ui.prq || '');
+  if (R === '진행 중') R = ui.prR = 'open';
+  var list = all.filter(function (x) {
+    if (R === 'stale') { if (!stale(x)) return false; } else if (R === 'open') { if (!STAGE_OPEN[x.st]) return false; } else if (R === 'wonM') { if (won.indexOf(x) < 0) return false; } else if (R && x.st !== R) return false;
+    return !q || norm(x.c.name).indexOf(q) >= 0;
+  });
+  var kp = function (key, label, v, tone, unit) { var on = R === key; return '<button class="kpi' + (on ? ' on' : '') + (tone && v ? ' ' + tone : '') + '" data-act="uiPick" data-k="prR" data-id="' + key + '" aria-pressed="' + on + '"><span class="k">' + label + '</span><span class="v num">' + v + '<small>' + (unit || '건') + '</small></span></button>'; };
+  var kpis = '<div class="kpis">' + kp('open', '진행 중 (제안~청약)', nOpen) + kp('stale', '14일 넘게 멈춤', nStale, 'warn') + kp('wonM', '이번 달 성사', won.length, '', '건' + (wonDiff ? ' · 월 ' + (wonDiff > 0 ? '+' : '') + fmtWon(wonDiff) : '')) +
+    '<div class="kpi" style="cursor:default"><span class="k">성사율 (결과 난 제안 중)</span><span class="v num">' + rate + '<small>% · ' + cnt['성사'] + '/' + closed + '건</small></span></div></div>';
+  var pipe = '<div class="pipe" role="group" aria-label="진행 단계">' + STAGES.map(function (st, i) { var on = R === st;
+    return (i === 3 ? '<span class="pipe-sep" aria-hidden="true"></span>' : i > 0 && i < 3 ? '<span class="pipe-arrow" aria-hidden="true">›</span>' : '') + '<button class="pipe-st pipe-' + i + (on ? ' on' : '') + '" data-act="uiPick" data-k="prR" data-id="' + st + '" aria-pressed="' + on + '"><span>' + st + '</span><b class="num">' + cnt[st] + '</b></button>'; }).join('') + '</div>';
+  // 거절·보류 사유
+  var rs = {}; all.forEach(function (x) { if ((x.st === '거절' || x.st === '보류') && x.s.reason) rs[x.s.reason] = (rs[x.s.reason] || 0) + 1; });
+  var rk = Object.keys(rs).sort(function (a, b) { return rs[b] - rs[a]; }), rmx = Math.max.apply(null, rk.map(function (k) { return rs[k]; }).concat([1]));
+  var noReason = all.filter(function (x) { return (x.st === '거절' || x.st === '보류') && !x.s.reason; }).length;
+  var reasonP = (cnt['거절'] + cnt['보류']) ? '<section class="panel"><h2>거절·보류 사유</h2>' + (rk.length ? '<ul class="tbar-list reason-list">' + rk.map(function (k) { return '<li><span>' + esc(k) + '</span><span class="tbar"><span style="width:' + Math.round(rs[k] / rmx * 100) + '%"></span></span><b class="num">' + rs[k] + '</b></li>'; }).join('') + '</ul>' : '') +
+    (noReason ? '<p class="muted" style="margin:0">사유를 고르지 않은 거절·보류 ' + noReason + '건이 있습니다. 표의 "사유" 칸에서 골라 두면 어떤 이유로 놓치는지 보입니다.</p>' : '') + '</section>' : '';
   var rows = list.map(function (x) {
-    var d = num(x.s.after) - num(x.s.before), g = ago(x), st = stale(x);
-    return '<tr' + (st ? ' class="prop-stale"' : '') + '><td class="num" data-l="제안일">' + esc(x.s.at) + '</td><td data-l="고객">' + custLink(x.c, 'proposal') + '</td>' +
-      '<td class="num" data-l="경과">' + (g == null ? '–' : '<span class="chip' + (st ? ' warn' : '') + '">' + (g <= 0 ? '오늘' : g + '일 지남') + '</span>') + '</td>' +
-      '<td class="r num" data-l="정리 전">' + fmtWon(x.s.before) + '</td><td class="r num" data-l="정리 후">' + fmtWon(x.s.after) + '</td>' +
-      '<td class="r num" data-l="차이">' + (d ? (d > 0 ? '+' : '') + fmtWon(d) : '0원') + '</td><td class="r num" data-l="부족 담보">' + x.s.shortBefore + ' → ' + x.s.shortAfter + '</td>' +
-      '<td style="min-width:110px" data-l="결과"><select data-scope="snap" data-k="result" data-id="' + x.c.id + '" data-pid="' + x.i + '" id="snap-' + x.c.id + '-' + x.i + '" aria-label="제안 결과">' + RESULTS.map(function (r) { return '<option value="' + r + '"' + sel(x.s.result || '진행 중', r) + '>' + r + '</option>'; }).join('') + '</select></td>' +
-      '<td class="prop-go"><button class="btn ghost sm" data-act="goCust" data-id="' + x.c.id + '" data-pid="proposal">제안서 보기</button></td></tr>';
+    var d = num(x.s.after) - num(x.s.before), g = ago(x), sl = stale(x), ph = String(x.c.phone || '').replace(/[^\d+]/g, '');
+    var reasonSel = x.st === '거절' || x.st === '보류' ? '<select data-scope="snap" data-k="reason" data-id="' + x.c.id + '" data-pid="' + x.i + '" id="snapr-' + x.c.id + '-' + x.i + '" aria-label="거절·보류 사유"><option value="">사유 선택</option>' + PROP_REASONS.map(function (r) { return '<option value="' + attr(r) + '"' + sel(x.s.reason || '', r) + '>' + esc(r) + '</option>'; }).join('') + '</select>' : '<span class="muted">–</span>';
+    return '<tr' + (sl ? ' class="prop-stale"' : '') + '><td class="num" data-l="제안일">' + esc(String(x.s.at).slice(0, 10)) + '</td><td data-l="고객">' + custLink(x.c, 'proposal') + '</td>' +
+      '<td class="num" data-l="경과">' + (g == null ? '–' : '<span class="chip' + (sl ? ' warn' : '') + '">' + (g <= 0 ? '오늘' : g + '일') + '</span>') + '</td>' +
+      '<td class="r num" data-l="월 보험료">' + fmtWon(x.s.before) + ' → ' + fmtWon(x.s.after) + (d ? ' <small class="muted">(' + (d > 0 ? '+' : '') + fmtWon(d) + ')</small>' : '') + '</td><td class="r num" data-l="부족 담보">' + x.s.shortBefore + ' → ' + x.s.shortAfter + '</td>' +
+      '<td style="min-width:110px" data-l="단계"><select data-scope="snap" data-k="result" data-id="' + x.c.id + '" data-pid="' + x.i + '" id="snap-' + x.c.id + '-' + x.i + '" aria-label="진행 단계">' + STAGES.map(function (r) { return '<option value="' + r + '"' + sel(x.st, r) + '>' + r + '</option>'; }).join('') + '</select></td>' +
+      '<td style="min-width:120px" data-l="사유">' + reasonSel + '</td>' +
+      '<td class="prop-go">' + (STAGE_OPEN[x.st] ? '<button class="btn sm' + (sl ? ' primary' : '') + '" data-act="propFollow" data-id="' + x.c.id + '" data-pid="' + x.i + '" title="오늘 후속 연락을 상담 기록에 남기고 7일 뒤 다음 연락일을 잡습니다">후속 연락</button>' : '') +
+      (ph ? '<a class="btn sm" href="sms:' + attr(ph) + SMS_SEP + 'body=' + encodeURIComponent(propSmsText(x.c, x.s)) + '">요약 문자</a>' : '') +
+      '<button class="btn ghost sm" data-act="goCust" data-id="' + x.c.id + '" data-pid="proposal">제안서</button></td></tr>';
   }).join('');
-  return kpis + '<section class="panel"><div class="row between"><h2>제안 기록 ' + list.length + '건</h2><div class="row" style="gap:6px"><input type="search" id="prq" class="mini-search" placeholder="고객 이름 검색" value="' + attr(ui.prq || '') + '" aria-label="제안 기록 검색"></div></div>' +
-    (rows ? '<div class="tablewrap"><table class="t ctab prop-table"><thead><tr><th>제안일</th><th>고객</th><th>경과</th><th class="r">정리 전</th><th class="r">정리 후</th><th class="r">차이</th><th class="r">부족 담보</th><th>결과</th><th></th></tr></thead><tbody>' + rows + '</tbody></table></div>'
+  return kpis + '<section class="panel"><div class="row between"><h2>진행 단계</h2><span class="muted">단계를 누르면 그 제안만 봅니다</span></div>' + pipe + '</section>' +
+    '<section class="panel"><div class="row between"><h2>제안 기록 ' + list.length + '건</h2><div class="row" style="gap:6px"><input type="search" id="prq" class="mini-search" placeholder="고객 이름 검색" value="' + attr(ui.prq || '') + '" aria-label="제안 기록 검색"></div></div>' +
+    (rows ? '<div class="tablewrap"><table class="t ctab prop-table"><thead><tr><th>제안일</th><th>고객</th><th>경과</th><th class="r">월 보험료 (전 → 후)</th><th class="r">부족 담보</th><th>단계</th><th>사유</th><th></th></tr></thead><tbody>' + rows + '</tbody></table></div>'
       : '<div class="empty"><strong>조건에 맞는 제안 기록이 없습니다</strong></div>') +
-    '<p class="muted" style="margin:0">위 숫자 칸을 누르면 그 결과만 봅니다. "진행 중"으로 14일이 지난 제안은 주황색으로 표시하니 결과를 확인해 바꿔 두세요. 성사율은 전체 제안 중 성사 비율입니다. 금액은 월 보험료 기준입니다.</p></section>';
+    '<p class="muted" style="margin:0">단계를 바꾼 날부터 경과일을 셉니다. 제안함·검토 중·청약에서 14일 넘게 멈춘 제안은 주황색으로 표시합니다. "후속 연락"은 오늘 상담 기록을 남기고 7일 뒤를 다음 연락일로 잡습니다. "요약 문자"는 정리 전후 보험료와 부족 담보 수를 담은 문자를 휴대폰 문자 앱으로 엽니다(외부 발송 없음). 성사율은 결과가 난 제안(성사·보류·거절) 중 성사 비율입니다.</p></section>' + reasonP;
 }
 var REL_ORDER = { '본인': 0, '배우자': 1, '자녀': 2, '부모': 3, '형제자매': 4, '기타': 5 };
 var REL_OPTS = [['', '관계'], ['본인', '본인'], ['배우자', '배우자'], ['자녀', '자녀'], ['부모', '부모'], ['형제자매', '형제자매'], ['기타', '기타']];
@@ -5380,6 +5500,46 @@ function famCell(an, code) {
   var amt = r.agg === 'one' ? (r.cur ? r.cur + '건' : '없음') : (r.cur ? fmtMan(r.cur) : '0');
   var tag = r.verdict === 'short' ? (r.gap ? fmtMan(r.gap) + ' 부족' : '부족') : r.verdict === 'dup' ? '중복' : r.verdict === 'over' ? '과잉' : '적정';
   return '<span class="fam-amt num">' + amt + '</span><span class="pill v-' + r.verdict + '">' + tag + '</span>';
+}
+// ===== 가구: 점검(보장 빈 곳·부담·중복·가구원 빠짐)·묶기 추천·가구 연락·제안서 가구 보장 (2026-11-04) =====
+function hhMembers(h) {
+  return store.customers.filter(function (c) { return c.householdId === h.id; }).sort(function (a, b) {
+    return (REL_ORDER[a.relation] == null ? 9 : REL_ORDER[a.relation]) - (REL_ORDER[b.relation] == null ? 9 : REL_ORDER[b.relation]) || byName(a, b);
+  });
+}
+function hhCheck(h) {
+  var mem = hhMembers(h), o = { mem: mem, ans: {}, prem: 0, inc: 0, short: 0, dup: 0, liab: 0, silson: 0, withPol: 0, missing: [], last: '', lastWho: null };
+  mem.forEach(function (c) {
+    var an = analyze(c, store.settings); o.ans[c.id] = an; o.prem += an.premium; o.inc += num(c.income);
+    if ((c.policies || []).length) { o.withPol++; o.short += an.counts.short; o.dup += an.counts.dup; }
+    an.rows.forEach(function (r) { if (r.code === 'SILSON') o.silson += r.cur; if (r.code === 'LIABILITY') o.liab += r.cur; });
+    var ri = relInfo(c); if (ri.last && ri.last > o.last) { o.last = ri.last; o.lastWho = c; }
+  });
+  o.share = o.inc > 0 ? Math.round(o.prem / (o.inc * 10000) * 1000) / 10 : null;
+  var ps = num(store.settings.params.premiumShare); o.burden = o.share != null && ps > 0 && o.share > ps;
+  o.dupFlag = o.dup > 0 || o.liab > 1;
+  var couple = mem.filter(function (c) { return c.relation === '본인' || c.relation === '배우자'; }).length;
+  if (mem.some(function (c) { return c.spouse; }) && couple < 2) o.missing.push('배우자');
+  var kidsWant = Math.max.apply(null, mem.filter(function (c) { return c.relation !== '자녀'; }).map(function (c) { return num(c.children); }).concat([0])), kids = mem.filter(function (c) { return c.relation === '자녀'; }).length;
+  if (kidsWant > kids) o.missing.push('자녀 ' + (kidsWant - kids) + '명');
+  o.rep = mem.filter(function (c) { return c.relation === '본인'; })[0] || mem[0] || null;
+  return o;
+}
+function hhMatrixHtml(mem, ans, title) {
+  var polMem = mem.filter(function (c) { return (c.policies || []).length; }); if (!polMem.length) return '';
+  return '<h3 style="margin-top:4px">' + (title || '가구 보장 한눈에 보기') + '</h3><div class="tablewrap"><table class="t fam-matrix"><thead><tr><th>담보</th>' + polMem.map(function (c) { return '<th>' + esc(c.name || '') + (c.relation ? ' <span class="muted">' + esc(c.relation) + '</span>' : '') + '</th>'; }).join('') + '</tr></thead><tbody>' +
+    FAM_ROWS.map(function (fr) { return '<tr><td><b>' + fr[1] + '</b></td>' + polMem.map(function (c) { return '<td>' + famCell(ans[c.id], fr[0]) + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table></div>';
+}
+function hhDocSection(c) { // 제안서: 가구 보장 요약 (가구 화면에서 "제안서에 넣기"를 켠 경우)
+  var h = c.householdId && hhSorted().filter(function (x) { return x.id === c.householdId; })[0]; if (!h || !h.onDoc) return '';
+  var o = hhCheck(h); if (o.mem.length < 2) return '';
+  return '<section class="doc-hh"><h2>가구 보장 요약 — ' + esc(h.name || '') + '</h2><p class="num" style="margin:0 0 6px">가구 월 보험료 ' + fmtWon(o.prem) + (o.share != null ? ' (가구 월소득의 ' + o.share + '%)' : '') + ' · 부족 담보 ' + o.short + '개 · 중복 담보 ' + o.dup + '개</p>' + hhMatrixHtml(o.mem, o.ans, ' ') + '</section>';
+}
+function hhAddrKey(a) { var s = String(a || '').replace(/\(예시\)/g, '').replace(/[\s,.\-]/g, ''); return s.length >= 10 && /\d/.test(s) ? s : ''; }
+function hhSuggest() { // 같은 상세 주소(번지·동호수 포함)인데 같은 가구가 아닌 고객들
+  var g = {}, skip = store.settings.hhSkip || [];
+  store.customers.forEach(function (c) { var k = hhAddrKey(c.address); if (k) (g[k] = g[k] || []).push(c); });
+  return Object.keys(g).filter(function (k) { var L = g[k]; if (L.length < 2 || skip.indexOf(k) >= 0) return false; var h0 = L[0].householdId; return !h0 || L.some(function (c) { return c.householdId !== h0; }); }).map(function (k) { return { k: k, L: g[k].sort(byName) }; });
 }
 function renderFamily() {
   var H = hhSorted(), q = norm(ui.hq);
@@ -5392,11 +5552,18 @@ function renderFamily() {
   var unassigned = store.customers.filter(function (c) { return !c.householdId || !H.some(function (h) { return h.id === c.householdId; }); }).sort(byName);
   var allMem = 0, allPrem = 0;
   H.forEach(function (h) { memOf(h).forEach(function (c) { allMem++; allPrem += analyze(c, store.settings).premium; }); });
-  var shown = H.filter(function (h) { return !q || norm(h.name).indexOf(q) >= 0 || memOf(h).some(function (c) { return norm(c.name).indexOf(q) >= 0; }); });
-  var head = '<div class="kpis"><div class="kpi" style="cursor:default"><span class="k">가구</span><span class="v num">' + H.length + '<small>곳</small></span></div>' +
-    '<div class="kpi" style="cursor:default"><span class="k">가구에 속한 고객</span><span class="v num">' + allMem + '<small>명</small></span></div>' +
-    '<div class="kpi' + (unassigned.length ? ' warn' : '') + '" style="cursor:default"><span class="k">가구 미지정 고객</span><span class="v num">' + unassigned.length + '<small>명</small></span></div>' +
-    '<div class="kpi" style="cursor:default"><span class="k">전체 가구 월 보험료</span><span class="v num">' + fmtWon(allPrem) + '</span></div></div>' +
+  var CK = {}, HF = ui.hhF || ''; H.forEach(function (h) { CK[h.id] = hhCheck(h); });
+  var hit = function (h) { var o = CK[h.id]; return HF === 'gap' ? o.short > 0 : HF === 'burden' ? o.burden : HF === 'dup' ? o.dupFlag : HF === 'miss' ? o.missing.length > 0 : true; };
+  var shown = H.filter(function (h) { return hit(h) && (!q || norm(h.name).indexOf(q) >= 0 || memOf(h).some(function (c) { return norm(c.name).indexOf(q) >= 0; })); });
+  var hk = function (key, label, v, tone) { var on = HF === key; return '<button class="kpi' + (on ? ' on' : '') + (tone && v ? ' ' + tone : '') + '" data-act="uiPick" data-k="hhF" data-id="' + key + '" aria-pressed="' + on + '"><span class="k">' + label + '</span><span class="v num">' + v + '<small>가구</small></span></button>'; };
+  var cntF = function (fn) { return H.filter(function (h) { return fn(CK[h.id]); }).length; };
+  var sug = hhSuggest();
+  var head = '<div class="kpis">' + hk('gap', '보장 빈 곳 있는 가구', cntF(function (o) { return o.short > 0; }), 'warn') + hk('burden', '보험료 부담 큰 가구', cntF(function (o) { return o.burden; }), 'warn') +
+    hk('dup', '중복 담보 있는 가구', cntF(function (o) { return o.dupFlag; }), 'warn') + hk('miss', '가구원 빠진 가구', cntF(function (o) { return o.missing.length > 0; }), 'warn') + '</div>' +
+    '<p class="muted hh-line num">가구 ' + H.length + '곳 · 가구에 속한 고객 ' + allMem + '명 · 가구 미지정 ' + unassigned.length + '명 · 전체 가구 월 보험료 ' + fmtWon(allPrem) + (num(store.settings.params.premiumShare) > 0 ? ' · 부담 기준: 가구 월소득의 ' + store.settings.params.premiumShare + '% 초과 (설정 → 분석기준)' : '') + '</p>' +
+    (sug.length ? '<section class="panel hh-sug"><div class="row between"><h2>같은 가구 같아요 <span class="muted num">' + sug.length + '</span></h2><span class="muted">주소(동·호수까지)가 같은 고객입니다</span></div><ul class="hh-sug-list">' + sug.map(function (g, i) {
+      return '<li><span>' + g.L.map(function (c) { return custLink(c, 'info') + (c.householdId ? ' <small class="muted">(' + esc(((hhSorted().filter(function (x) { return x.id === c.householdId; })[0]) || {}).name || '가구') + ')</small>' : ''); }).join('<span class="muted"> · </span>') + '<br><small class="muted">' + esc(g.L[0].address) + '</small></span>' +
+        '<span class="row" style="gap:6px"><button class="btn sm primary" data-act="hhMerge" data-id="' + attr(g.k) + '">가구로 묶기</button><button class="btn sm ghost" data-act="hhSkip" data-id="' + attr(g.k) + '">아님</button></span></li>'; }).join('') + '</ul></section>' : '') +
     '<section class="panel fam-bar"><div class="row between fam-headrow"><h2>가구 ' + shown.length + '곳</h2><div class="row" style="gap:6px"><input type="search" id="hq" class="mini-search" placeholder="가구·가구원 이름 검색" value="' + attr(ui.hq) + '" aria-label="가구 검색">' +
     (H.length > 1 ? '<button class="btn ghost sm" data-act="hhAll" data-id="' + (H.every(function (h) { return ui.hhOpen[h.id] === true; }) ? '0' : '1') + '">' + (H.every(function (h) { return ui.hhOpen[h.id] === true; }) ? '모두 접기' : '모두 펼치기') + '</button>' : '') +
     '<button class="btn primary sm" data-act="addHousehold" title="새 가구 만들기">+ 추가</button></div></div></section>';
@@ -5412,7 +5579,8 @@ function renderFamily() {
     var del = ui.armed === 'delH:' + h.id;
     var summary = '<button class="fam-sum" data-act="hhToggle" data-id="' + h.id + '" aria-expanded="' + open + '"><span class="chev">' + (open ? '▾' : '▸') + '</span><strong>' + esc(h.name || '이름 없는 가구') + '</strong>' +
       '<span class="fam-names">' + (mem.length ? mem.map(function (c) { return esc(c.name || '이름 없음') + (c.relation ? '<small>' + esc(c.relation) + '</small>' : ''); }).join(' · ') : '구성원 없음') + '</span>' +
-      '<span class="num fam-meta">' + mem.length + '명 · 월 ' + fmtWon(tot.prem) + (tot.short ? ' · <b>부족 ' + tot.short + '</b>' : '') + '</span></button>';
+      '<span class="num fam-meta">' + mem.length + '명 · 월 ' + fmtWon(tot.prem) + (tot.short ? ' · <b>부족 ' + tot.short + '</b>' : '') + (CK[h.id].burden ? ' · <b>부담 ' + CK[h.id].share + '%</b>' : '') + (CK[h.id].dupFlag ? ' · <b>중복</b>' : '') + (CK[h.id].missing.length ? ' · <b>' + esc(CK[h.id].missing.join('·')) + ' 빠짐</b>' : '') +
+        ' · ' + (CK[h.id].last ? '연락 ' + (daysUntil(CK[h.id].last) === 0 ? '오늘' : (-daysUntil(CK[h.id].last)) + '일 전') : '연락 기록 없음') + '</span></button>';
     if (!open) return '<!--closed--><div class="fam-row">' + summary + '</div>';
     var members = mem.map(function (c) {
       var an = ans[c.id];
@@ -5421,12 +5589,12 @@ function renderFamily() {
         '<td class="r">' + (c.policies.length ? (an.counts.short ? '<span class="pill v-short">' + an.counts.short + '</span>' : '0') : '<span class="muted">계약 없음</span>') + '</td>' +
         '<td style="white-space:nowrap"><button class="btn ghost sm" data-act="goCust" data-id="' + c.id + '" data-pid="policies">계약 입력</button><button class="btn ghost sm" data-act="hhRemove" data-id="' + c.id + '">가구에서 빼기</button></td></tr>';
     }).join('');
-    var matrix = '';
-    var polMem = mem.filter(function (c) { return c.policies.length; });
-    if (polMem.length) {
-      matrix = '<h3 style="margin-top:4px">가구 보장 한눈에 보기</h3><div class="tablewrap"><table class="t fam-matrix"><thead><tr><th>담보</th>' + polMem.map(function (c) { return '<th>' + esc(c.name || '') + (c.relation ? ' <span class="muted">' + esc(c.relation) + '</span>' : '') + '</th>'; }).join('') + '</tr></thead><tbody>' +
-        FAM_ROWS.map(function (fr) { return '<tr><td><b>' + fr[1] + '</b></td>' + polMem.map(function (c) { return '<td>' + famCell(ans[c.id], fr[0]) + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table></div>';
-    }
+    var polMem = mem.filter(function (c) { return c.policies.length; }), ck = CK[h.id];
+    var matrix = hhMatrixHtml(mem, ans);
+    if (matrix) matrix += '<label class="check hh-doc">' + f('hh', 'onDoc', !!h.onDoc, { id: h.id, type: 'check' }) + ' 가구원 제안서에 이 "가구 보장 한눈에 보기"를 함께 넣기</label>';
+    var rep = ck.rep, contact = '<div class="hh-contact"><span><b>가구 연락</b> ' + (ck.last ? '마지막 ' + esc(ck.last.replace(/-/g, '.')) + ' (' + esc(ck.lastWho.name || '') + ', ' + (daysUntil(ck.last) === 0 ? '오늘' : (-daysUntil(ck.last)) + '일 전') + ')' : '<span class="muted">가구원 연락 기록이 없습니다</span>') + '</span>' +
+      (rep ? '<span class="row" style="gap:6px"><span class="muted">대표 ' + esc(rep.name || '') + '</span>' + telLink(rep.phone) + relSms(rep.phone) + '<button class="btn sm primary" data-act="rcDone" data-id="' + rep.id + '" title="대표 가구원에게 오늘 연락했다고 상담 기록에 남깁니다">연락함</button></span>' : '') + '</div>';
+    if (ck.missing.length) contact += '<div class="notice">가구원이 빠진 것 같습니다: ' + esc(ck.missing.join(', ')) + '. 고객 정보의 "배우자 있음"·"자녀 수"를 기준으로 봤습니다. 아래에서 구성원을 추가하거나 관계를 고르세요.</div>';
     var notes = [];
     var liabHave = polMem.filter(function (c) { return ans[c.id].rows.some(function (r) { return r.code === 'LIABILITY' && r.cur > 0; }); });
     if (liabHave.length && liabHave.length < polMem.length && tot.liab === 1) notes.push('일상생활배상책임은 ' + liabHave.map(function (c) { return c.name; }).join(', ') + '님 계약에만 있습니다. 가족형이면 함께 사는 가족도 보장되므로 계약 내용을 확인하세요.');
@@ -5442,7 +5610,7 @@ function renderFamily() {
       '<div class="stat' + (tot.short ? ' hot' : '') + '"><div class="k">부족 담보 합계</div><div class="v">' + tot.short + '개</div><div class="sub">계약 입력한 ' + tot.withPol + '명 기준</div></div>' +
       '<div class="stat"><div class="k">실손 가입</div><div class="v">' + tot.silson + '건</div><div class="sub">한 사람당 1건이면 충분</div></div>' +
       '<div class="stat"><div class="k">중복 담보</div><div class="v">' + tot.dup + '개</div></div></div>' +
-      (notes.length ? '<div class="notice"><ul style="margin:0">' + notes.map(function (n) { return '<li>' + esc(n) + '</li>'; }).join('') + '</ul></div>' : '') +
+      contact + (notes.length ? '<div class="notice"><ul style="margin:0">' + notes.map(function (n) { return '<li>' + esc(n) + '</li>'; }).join('') + '</ul></div>' : '') +
       (members ? '<div class="tablewrap"><table class="t ctab"><thead><tr><th>이름</th><th>관계</th><th>나이</th><th>휴대폰</th><th class="r">계약</th><th class="r">월보험료</th><th class="r">부족</th><th></th></tr></thead><tbody>' + members + '</tbody></table></div>' : '<p class="muted" style="margin:0">아직 구성원이 없습니다. 아래에서 추가하세요.</p>') +
       matrix +
       '<div class="fam-add"><div class="field"><span>기존 고객을 구성원으로 추가</span><select data-scope="hhadd" data-id="' + h.id + '" id="hhadd-' + h.id + '" aria-label="구성원 추가">' +
@@ -6418,7 +6586,8 @@ function setField(el) {
     var nc = custById(pid); if (!nc) return; var nt = (nc.notes || []).filter(function (x) { return x.id === id; })[0]; if (!nt) return;
     nt[k] = v; stampCustomer(nc);
   } else if (scope === 'snap') {
-    var sc2 = custById(id); if (!sc2 || !sc2.snapshots[Number(pid)]) return; sc2.snapshots[Number(pid)][k] = v;
+    var sc2 = custById(id); if (!sc2 || !sc2.snapshots[Number(pid)]) return; var sn2 = sc2.snapshots[Number(pid)]; sn2[k] = v;
+    if (k === 'result') { sn2.stageAt = today(); if (v !== '거절' && v !== '보류') sn2.reason = ''; } stampCustomer(sc2);
   } else if (scope === 'hh') {
     var h2 = s.households.filter(function (x) { return x.id === id; })[0]; if (!h2) return; h2[k] = v;
   }
@@ -6516,8 +6685,8 @@ function doAction(el) {
     case 'ndaGo': { // 상담 기록 화면에서 바로 기록 추가
       var nc = custById(ui.ndaCid || ''); if (!nc) { toast('고객을 고르세요'); break; }
       if (!String(ui.ndaText || '').trim()) { toast('상담 내용을 입력하세요'); break; }
-      nc.notes = nc.notes || []; nc.notes.push({ id: uid(), date: ui.ndaDate || today(), method: ui.ndaMethod || '전화', text: String(ui.ndaText).trim(), next: ui.ndaNext || '', done: false });
-      stampCustomer(nc); ui.ndaText = ''; ui.ndaNext = ''; ui.ndaDate = ''; ui.modal = null; save(); toast('상담 기록을 남겼습니다'); break; }
+      nc.notes = nc.notes || []; nc.notes.push({ id: uid(), date: ui.ndaDate || today(), method: ui.ndaMethod || '전화', topic: ui.ndaTopic || '', text: String(ui.ndaText).trim(), next: ui.ndaNext || '', done: false });
+      stampCustomer(nc); ui.ndaText = ''; ui.ndaNext = ''; ui.ndaDate = ''; ui.ndaTopic = ''; ui.modal = null; save(); toast('상담 기록을 남겼습니다'); break; }
     case 'expMsg': { var em = id.split(':'), eo = em[0] === 'auto' ? autoById(em[1], em[2]) : fireById(em[1], em[2]); if (eo) copyText(expMsgText(em[0], eo.c, eo.a), '만기 안내 문자를 복사했습니다. 문자·카톡에 붙여 넣으세요'); return; }
     case 'polaGo': { // 장기보험: 고른 고객에게 빈 계약을 만들고 계약 입력으로
       var pc = custById(ui.polaCid || ''); if (!pc) { toast('고객을 먼저 고르세요'); break; }
@@ -6646,8 +6815,8 @@ function doAction(el) {
     case 'addNote': {
       if (!String(ui.ndText || '').trim()) { toast('상담 내용을 입력하세요'); break; }
       c.notes = c.notes || [];
-      c.notes.push({ id: uid(), date: ui.ndDate || today(), method: ui.ndMethod || '전화', text: String(ui.ndText).trim(), next: ui.ndNext || '', done: false });
-      stampCustomer(c); ui.ndText = ''; ui.ndNext = ''; ui.ndDate = ''; save(); toast('상담 기록을 남겼습니다'); break;
+      c.notes.push({ id: uid(), date: ui.ndDate || today(), method: ui.ndMethod || '전화', topic: ui.ndTopic || '', text: String(ui.ndText).trim(), next: ui.ndNext || '', done: false });
+      stampCustomer(c); ui.ndText = ''; ui.ndNext = ''; ui.ndDate = ''; ui.ndTopic = ''; save(); toast('상담 기록을 남겼습니다'); break;
     }
     case 'noteDone': { var c3 = custById(el.dataset.pid); var n3 = c3 && c3.notes.filter(function (x) { return x.id === id; })[0]; if (n3) { n3.done = !n3.done; stampCustomer(c3); save(); } break; }
     case 'delNote':
@@ -6783,6 +6952,17 @@ function doAction(el) {
     case 'newsRefresh': { var nt0 = ui.newsT || 'all'; news.err[nt0] = ''; newsLoad(nt0, true); break; }
     case 'newsCopy': { var nc = news.cache[ui.newsT || 'all'], ni = nc && nc.items[Number(id)]; if (ni) copyText(ni.title + '\n' + ni.link, '기사 링크를 복사했습니다'); return; }
     case 'relTab': ui.relTab = id; ui.armed = null; break;
+    case 'hhSkip': store.settings.hhSkip = (store.settings.hhSkip || []).concat([id]); save(); break;
+    case 'hhMerge': { var gm = hhSuggest().filter(function (g) { return g.k === id; })[0]; if (!gm) break;
+      var hs0 = gm.L.map(function (c) { return c.householdId; }).filter(function (x) { return x && hhSorted().some(function (h) { return h.id === x; }); })[0], hn;
+      if (!hs0) { var old = gm.L.slice().sort(function (a, b) { return String(a.birth || '9999').localeCompare(String(b.birth || '9999')); })[0]; hn = { id: uid(), name: (old.name || '새').replace(' (예시)', '') + ' 가구' }; store.settings.households.push(hn); hs0 = hn.id; old.relation = old.relation || '본인'; }
+      gm.L.forEach(function (c) { if (c.householdId !== hs0) { c.householdId = hs0; if (!hn) c.relation = c.relation || ''; } stampCustomer(c); });
+      ui.hhOpen = ui.hhOpen || {}; ui.hhOpen[hs0] = true; save(); toast(gm.L.length + '명을 한 가구로 묶었습니다. 관계를 골라 주세요'); break; }
+    case 'propFollow': { var pc = custById(id), ps = pc && pc.snapshots && pc.snapshots[Number(el.dataset.pid)]; if (!ps) break;
+      var nx7 = isoDate(new Date(Date.now() + 7 * 864e5)); pc.notes = pc.notes || [];
+      pc.notes.push({ id: uid(), date: today(), method: '전화', topic: '보장분석', text: '제안 후속 연락 (' + String(ps.at).slice(0, 10) + ' 제안)', next: nx7, done: false });
+      if (snapStage(ps) === '제안함') ps.result = '검토 중'; ps.stageAt = today(); stampCustomer(pc); save(); toast('후속 연락을 기록했습니다. 다음 연락일 ' + nx7.replace(/-/g, '.')); break; }
+    case 'noteTpl': { var tp9 = NOTE_TPLS[Number(id)], px = el.dataset.pid === 'nda' ? 'nda' : 'nd'; if (tp9) { ui[px + 'Topic'] = tp9[0]; ui[px + 'Text'] = tp9[2]; } break; }
     case 'rcDone': { var rc = custById(id); if (!rc) break; var td0 = today(); rc.notes = rc.notes || [];
       rc.notes.forEach(function (n) { if (n.next && !n.done && n.next <= td0) n.done = true; });
       rc.notes.push({ id: uid(), date: td0, method: '전화', text: '안부 연락 (관계 화면에서 기록)', next: '', done: true }); stampCustomer(rc); save(); toast((rc.name || '고객') + '님 연락을 상담 기록에 남겼습니다'); break; }
@@ -6973,7 +7153,7 @@ function doAction(el) {
     case 'snapshot': {
       var a1 = analyze(c, store.settings), s1 = suggest(c, store.settings, a1), r1 = applyPlan(c, store.settings, s1), a2 = analyze(c, store.settings, r1.after);
       var d = new Date();
-      c.snapshots.push({ result: '진행 중', at: today() + ' ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'), before: a1.premium, after: a2.premium, shortBefore: a1.counts.short, shortAfter: a2.counts.short,
+      c.snapshots.push({ result: '제안함', at: today() + ' ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'), before: a1.premium, after: a2.premium, shortBefore: a1.counts.short, shortAfter: a2.counts.short,
         rows: a1.rows.map(function (r) { return { code: r.code, cur: r.cur, verdict: r.verdict }; }) });
       save(); toast('분석 기록을 남겼습니다'); break;
     }
@@ -7279,6 +7459,7 @@ function detailModalHtml() {
     title = '상담 기록 추가'; head = '고객을 고르고 상담 내용을 남기세요';
     body = NL.length ? '<div class="grid-form dm-grid">' + lbl('고객', f('ui', 'ndaCid', ui.ndaCid || '', { type: 'select', options: NL.map(function (c) { return [c.id, c.name || '이름 없음']; }) }), 'span2') +
       lbl('상담일', f('ui', 'ndaDate', ui.ndaDate || today(), { type: 'date' })) + lbl('방법', f('ui', 'ndaMethod', ui.ndaMethod || '전화', { type: 'select', options: NOTE_METHODS.map(function (x) { return [x, x]; }) })) +
+      lbl('주제', f('ui', 'ndaTopic', ui.ndaTopic || '', { type: 'select', options: [['', '자동 (내용으로 짐작)']].concat(NOTE_TOPICS.map(function (x) { return [x, x]; })) })) + '<div class="field span2">' + noteTplChips('nda') + '</div>' +
       lbl('상담 내용', f('ui', 'ndaText', ui.ndaText || '', { type: 'textarea', ph: '예: 실손 중복 설명, 다음 주 증권 받기로 함' }), 'span2') +
       lbl('다음 연락일 (선택)', f('ui', 'ndaNext', ui.ndaNext || '', { type: 'date', quick: true }), 'span2') +
       '<div class="field span2"><button class="btn primary" data-act="ndaGo">기록 추가</button></div></div>'
