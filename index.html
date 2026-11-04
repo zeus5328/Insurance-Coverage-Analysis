@@ -1859,7 +1859,7 @@ function sampleCustomer() {
     snapshots: []
   };
 }
-// 자료 관리 → "예시 고객 추가": 누를 때마다 다른 예시 고객을 만든다 (연락처는 실제 번호와 겹치지 않게 비워 둠)
+// 자료관리 → "예시 고객 추가": 누를 때마다 다른 예시 고객을 만든다 (연락처는 실제 번호와 겹치지 않게 비워 둠)
 function randomSampleCustomer() {
   var R = function (a, b) { return a + Math.floor(Math.random() * (b - a + 1)); }, pick = function (arr) { return arr[R(0, arr.length - 1)]; }, chance = function (p2) { return Math.random() < p2; };
   var pad = function (n) { return String(n).padStart(2, '0'); };
@@ -1912,7 +1912,7 @@ function randomSampleCustomer() {
   return c;
 }
 
-// ===== 체험판 예시 자료 (설정 → 자료 관리 → "예시 자료 생성(랜덤)") =====
+// ===== 체험판 예시 자료 (설정 → 자료관리 → "예시 자료 생성(랜덤)") =====
 // 고객·가구·상담·제안·일정·할 일·직원·기념일 등 모든 화면에 샘플이 보이도록 무작위로 만든다. 만든 자료에는 sample 표시를 붙여 한 번에 지울 수 있다.
 function generateDemoData() {
   var R = function (a, b) { return a + Math.floor(Math.random() * (b - a + 1)); }, pick = function (arr) { return arr[R(0, arr.length - 1)]; };
@@ -2201,7 +2201,7 @@ function render() {
 
 // ===== 화면 이동 (주소 # 으로 기억 → 뒤로가기 동작) =====
 var STEPS = [['info', '고객 정보'], ['policies', '계약 입력'], ['analysis', '보장분석'], ['plan', '정리·설계'], ['proposal', '제안서']];
-var SETTING_SUBS = [['display', '화면 설정'], ['me', '내 정보'], ['data', '자료 관리'], ['rules', '분석 기준'], ['dict', '담보 사전'], ['products', '상품 관리']];
+var SETTING_SUBS = [['display', '화면설정'], ['me', '계정설정'], ['data', '자료관리'], ['rules', '분석기준'], ['dict', '담보사전'], ['products', '상품관리']];
 var WORK_SUBS = [['home', '오늘'], ['calendar', '일정'], ['tasks', '할 일'], ['birthday', '생일'], ['anniv', '기념일'], ['gifts', '선물'], ['stats', '실적'], ['comm', '수수료']];
 var OFFICE_SUBS = [['notice', '공지'], ['schedule', '일정'], ['staff', '직원'], ['branch', '지점·사업단']]; // 직원 생일은 업무 → 생일(직원)로 합침(2026-11-03)
 var OFFICE_TITLES = { schedule: '지점 일정', staff: '직원 연락처', sbd: '직원 생일' }; // 메뉴 이름은 짧게, 화면 제목은 그대로
@@ -2318,7 +2318,7 @@ function renderTop() {
     (LOGIN_OFF ? '<span class="test-badge" title="로그인 기능이 꺼져 있습니다. 자료는 이 브라우저에만 저장됩니다."><span class="tb-long">로그인 꺼짐 · </span>테스트</span>' : '') +
     '<span class="save-state' + (storageOk ? '' : ' bad') + (isOffNow() ? ' off' : '') + '" id="saveState" role="status">' + esc(saveLabel()) + '</span>' +
     (who ? '<details class="who-menu"><summary title="' + attr(cloud.user.email || '') + '"><span class="who-av" aria-hidden="true">' + esc(Array.from(String(who).trim())[0] || '·') + '</span><span class="who-nm">' + esc(who) + ' ▾</span></summary>' +
-      '<div class="who-pop"><div class="muted">' + esc(cloud.user.email || '') + '</div><button class="btn sm" data-act="goSettings" data-id="me">내 정보</button><button class="btn sm" data-act="logout">로그아웃</button></div></details>' : '') +
+      '<div class="who-pop"><div class="muted">' + esc(cloud.user.email || '') + '</div><button class="btn sm" data-act="goSettings" data-id="me">계정설정</button><button class="btn sm" data-act="logout">로그아웃</button></div></details>' : '') +
     '</header>' + subbarHtml() + '</div>';
 }
 
@@ -2396,8 +2396,8 @@ function renderList() {
     '<div id="clistWrap">' + renderListTable() + '</div>' + custImportPanel() +
     '<div class="row list-xls"><button class="btn sm" data-act="custXlsOut" title="고객 기본 정보를 엑셀 파일로 받습니다 (파일은 이 기기에서만 만듭니다)">엑셀 받기</button>' +
       '<label class="btn sm file-btn" title="엑셀에 적은 고객 명단을 불러옵니다">엑셀 입력<input type="file" accept=".xlsx,.xls,.csv" data-kind="custxlsx" hidden></label>' +
-      '<span class="muted">기본 정보(이름·생년월일·성별·휴대폰·주소·직업 등)만 주고받습니다. 계약·상담 기록은 설정 → 자료 관리의 백업 파일을 쓰세요.</span></div>' +
-    '<p class="muted list-foot">' + (cloud.on ? '고객 자료는 입력할 때마다 서버의 내 계정에 저장됩니다. 다른 FC에게는 보이지 않습니다.' : site.on ? '고객 자료는 이 사이트에 저장됩니다.' : '고객 자료는 이 브라우저에 저장됩니다. 설정 → 자료 관리에서 백업 파일을 주기적으로 내보내 두세요.') + '</p>' +
+      '<span class="muted">기본 정보(이름·생년월일·성별·휴대폰·주소·직업 등)만 주고받습니다. 계약·상담 기록은 설정 → 자료관리의 백업 파일을 쓰세요.</span></div>' +
+    '<p class="muted list-foot">' + (cloud.on ? '고객 자료는 입력할 때마다 서버의 내 계정에 저장됩니다. 다른 FC에게는 보이지 않습니다.' : site.on ? '고객 자료는 이 사이트에 저장됩니다.' : '고객 자료는 이 브라우저에 저장됩니다. 설정 → 자료관리에서 백업 파일을 주기적으로 내보내 두세요.') + '</p>' +
     '</section>';
 }
 
@@ -2823,9 +2823,9 @@ function renderAnalysis(c, an) {
     '<button class="btn primary" data-act="tab" data-id="plan">정리·설계로 이동 →</button></div>' +
     (warns.length ? '<div class="side-card warn" role="note"><h3>확인 필요 ' + warns.length + '건</h3><ul>' + warns.map(function (w) { return '<li>' + esc(w) + '</li>'; }).join('') + '</ul>' +
       (an.unmapped ? '<button class="link" data-act="tab" data-id="policies">계약 입력에서 지정하기 ›</button>' : '') + '</div>' : '') +
-    '<div class="side-card"><span class="k">분석 기준</span><strong>' + (BANDS.filter(function (b) { return b[0] === an.band; })[0][1]) + ' 권장 기준표</strong>' +
+    '<div class="side-card"><span class="k">분석기준</span><strong>' + (BANDS.filter(function (b) { return b[0] === an.band; })[0][1]) + ' 권장 기준표</strong>' +
     '<div class="legend"><span><i style="background:var(--accent)"></i>부족</span><span><i style="background:var(--ok)"></i>적정</span><span><i style="background:var(--muted)"></i>과잉·중복</span><span><i style="background:var(--ink);width:2px;height:12px"></i>권장 금액</span></div>' +
-    '<span class="muted">기준값은 설정 → 분석 기준에서 바꿀 수 있습니다. 실손·배상책임은 여러 건 가입해도 실제 손해만큼 나눠 보상하므로 건수로 판단합니다.</span></div>' +
+    '<span class="muted">기준값은 설정 → 분석기준에서 바꿀 수 있습니다. 실손·배상책임은 여러 건 가입해도 실제 손해만큼 나눠 보상하므로 건수로 판단합니다.</span></div>' +
     '</aside>';
   return '<div class="an-layout"><div class="an-main">' +
     '<div class="summary num">' +
@@ -3036,7 +3036,7 @@ function renderSettings() {
         '<td class="r num">' + (a.uses || 0) + '</td>' +
         '<td><button class="btn ghost sm" data-act="aliasUp" data-id="' + i + '" aria-label="위로">↑</button><button class="btn ghost sm" data-act="delAlias" data-id="' + i + '">삭제</button></td></tr>';
     }).join('');
-    body = '<section class="panel"><div class="row between"><h2>표준담보 사전 <span class="muted num">' + s.aliases.length + '개 · 학습 ' + learned.length + '개</span></h2><div class="ins-tools"><input type="search" id="dq" class="mini-search" placeholder="담보명·표준담보 검색" value="' + attr(ui.dq || '') + '" aria-label="사전 검색">' + (learned.some(function (a) { return !a.uses; }) ? '<button class="btn sm" data-act="cleanLearned" title="한 번도 쓰이지 않은 학습 규칙을 지웁니다">안 쓰는 학습 ' + learned.filter(function (a) { return !a.uses; }).length + '개 정리</button>' : '') + '<button class="btn primary sm" data-act="addAlias">+ 키워드 규칙</button></div></div>' +
+    body = '<section class="panel"><div class="row between"><h2>표준담보사전 <span class="muted num">' + s.aliases.length + '개 · 학습 ' + learned.length + '개</span></h2><div class="ins-tools"><input type="search" id="dq" class="mini-search" placeholder="담보명·표준담보 검색" value="' + attr(ui.dq || '') + '" aria-label="사전 검색">' + (learned.some(function (a) { return !a.uses; }) ? '<button class="btn sm" data-act="cleanLearned" title="한 번도 쓰이지 않은 학습 규칙을 지웁니다">안 쓰는 학습 ' + learned.filter(function (a) { return !a.uses; }).length + '개 정리</button>' : '') + '<button class="btn primary sm" data-act="addAlias">+ 키워드 규칙</button></div></div>' +
       '<div class="todos">' + [['', '모든 규칙', s.aliases.length], ['keyword', '키워드 규칙', s.aliases.length - learned.length], ['exact', '학습한 담보명', learned.length]].map(function (o) { var on = (dt || '') === o[0]; return '<button class="todo' + (on ? ' on' : '') + '" data-act="uiPick" data-k="dType" data-id="' + o[0] + '">' + o[1] + ' <b>' + o[2] + '</b></button>'; }).join('') + '</div>' +
       '<div class="dict-test"><label class="field"><span>담보명 시험해 보기</span><input type="text" id="dTest" value="' + attr(ui.dTest || '') + '" placeholder="예: 유사암진단비(갑상선암 포함)" aria-label="담보명 시험"></label><div id="dTestOut" class="dict-test-out">' + (testHtml || '<span class="muted">증권에 적힌 담보명을 넣으면 어느 표준담보로 분류되는지 바로 보여 줍니다.</span>') + '</div></div>' +
       '<div class="tablewrap"><table class="t"><thead><tr><th>종류</th><th>담보명 / 키워드</th><th>표준담보</th><th class="r">사용</th><th></th></tr></thead><tbody>' + (aliasRows || '<tr><td colspan="5" class="muted">조건에 맞는 규칙이 없습니다</td></tr>') + '</tbody></table></div><p class="muted" style="margin:0">위에서부터 먼저 맞는 규칙이 적용됩니다. 키워드에서 <b>+</b>는 "모두 포함", <b>!</b>는 "포함하면 제외"입니다. 예: <b>유사암+!제외</b>는 "유사암"이 있고 "제외"가 없는 담보명. 계약 입력에서 표준담보를 직접 고르면 "학습" 규칙이 자동으로 추가됩니다.</p></section>';
@@ -3049,7 +3049,7 @@ function renderSettings() {
     body = '<div class="kpis">' + stat('고객', store.customers.length + '<small>명</small>') + stat('계약', nPol + '<small>건</small>') + stat('상담 기록', nNote + '<small>건</small>') +
       stat('일정 · 할 일', s.events.length + ' · ' + s.tasks.length) + stat('직원 · 보험사 연락처', s.contacts.staff.length + ' · ' + s.contacts.insurers.length) + stat('자료 크기', kb + '<small>KB</small>') + '</div>' +
       '<div class="' + (lbDays == null || lbDays > 30 ? 'notice warn-box' : 'info') + '">' + (lb ? '마지막 백업: <b>' + esc(lb) + '</b> (' + (lbDays === 0 ? '오늘' : lbDays + '일 전') + ')' + (lbDays > 30 ? ' — 한 달이 넘었습니다. 백업 파일을 새로 받아 두세요.' : '') : '아직 이 기기에서 백업 파일을 받은 적이 없습니다. 아래 "백업 파일 내보내기"로 받아 두세요.') + '</div>' +
-      localMergePanel() + historyPanel() + renderFilesSection() + offlineSection() + // 오프라인 모드는 자료 관리에서 (2026-11-04, 내 정보에서 옮김)
+      localMergePanel() + historyPanel() + renderFilesSection() + offlineSection() + // 오프라인 모드는 자료관리에서 (2026-11-04, 계정설정에서 옮김)
       '<section class="panel"><h2>백업 (내 컴퓨터로)</h2><div class="info">' + (site.on ? '서버·사이트 저장과 별도로, 전체 자료를 내 컴퓨터에 파일로 받아 둘 수 있습니다.' : '모든 고객·계약·설정은 이 브라우저에만 저장됩니다. 브라우저 기록을 지우거나 다른 컴퓨터로 옮기면 사라지므로 백업 파일로 내보내 두세요.') + ' 백업 파일에는 고객 개인정보가 들어 있으니 안전한 곳에 보관하세요.</div>' +
       '<div class="row"><button class="btn primary" data-act="exportJson">백업 파일 내보내기</button><label class="btn" for="importFile">백업 파일 불러오기</label><input type="file" id="importFile" accept=".json,application/json" hidden>' +
       '</div></section>' +
@@ -3281,7 +3281,7 @@ var ABA_BRANCHES = [
   ['지사','영남','더피플지사','053-763-7753','대구광역시 중구 국채보상로 488, 13층(동산동, 섬유회관)']
 ];
 // 목록 머리말·고르기 창에 쓰는 회사 이름과 구분: 입력된 내용을 따른다
-// 회사 이름 = 내 정보의 소속 → 없으면 기본(홈페이지) 목록일 때만 ABA금융서비스. 구분 = 목록에 실제로 있는 구분(사업단·지사·지점 등) 순서대로.
+// 회사 이름 = 계정설정의 소속 → 없으면 기본(홈페이지) 목록일 때만 ABA금융서비스. 구분 = 목록에 실제로 있는 구분(사업단·지사·지점 등) 순서대로.
 function brOrgName() { var o = String((store.settings.fc && store.settings.fc.org) || '').trim(); if (o) return o; return getBranches() === ABA_BRANCHES ? 'ABA금융서비스' : ''; }
 function brTypes(list) {
   var order = ['사업단', '지사', '지점'], cnt = {}, seen = [];
@@ -3789,7 +3789,7 @@ function branchPanel() {
     brImportPanel() +
     '<div class="todos">' + chip('bType', '', '전체') + types.map(function (t) { return chip('bType', t[0], esc(t[0])); }).join('') + '<span class="todo-sep" aria-hidden="true"></span>' +
       chip('bRegion', '', '모든 지역') + regions.map(function (r) { return chip('bRegion', r, r); }).join('') +
-      (store.settings.fc.branch ? '<span class="todo-sep" aria-hidden="true"></span><button class="todo' + (ui.bMine ? ' on' : '') + '" data-act="brMine" title="설정 → 내 정보의 사업단·지사">내 소속 · ' + esc(store.settings.fc.branch) + '</button>' : '') + '</div>' +
+      (store.settings.fc.branch ? '<span class="todo-sep" aria-hidden="true"></span><button class="todo' + (ui.bMine ? ' on' : '') + '" data-act="brMine" title="설정 → 계정설정의 사업단·지사">내 소속 · ' + esc(store.settings.fc.branch) + '</button>' : '') + '</div>' +
     '<div id="bqWrap">' + branchTable() + '</div>' +
     '<p class="muted" style="margin:0">' + (!BR.length ? '' : custom ? '직접 입력하거나 엑셀로 올린 목록입니다' + (store.settings.branchesAt ? ' (' + esc(store.settings.branchesAt) + ')' : '') + '.' : 'ABA금융서비스 홈페이지 "사업단 및 지사 찾기"(2026년 7월 14일 기준)에 공개된 목록입니다.') + ' 직원 연락처의 부서·지점 칸에서 고르면 이름과 사무실 번호가 바로 들어가고, 여기 "등록한 직원"에 표시됩니다.</p></section>';
 }
@@ -3853,7 +3853,7 @@ function insurerTable() {
   if (!L.length) return '<div class="empty"><strong>조건에 맞는 보험사가 없습니다</strong></div>';
   ui.icOpen = ui.icOpen || {};
   var KL = { '생명': '생명보험', '손해': '손해보험', '공제': '공제', '기타': '기타' };
-  // 상품 관리와 같은 모양: 접힌 줄 목록, 누르면 그 보험사만 펼쳐 고치기 (2026-11-03)
+  // 상품관리와 같은 모양: 접힌 줄 목록, 누르면 그 보험사만 펼쳐 고치기 (2026-11-03)
   var cards = L.sort(function (a, b) { return (String(a.name || '').trim() ? 1 : 0) - (String(b.name || '').trim() ? 1 : 0) || (cc[b.id] || 0) - (cc[a.id] || 0) || (collator ? collator.compare(a.name || '힣', b.name || '힣') : 0); }).map(function (x) {
     if (!ui.icOpen[x.id]) {
       var sub = [x.claim ? '보상 ' + x.claim : '', x.fax ? '청구 팩스 ' + x.fax : '', x.web ? String(x.web).replace(/^https?:\/\//i, '') : '', x.manager ? '담당 ' + x.manager + (x.managerPhone ? ' ' + x.managerPhone : '') : '', x.address || '', x.memo || ''].filter(Boolean).join(' · ');
@@ -3963,7 +3963,7 @@ function giftModalBody(g) {
     lbl('메모', A('memo', g.memo, { type: 'textarea', ph: '예: 배송지 회사, 감사 문자 받음' }), 'span2') + '</div>' +
     (g.occ === '계약 감사' && num(g.amount) > 30000 ? '<div class="notice" style="margin-top:10px">계약 관련 금품은 최초 1년 보험료의 10%와 3만원 중 적은 금액까지만 허용됩니다. 금액을 확인하세요.</div>' : '');
 }
-// ===== 보험 (전체 계약 · 상품 관리) =====
+// ===== 보험 (전체 계약 · 상품관리) =====
 // ----- 전체 계약 도우미 -----
 function insContactOf(name) {
   var n = norm(name); if (!n) return null;
@@ -4181,7 +4181,7 @@ function polGroupPanel(kind, by) {
 }
 // ===== 보험 → 운전자보험: 고객별 운전자 담보(형사·행정 책임) 점검 =====
 // 장기 계약의 담보 중 표준담보 DRV_SETTLE(교통사고처리지원금)·DRV_LAWYER(변호사선임비)·DRV_FINE(벌금)을 모아 본다.
-// 기준 금액은 설정 → 분석 기준의 기준표(예시값)를 쓰고, 법령 수치(스쿨존 벌금 상한 3천만원)만 고정으로 쓴다.
+// 기준 금액은 설정 → 분석기준의 기준표(예시값)를 쓰고, 법령 수치(스쿨존 벌금 상한 3천만원)만 고정으로 쓴다.
 var DRV_LAW_FINE = 3000; // 만원: 특가법 제5조의13 어린이보호구역 어린이 상해 벌금 상한
 function drvInfo(c) {
   var st = store.settings, bk = bandOf(ageOf(c.birth)), cur = { DRV_SETTLE: 0, DRV_LAWYER: 0, DRV_FINE: 0 }, pols = [];
@@ -4236,7 +4236,7 @@ function drvPanel() {
   }).join('') + '</tbody></table></div>'
     : '<div class="empty"><strong>' + (all.length ? '조건에 맞는 고객이 없습니다' : '운전하는 고객이나 운전자보험 계약이 없습니다') + '</strong><span>고객 정보에서 "운전함"을 체크하고, 계약 입력에서 운전자보험 담보(교통사고처리지원금·변호사선임비용·벌금)를 넣으면 여기서 점검합니다.</span></div>';
   return kpis + '<section class="panel"><div class="row between"><h2>고객별 운전자 담보 ' + rows.length + '명</h2><div class="ins-tools"><input type="search" id="drvq" class="mini-search" placeholder="고객·보험사 검색" value="' + attr(ui.drvq || '') + '" aria-label="운전자보험 검색"><button class="btn primary sm" data-act="drvAdd" title="운전자보험 계약 입력">+ 추가</button></div></div>' +
-    '<div id="drvWrap">' + table + '</div><p class="muted" style="margin:0">금액은 계약 입력의 담보(표준담보: 교통사고처리지원금·운전자 변호사선임비·운전자 벌금) 중 가장 큰 값입니다. 주황 글씨는 설정 → 분석 기준의 기준값(예시값) 미만이거나, 벌금이 스쿨존 상한(3천만원)보다 낮은 경우입니다. 새 운전자보험은 위 "+ 추가"로 고객을 골라 넣습니다.</p></section>' + drvGuide();
+    '<div id="drvWrap">' + table + '</div><p class="muted" style="margin:0">금액은 계약 입력의 담보(표준담보: 교통사고처리지원금·운전자 변호사선임비·운전자 벌금) 중 가장 큰 값입니다. 주황 글씨는 설정 → 분석기준의 기준값(예시값) 미만이거나, 벌금이 스쿨존 상한(3천만원)보다 낮은 경우입니다. 새 운전자보험은 위 "+ 추가"로 고객을 골라 넣습니다.</p></section>' + drvGuide();
 }
 // 운전자보험 → 보험사별 계약: 운전자 담보가 든 장기 계약을 보험사로 묶음
 function drvByInsPanel() {
@@ -4925,7 +4925,7 @@ function renderTodo() {
     if (sb && sb.days <= num(P.birthdayDays)) birth.push({ d: sb.days, h: '<li><span class="when ' + (sb.days === 0 ? 'now' : '') + '">' + dLabel(sb.days) + '</span><span class="who who-s">직원</span><b>' + esc(st.name || '') + '</b><span class="what">' + Number(sb.date.slice(5, 7)) + '월 ' + Number(sb.date.slice(8, 10)) + '일' + (st.bdCal === 'lunar' ? ' (' + esc(bdDesc(st)) + ')' : '') + (st.role ? ' · ' + esc(st.role) : '') + '</span>' + (st.phone ? telLink(st.phone) : '') + '</li>' });
   });
   var srt = function (a) { return a.sort(function (x, y) { return x.d - y.d; }).map(function (x) { return x.h; }); };
-  return '<p class="muted" style="margin:0">' + today() + ' 기준 · 기간은 설정 → 분석 기준에서 바꿀 수 있습니다.</p>' +
+  return '<p class="muted" style="margin:0">' + today() + ' 기준 · 기간은 설정 → 분석기준에서 바꿀 수 있습니다.</p>' +
     '<div class="todo-grid">' +
     todoCard('연락할 고객', '다음 연락일 ' + num(P.followDays) + '일 안·지난 것', srt(follow), '연락 예정인 고객이 없습니다. 고객 정보 → 상담 기록에서 다음 연락일을 넣으세요.', 'tmFollow') +
     todoCard('갱신·납입 완료 예정', num(P.renewDays) + '일 안', srt(renew), '예정된 갱신·납입 완료가 없습니다. 계약 입력에서 다음 갱신일을 넣으면 여기에 보입니다.', 'tmRenew') +
@@ -5579,7 +5579,7 @@ function workHome() {
     '<section class="panel"><div class="row between"><h2>다가오는 7일간 일정</h2></div>' + (week.length ? foldList(week, 5, 'weekMore', function (it) { return itemRow(it, true); }, 'wlist') : '<p class="muted" style="margin:0">다가오는 일정이 없습니다.</p>') + '</section>' +
     renderTodo();
 }
-// 달력 보기: 이번에 고른 보기(ui.calView) → 없으면 설정 → 화면 설정의 기본 보기(params.calView) → 월간
+// 달력 보기: 이번에 고른 보기(ui.calView) → 없으면 설정 → 화면설정의 기본 보기(params.calView) → 월간
 function calViewNow() { return ui.calView || (store.settings.params.calView === 'week' ? 'week' : 'month'); }
 function workCalendar() {
   var wk = calViewNow() === 'week', WD = ['일', '월', '화', '수', '목', '금', '토'];
@@ -5752,7 +5752,7 @@ function workTasks() {
       return '<section class="panel"><div class="row between"><h2>고객 자료에서 생긴 할 일 ' + A.length + '건' + (late ? ' <span class="chip warn">밀림 ' + late + '</span>' : '') + '</h2><span class="muted">앞으로 ' + (num(store.settings.params.renewDays) || 60) + '일 · 일정 제외</span></div>' +
         '<div class="todos">' + kinds.filter(function (o) { return !o[0] || cnt[o[0]]; }).map(function (o) { return '<button class="todo' + (F === o[0] ? ' on' : '') + '" data-act="atF" data-id="' + o[0] + '">' + o[1] + (o[0] ? ' <b>' + cnt[o[0]] + '</b>' : '') + '</button>'; }).join('') + '</div>' +
         (L.length ? foldList(L, 5, 'atMore', function (it) { return itemRow(it, true); }, 'wlist') : '<p class="muted" style="margin:0">해야 할 일이 없습니다.</p>') +
-        '<p class="muted" style="margin:0">상담 기록의 다음 연락일, 계약의 갱신일·납입 완료일, 개인정보 동의 만료, 상령일(보험나이 +1)을 모아 보여 줍니다. 기간은 설정 → 분석 기준의 "갱신·납입완료 예정 표시"를 따릅니다.</p></section>';
+        '<p class="muted" style="margin:0">상담 기록의 다음 연락일, 계약의 갱신일·납입 완료일, 개인정보 동의 만료, 상령일(보험나이 +1)을 모아 보여 줍니다. 기간은 설정 → 분석기준의 "갱신·납입완료 예정 표시"를 따릅니다.</p></section>';
     })() +
     (done.length ? '<section class="panel"><div class="row between"><h2>완료 ' + done.length + '건</h2><button class="btn ghost sm' + (ui.armed === 'clearDone' ? ' danger armed' : '') + '" data-act="clearDoneTasks">' + (ui.armed === 'clearDone' ? '한 번 더 누르면 삭제' : '완료항목 삭제') + '</button></div><ul class="wlist tasks">' + done.slice(-30).reverse().map(row).join('') + '</ul></section>' : '');
 }
@@ -6539,13 +6539,13 @@ function doAction(el) {
 
 function importRules(file) {
   file.text().then(function (t) {
-    var o = JSON.parse(t); if (!o || o.kind !== 'fcp-rules' || !o.bench) throw new Error('분석 기준 파일이 아닙니다');
+    var o = JSON.parse(t); if (!o || o.kind !== 'fcp-rules' || !o.bench) throw new Error('분석기준 파일이 아닙니다');
     var keep = { startView: store.settings.params.startView, bdMsg: store.settings.params.bdMsg, anMsg: store.settings.params.anMsg, expMsg: store.settings.params.expMsg, calView: store.settings.params.calView };
     STANDARDS.forEach(function (st) { if (o.bench[st.code]) store.settings.bench[st.code] = o.bench[st.code]; });
     if (o.params) { Object.keys(o.params).forEach(function (k) { if (k !== 'startView' && k !== 'bdMsg' && k !== 'anMsg' && k !== 'expMsg' && k !== 'calView') store.settings.params[k] = o.params[k]; }); }
     if (Array.isArray(o.aliases)) { var have = {}; store.settings.aliases.forEach(function (a) { have[a.type + '|' + norm(a.pattern)] = 1; }); o.aliases.forEach(function (a) { if (a && a.pattern && !have['keyword|' + norm(a.pattern)]) store.settings.aliases.push({ pattern: a.pattern, code: a.code, type: 'keyword', uses: 0 }); }); }
     Object.keys(keep).forEach(function (k) { if (keep[k] != null) store.settings.params[k] = keep[k]; });
-    save(); render(); toast('분석 기준을 불러왔습니다');
+    save(); render(); toast('분석기준을 불러왔습니다');
   }).catch(function (e) { toast(e.message || '파일을 읽지 못했습니다'); });
 }
 function exportJson() {
@@ -7196,7 +7196,7 @@ function koAuthError(e) {
   var m = String((e && (e.message || e.error_description)) || e || '');
   if (/passkey_disabled|passkey.*(disabled|not enabled)/i.test(m)) return '서버에서 패스키 로그인이 아직 켜지지 않았습니다. 관리자가 Supabase 설정에서 패스키를 켜야 합니다';
   if (/NotAllowedError|not allowed|cancel|timed out|AbortError/i.test(m)) return '패스키 확인이 취소됐거나 시간이 지났습니다. 다시 눌러 주세요';
-  if (/passkey.*not found|credential.*not found|no.*passkey|webauthn.*(invalid|failed)/i.test(m)) return '이 기기에 등록된 패스키를 찾지 못했습니다. 이메일로 로그인한 뒤 설정 → 내 정보에서 패스키를 먼저 등록하세요';
+  if (/passkey.*not found|credential.*not found|no.*passkey|webauthn.*(invalid|failed)/i.test(m)) return '이 기기에 등록된 패스키를 찾지 못했습니다. 이메일로 로그인한 뒤 설정 → 계정설정에서 패스키를 먼저 등록하세요';
   if (/SecurityError|rp.?id|origin/i.test(m)) return '이 주소에서는 패스키를 쓸 수 없습니다. 등록된 웹사이트 주소(https)에서 여세요';
   if (/Invalid login credentials/i.test(m)) return '이메일 또는 비밀번호가 맞지 않습니다';
   if (/Email not confirmed/i.test(m)) return '이메일 인증이 아직 안 됐습니다. 메일함에서 인증 링크를 누르거나 관리자에게 문의하세요';
@@ -7443,7 +7443,7 @@ function teamJoinHint() { // 로그인했는데 팀이 없으면 지점 화면 �
   if (!team.loaded) { teamLoad(); return ''; }
   if (team.info) return '';
   return '<section class="panel team-hint"><div class="row between"><h2>팀 공지 · 팀 일정 함께 쓰기</h2><button class="btn primary sm" data-act="goSettings" data-id="me">팀 설정으로</button></div>' +
-    '<p style="margin:0">지점장(관리자)이 팀을 만들고 초대 코드를 나눠 주면, 팀 공지와 팀 일정을 팀원 모두가 함께 보고 참석 여부도 각자 체크합니다. 팀 만들기와 초대 코드 입력은 설정 → 내 정보의 "팀" 칸에 있습니다.</p></section>';
+    '<p style="margin:0">지점장(관리자)이 팀을 만들고 초대 코드를 나눠 주면, 팀 공지와 팀 일정을 팀원 모두가 함께 보고 참석 여부도 각자 체크합니다. 팀 만들기와 초대 코드 입력은 설정 → 계정설정의 "팀" 칸에 있습니다.</p></section>';
 }
 function teamOk() { return !!(cloud.on && cloud.client && cloud.user && !cloud.offline); }
 function teamErr(e) {
@@ -7540,7 +7540,7 @@ function teamSection() {
   return '<section class="panel"><div class="row between"><h2>팀 · ' + esc(team.info.name) + ' <span class="chip' + (mgr ? ' warn' : '') + '">' + (mgr ? '관리자' : 'FC') + '</span></h2><button class="btn sm" data-act="teamRefresh"' + busy + '>새로 고침</button></div>' + err +
     (mgr ? '<div class="team-code"><span class="muted">초대 코드</span><b class="num">' + esc(team.info.code) + '</b><button class="btn sm" data-act="teamCopy">복사</button>' +
       '<button class="btn ghost sm' + (ui.armed === 'tmRotate' ? ' danger armed' : '') + '" data-act="teamRotate"' + busy + '>' + (ui.armed === 'tmRotate' ? '한 번 더 누르면 새 코드 (예전 코드는 막힘)' : '새 코드 만들기') + '</button></div>' +
-      '<p class="muted" style="margin:6px 0 10px">FC에게 이 코드를 알려 주면 설정 → 내 정보 → 팀에서 코드를 넣고 들어옵니다. 팀 공지는 지점 → 공지에서 올리고, FC 실적은 지점 → 팀 현황에서 봅니다.</p>'
+      '<p class="muted" style="margin:6px 0 10px">FC에게 이 코드를 알려 주면 설정 → 계정설정 → 팀에서 코드를 넣고 들어옵니다. 팀 공지는 지점 → 공지에서 올리고, FC 실적은 지점 → 팀 현황에서 봅니다.</p>'
       : '<div class="field" style="margin:4px 0 10px"><span>관리자에게 실적 숫자 공유 <small class="muted">고객 수, 이번 달 상담·제안·성사, 갱신 예정, 할 일 건수만. 고객 이름·연락처는 안 보냅니다.</small></span>' +
         '<span class="seg seg-f"><button type="button" class="seg-btn' + (me.share_stats ? ' on' : '') + '" data-act="teamShare" data-id="1"' + busy + '>공유</button><button type="button" class="seg-btn' + (!me.share_stats ? ' on' : '') + '" data-act="teamShare" data-id=""' + busy + '>안 함</button></span></div>') +
     '<h3 class="sub-h">구성원 ' + team.members.length + '명</h3><ul class="team-list">' + rows + '</ul>' +
@@ -7587,13 +7587,13 @@ function teamNoticeSection() {
 function teamStatsPanel() {
   if (!teamOk()) return '<section class="panel"><div class="empty"><strong>인터넷에 연결된 로그인 상태에서만 볼 수 있습니다</strong></div></section>';
   if (!team.loaded) { teamLoad(); return '<section class="panel"><p class="muted">불러오는 중…</p></section>'; }
-  if (!team.info) return '<section class="panel"><div class="empty"><strong>아직 팀에 들어가 있지 않습니다</strong><span>설정 → 내 정보 → 팀에서 만들거나 초대 코드로 들어가세요.</span></div></section>';
+  if (!team.info) return '<section class="panel"><div class="empty"><strong>아직 팀에 들어가 있지 않습니다</strong><span>설정 → 계정설정 → 팀에서 만들거나 초대 코드로 들어가세요.</span></div></section>';
   teamLoad();
   var mgr = team.info.role === 'manager';
   if (!mgr) {
     var mine = myTeamStats(), sh = team.me && team.me.share_stats;
     return '<section class="panel"><h2>팀 현황 · ' + esc(team.info.name) + '</h2><p style="margin:0">팀 현황표는 관리자만 봅니다. 지금 내 실적 숫자는 관리자에게 <b>' + (sh ? '공유 중' : '공유하지 않음') + '</b>입니다' +
-      (sh ? ' (고객 ' + mine.customers + '명, 이번 달 제안 ' + mine.props + ' · 성사 ' + mine.won + ').' : '.') + ' 바꾸려면 설정 → 내 정보 → 팀에서 고르세요.</p></section>';
+      (sh ? ' (고객 ' + mine.customers + '명, 이번 달 제안 ' + mine.props + ' · 성사 ' + mine.won + ').' : '.') + ' 바꾸려면 설정 → 계정설정 → 팀에서 고르세요.</p></section>';
   }
   var byU = {}; team.stats.forEach(function (x) { byU[x.user_id] = x; });
   var members = team.members.filter(function (m) { return m.role === 'member'; });
@@ -7610,13 +7610,13 @@ function teamStatsPanel() {
   return '<div class="kpis">' + kp('공유 중인 FC', shared + ' / ' + members.length, '명') + kp('이번 달 제안', sum.props, '건') + kp('이번 달 성사', sum.won, '건', 'warn') + kp('갱신 예정', sum.renew, '건') + kp('기한 지난 할 일', sum.tasksLate, '건', 'warn') + '</div>' +
     '<section class="panel"><div class="row between"><h2>팀 현황 · ' + esc(team.info.name) + '</h2><button class="btn sm" data-act="teamRefresh">새로 고침</button></div>' +
     (members.length ? '<div class="tablewrap"><table class="t ctab"><thead><tr><th>FC</th><th class="r">고객</th><th class="r">이번 달 상담</th><th class="r">제안</th><th class="r">성사</th><th class="r">성사율</th><th class="r">갱신 예정</th><th class="r">기한 지난 할 일</th><th>마지막 반영</th></tr></thead><tbody>' + rows + '</tbody></table></div>'
-      : '<div class="empty"><strong>아직 들어온 FC가 없습니다</strong><span>설정 → 내 정보 → 팀의 초대 코드를 FC에게 알려 주세요.</span></div>') +
+      : '<div class="empty"><strong>아직 들어온 FC가 없습니다</strong><span>설정 → 계정설정 → 팀의 초대 코드를 FC에게 알려 주세요.</span></div>') +
     '<p class="muted" style="margin:0">FC가 "실적 숫자 공유"를 켠 경우에만 숫자가 보이고, FC가 앱을 쓸 때마다 자동으로 반영됩니다. 고객 이름·연락처·계약 내용은 관리자에게도 보이지 않습니다. 지난달 숫자가 그대로인 FC는 이번 달에 아직 앱을 열지 않은 것입니다(-로 표시).</p></section>';
 }
 // ===== 오프라인 모드 =====
 // 로그인 상태에서 인터넷이 끊겨도 계속 쓴다. 자료 사본을 이 기기(IndexedDB)에 두고, 연결되면 못 올린 것만 서버에 올린다.
 // 사본 = { uid, email, meta, store(JSON), cache(JSON: 서버에 올라간 상태), at }. store와 cache가 다른 고객·설정이 '올릴 것'.
-// 로그아웃하면 사본을 지운다. 설정 → 자료 관리에서 기기별로 끌 수 있다(끄면 사본 삭제).
+// 로그아웃하면 사본을 지운다. 설정 → 자료관리에서 기기별로 끌 수 있다(끄면 사본 삭제).
 var OFF_DB = 'fcp-offline', OFF_ST = 'kv', offTimer = null, offDbP = null;
 function offIdb() {
   if (offDbP) return offDbP;
