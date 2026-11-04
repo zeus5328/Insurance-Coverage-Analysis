@@ -1512,6 +1512,35 @@ button.cal-btn { padding: 0; color: var(--ink-2); cursor: pointer; }
 /* 설정 → 자료 관리: 전체 초기화 칸은 따로 붉은 테두리 (2026-11-03) */
 .panel.danger-zone { border-color: color-mix(in srgb, var(--danger) 45%, var(--line)); }
 .panel.danger-zone h2 { color: var(--danger); }
+
+/* ===== 상단 바: 화면 크기별 배치 (2026-11-04) =====
+   데스크탑·태블릿: 한 줄. 로고를 아래 서브메뉴·본문과 같은 세로선(최대 1312px 가운데 정렬)에 맞춘다.
+   모바일(600px 이하): 두 줄. 윗줄 = 로고 | 테스트 표시·로그인, 아랫줄 = 큰 메뉴 5개를 가로로 고르게. */
+@media (min-width: 601px) {
+  .topbar { padding-left: max(16px, env(safe-area-inset-left, 0px), calc((100% - 1312px) / 2 + 16px)) !important; padding-right: max(16px, env(safe-area-inset-right, 0px), calc((100% - 1312px) / 2 + 16px)) !important; }
+  .topbar .topnav { margin-left: 8px; }
+}
+@media (min-width: 601px) and (max-width: 900px) {
+  .topbar { gap: 10px !important; }
+  .topbar .navbtn { padding: 7px 10px; }
+  .topbar .tb-long { display: none; }
+  .who-menu .who-nm { max-width: 90px; overflow: hidden; text-overflow: ellipsis; }
+}
+@media (max-width: 600px) {
+  .topbar { flex-wrap: wrap; row-gap: 0; column-gap: 8px; min-height: 0 !important; padding-block: 8px 0 !important; padding-inline: max(12px, env(safe-area-inset-left, 0px)) max(12px, env(safe-area-inset-right, 0px)) !important; }
+  .topbar .brand { order: 1; font-size: 15px; padding: 4px 0; }
+  .topbar .spacer { order: 2; }
+  .topbar .test-badge, .topbar .save-state, .topbar .who-menu { order: 3; }
+  .topbar .test-badge { font-size: 11.5px; width: auto; height: auto; padding: 3px 9px; border-radius: 999px; }
+  .topbar .test-badge .tb-long { display: none; }
+  .topbar .save-state.off, .topbar .save-state.bad { display: inline-flex; font-size: 0; gap: 0; } /* 오프라인·저장 오류일 때만 점으로 */
+  .who-menu summary { padding: 3px 10px 3px 3px; gap: 6px; max-width: 46vw; }
+  .who-menu .who-nm { display: inline; font-size: 13px; max-width: 30vw; overflow: hidden; text-overflow: ellipsis; }
+  .topbar .topnav { order: 4; flex: 1 1 100%; display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; margin: 4px 0 0; }
+  .topbar .navbtn { text-align: center; padding: 9px 0 10px; font-size: 14px; border-radius: 0; opacity: .7; position: relative; }
+  .topbar .navbtn.on { background: transparent; opacity: 1; }
+  .topbar .navbtn.on::after { content: ""; position: absolute; left: 22%; right: 22%; bottom: 0; height: 3px; border-radius: 3px 3px 0 0; background: var(--accent); }
+}
 </style>
 </head>
 <body>
@@ -2201,7 +2230,7 @@ function render() {
 
 // ===== 화면 이동 (주소 # 으로 기억 → 뒤로가기 동작) =====
 var STEPS = [['info', '고객 정보'], ['policies', '계약 입력'], ['analysis', '보장분석'], ['plan', '정리·설계'], ['proposal', '제안서']];
-var SETTING_SUBS = [['display', '화면설정'], ['me', '계정설정'], ['data', '자료관리'], ['rules', '분석기준'], ['dict', '담보사전'], ['products', '상품관리']];
+var SETTING_SUBS = [['display', '화면설정'], ['me', '내정보'], ['account', '계정설정'], ['data', '자료관리'], ['rules', '분석기준'], ['dict', '담보사전'], ['products', '상품관리']];
 var WORK_SUBS = [['home', '오늘'], ['calendar', '일정'], ['tasks', '할 일'], ['birthday', '생일'], ['anniv', '기념일'], ['gifts', '선물'], ['stats', '실적'], ['comm', '수수료']];
 var OFFICE_SUBS = [['notice', '공지'], ['schedule', '일정'], ['staff', '직원'], ['branch', '지점·사업단']]; // 직원 생일은 업무 → 생일(직원)로 합침(2026-11-03)
 var OFFICE_TITLES = { schedule: '지점 일정', staff: '직원 연락처', sbd: '직원 생일' }; // 메뉴 이름은 짧게, 화면 제목은 그대로
@@ -2241,7 +2270,7 @@ function applyHash() {
   var m;
   if ((m = h.match(/^#c-([A-Za-z0-9]+)-(info|policies|analysis|plan|proposal)$/)) && store.customers.some(function (c) { return c.id === m[1]; })) {
     ui.view = 'customer'; ui.cid = m[1]; ui.tab = m[2];
-  } else if ((m = h.match(/^#settings(?:-(me|display|rules|dict|products|data))?$/))) {
+  } else if ((m = h.match(/^#settings(?:-(me|account|display|rules|dict|products|data))?$/))) {
     ui.view = 'settings'; ui.sub = m[1] || 'display';
   } else if ((h === '' || h === '#') && store.settings.params.startView === 'list') {
     ui.view = 'list'; ui.lsub = 'list';
@@ -2318,7 +2347,7 @@ function renderTop() {
     (LOGIN_OFF ? '<span class="test-badge" title="로그인 기능이 꺼져 있습니다. 자료는 이 브라우저에만 저장됩니다."><span class="tb-long">로그인 꺼짐 · </span>테스트</span>' : '') +
     '<span class="save-state' + (storageOk ? '' : ' bad') + (isOffNow() ? ' off' : '') + '" id="saveState" role="status">' + esc(saveLabel()) + '</span>' +
     (who ? '<details class="who-menu"><summary title="' + attr(cloud.user.email || '') + '"><span class="who-av" aria-hidden="true">' + esc(Array.from(String(who).trim())[0] || '·') + '</span><span class="who-nm">' + esc(who) + ' ▾</span></summary>' +
-      '<div class="who-pop"><div class="muted">' + esc(cloud.user.email || '') + '</div><button class="btn sm" data-act="goSettings" data-id="me">계정설정</button><button class="btn sm" data-act="logout">로그아웃</button></div></details>' : '') +
+      '<div class="who-pop"><div class="muted">' + esc(cloud.user.email || '') + '</div><button class="btn sm" data-act="goSettings" data-id="account">계정설정</button><button class="btn sm" data-act="logout">로그아웃</button></div></details>' : '') +
     '</header>' + subbarHtml() + '</div>';
 }
 
@@ -2932,11 +2961,14 @@ function renderProposal(c, an) {
 
 function renderSettings() {
   var s = store.settings, sub = ui.sub || 'display', body = '';
-  if (sub === 'me') {
+  if (sub === 'account') { // 계정설정: 내 계정·팀·패스키 로그인 (2026-11-04, 내정보에서 나눔)
+    body = renderAccountSection() + teamSection() + passkeySection();
+    if (!cloud.on || !cloud.user) body = '<div class="info">로그인 없이 이 기기에만 저장하는 방식으로 쓰고 있습니다. 내 계정·패스키 로그인은 로그인해서 쓸 때 여기에 나옵니다.</div>' + body;
+  } else if (sub === 'me') {
     var fcRoles = [['', '선택'], ['FC', 'FC'], ['팀장', '팀장'], ['지점장', '지점장'], ['단장', '단장']]; if (s.fc.role && !fcRoles.some(function (o) { return o[0] === s.fc.role; })) fcRoles.push([s.fc.role, s.fc.role]);
     var fcLine = fcLineText(s.fc);
     var miss = [!s.fc.name && '이름', !s.fc.phone && '연락처', !s.fc.org && '소속'].filter(Boolean);
-    body = renderAccountSection() + teamSection() + passkeySection() + '<section class="panel"><h2>FC 정보 <span class="muted">제안서·축하 문자에 표시됩니다</span></h2><div class="grid-form">' +
+    body = '<section class="panel"><h2>FC 정보 <span class="muted">제안서·축하 문자에 표시됩니다</span></h2><div class="grid-form">' +
       lbl('이름', f('fc', 'name', s.fc.name, { ph: '예: 홍길동' })) + lbl('직급', f('fc', 'role', s.fc.role || '', { type: 'select', options: fcRoles })) +
       lbl('연락처', f('fc', 'phone', s.fc.phone, { ph: '예: 010-1234-5678', inputmode: 'tel', kind: 'phone' })) + lbl('이메일', f('fc', 'email', s.fc.email || '', { type: 'email', ph: 'name@company.com' })) + lbl('설계사 등록번호 (선택)', f('fc', 'regNo', s.fc.regNo || '', { ph: '넣으면 제안서에 표시' })) +
       lbl('소속', f('fc', 'org', s.fc.org, { ph: '예: ABA금융서비스' })) + lbl('사업단·지사', f('fc', 'branch', s.fc.branch, { kind: 'branch', ph: '눌러서 목록에서 선택' })) + lbl('지점', f('fc', 'unit', s.fc.unit || '', { ph: '예: 일산지점 (없으면 비워 두세요)' })) +
@@ -3049,7 +3081,7 @@ function renderSettings() {
     body = '<div class="kpis">' + stat('고객', store.customers.length + '<small>명</small>') + stat('계약', nPol + '<small>건</small>') + stat('상담 기록', nNote + '<small>건</small>') +
       stat('일정 · 할 일', s.events.length + ' · ' + s.tasks.length) + stat('직원 · 보험사 연락처', s.contacts.staff.length + ' · ' + s.contacts.insurers.length) + stat('자료 크기', kb + '<small>KB</small>') + '</div>' +
       '<div class="' + (lbDays == null || lbDays > 30 ? 'notice warn-box' : 'info') + '">' + (lb ? '마지막 백업: <b>' + esc(lb) + '</b> (' + (lbDays === 0 ? '오늘' : lbDays + '일 전') + ')' + (lbDays > 30 ? ' — 한 달이 넘었습니다. 백업 파일을 새로 받아 두세요.' : '') : '아직 이 기기에서 백업 파일을 받은 적이 없습니다. 아래 "백업 파일 내보내기"로 받아 두세요.') + '</div>' +
-      localMergePanel() + historyPanel() + renderFilesSection() + offlineSection() + // 오프라인 모드는 자료관리에서 (2026-11-04, 계정설정에서 옮김)
+      localMergePanel() + historyPanel() + renderFilesSection() + offlineSection() + // 오프라인 모드는 자료관리에서 (2026-11-04, 내정보에서 옮김)
       '<section class="panel"><h2>백업 (내 컴퓨터로)</h2><div class="info">' + (site.on ? '서버·사이트 저장과 별도로, 전체 자료를 내 컴퓨터에 파일로 받아 둘 수 있습니다.' : '모든 고객·계약·설정은 이 브라우저에만 저장됩니다. 브라우저 기록을 지우거나 다른 컴퓨터로 옮기면 사라지므로 백업 파일로 내보내 두세요.') + ' 백업 파일에는 고객 개인정보가 들어 있으니 안전한 곳에 보관하세요.</div>' +
       '<div class="row"><button class="btn primary" data-act="exportJson">백업 파일 내보내기</button><label class="btn" for="importFile">백업 파일 불러오기</label><input type="file" id="importFile" accept=".json,application/json" hidden>' +
       '</div></section>' +
@@ -3281,7 +3313,7 @@ var ABA_BRANCHES = [
   ['지사','영남','더피플지사','053-763-7753','대구광역시 중구 국채보상로 488, 13층(동산동, 섬유회관)']
 ];
 // 목록 머리말·고르기 창에 쓰는 회사 이름과 구분: 입력된 내용을 따른다
-// 회사 이름 = 계정설정의 소속 → 없으면 기본(홈페이지) 목록일 때만 ABA금융서비스. 구분 = 목록에 실제로 있는 구분(사업단·지사·지점 등) 순서대로.
+// 회사 이름 = 내정보의 소속 → 없으면 기본(홈페이지) 목록일 때만 ABA금융서비스. 구분 = 목록에 실제로 있는 구분(사업단·지사·지점 등) 순서대로.
 function brOrgName() { var o = String((store.settings.fc && store.settings.fc.org) || '').trim(); if (o) return o; return getBranches() === ABA_BRANCHES ? 'ABA금융서비스' : ''; }
 function brTypes(list) {
   var order = ['사업단', '지사', '지점'], cnt = {}, seen = [];
@@ -3789,7 +3821,7 @@ function branchPanel() {
     brImportPanel() +
     '<div class="todos">' + chip('bType', '', '전체') + types.map(function (t) { return chip('bType', t[0], esc(t[0])); }).join('') + '<span class="todo-sep" aria-hidden="true"></span>' +
       chip('bRegion', '', '모든 지역') + regions.map(function (r) { return chip('bRegion', r, r); }).join('') +
-      (store.settings.fc.branch ? '<span class="todo-sep" aria-hidden="true"></span><button class="todo' + (ui.bMine ? ' on' : '') + '" data-act="brMine" title="설정 → 계정설정의 사업단·지사">내 소속 · ' + esc(store.settings.fc.branch) + '</button>' : '') + '</div>' +
+      (store.settings.fc.branch ? '<span class="todo-sep" aria-hidden="true"></span><button class="todo' + (ui.bMine ? ' on' : '') + '" data-act="brMine" title="설정 → 내정보의 사업단·지사">내 소속 · ' + esc(store.settings.fc.branch) + '</button>' : '') + '</div>' +
     '<div id="bqWrap">' + branchTable() + '</div>' +
     '<p class="muted" style="margin:0">' + (!BR.length ? '' : custom ? '직접 입력하거나 엑셀로 올린 목록입니다' + (store.settings.branchesAt ? ' (' + esc(store.settings.branchesAt) + ')' : '') + '.' : 'ABA금융서비스 홈페이지 "사업단 및 지사 찾기"(2026년 7월 14일 기준)에 공개된 목록입니다.') + ' 직원 연락처의 부서·지점 칸에서 고르면 이름과 사무실 번호가 바로 들어가고, 여기 "등록한 직원"에 표시됩니다.</p></section>';
 }
@@ -7198,6 +7230,7 @@ function koAuthError(e) {
   if (/NotAllowedError|not allowed|cancel|timed out|AbortError/i.test(m)) return '패스키 확인이 취소됐거나 시간이 지났습니다. 다시 눌러 주세요';
   if (/passkey.*not found|credential.*not found|no.*passkey|webauthn.*(invalid|failed)/i.test(m)) return '이 기기에 등록된 패스키를 찾지 못했습니다. 이메일로 로그인한 뒤 설정 → 계정설정에서 패스키를 먼저 등록하세요';
   if (/SecurityError|rp.?id|origin/i.test(m)) return '이 주소에서는 패스키를 쓸 수 없습니다. 등록된 웹사이트 주소(https)에서 여세요';
+  if (/JWT expired|Invalid JWT|jwt.*(expired|malformed|invalid)|PGRST30[0-3]|refresh.?token|session.*(missing|not found|expired)|Auth session missing/i.test(m) || (e && e.status === 401)) return '로그인이 만료됐습니다. 다시 로그인하세요. 다른 기기에서 "다른 기기 모두 로그아웃"을 눌렀거나 오래 쓰지 않으면 이렇게 됩니다'; // 2026-11-04
   if (/Invalid login credentials/i.test(m)) return '이메일 또는 비밀번호가 맞지 않습니다';
   if (/Email not confirmed/i.test(m)) return '이메일 인증이 아직 안 됐습니다. 메일함에서 인증 링크를 누르거나 관리자에게 문의하세요';
   if (/Signups not allowed|signup.*disabled/i.test(m)) return '새 가입이 막혀 있습니다. 관리자에게 계정을 만들어 달라고 요청하세요';
@@ -7442,7 +7475,7 @@ function teamJoinHint() { // 로그인했는데 팀이 없으면 지점 화면 �
   if (LOGIN_OFF || !teamOk()) return '';
   if (!team.loaded) { teamLoad(); return ''; }
   if (team.info) return '';
-  return '<section class="panel team-hint"><div class="row between"><h2>팀 공지 · 팀 일정 함께 쓰기</h2><button class="btn primary sm" data-act="goSettings" data-id="me">팀 설정으로</button></div>' +
+  return '<section class="panel team-hint"><div class="row between"><h2>팀 공지 · 팀 일정 함께 쓰기</h2><button class="btn primary sm" data-act="goSettings" data-id="account">팀 설정으로</button></div>' +
     '<p style="margin:0">지점장(관리자)이 팀을 만들고 초대 코드를 나눠 주면, 팀 공지와 팀 일정을 팀원 모두가 함께 보고 참석 여부도 각자 체크합니다. 팀 만들기와 초대 코드 입력은 설정 → 계정설정의 "팀" 칸에 있습니다.</p></section>';
 }
 function teamOk() { return !!(cloud.on && cloud.client && cloud.user && !cloud.offline); }
@@ -7746,12 +7779,15 @@ function authField(id, label, type, ph, auto, val) {
 }
 // ----- 패스키 (Supabase Auth passkey, 베타) -----
 // 휴대폰 지문·얼굴, 맥 Touch ID, 윈도 Hello 등으로 비밀번호 없이 로그인. https 주소(또는 localhost)에서만 동작.
+// 서버(Supabase)에서 패스키 기능이 꺼져 있으면 /auth/v1/passkeys 가 404를 돌려준다 → 영어 원문 대신 한국어 안내, 등록 버튼 숨김 (2026-11-04)
+var PK_OFF_MSG = '서버에서 패스키 로그인이 아직 켜져 있지 않습니다. 관리자가 Supabase → Authentication 설정에서 패스키를 켜면 이 기기를 등록할 수 있습니다. 그 전까지는 이메일·간편 로그인을 쓰세요';
+function pkIsOff(e) { var m = String((e && (e.message || e.error_description)) || e || ''); return !!(e && (e.status === 404 || /404 page not found|^not found$|passkey_disabled|passkey.*(disabled|not enabled)/i.test(m))); }
 function passkeyOk() { return !!(window.PublicKeyCredential && window.isSecureContext && cloud.client && cloud.client.auth && cloud.client.auth.signInWithPasskey); }
 function passkeyLogin() {
   if (!passkeyOk()) { cloud.msg = '이 주소나 브라우저에서는 패스키를 쓸 수 없습니다. 웹사이트 주소(https)에서 여세요'; cloud.msgKind = 'err'; render(); return; }
   cloud.busy = true; cloud.msg = ''; render();
   cloud.client.auth.signInWithPasskey().then(function (r) {
-    if (r.error) { cloud.busy = false; cloud.msg = koAuthError(r.error); cloud.msgKind = 'err'; render(); return; }
+    if (r.error) { cloud.busy = false; cloud.msg = pkIsOff(r.error) ? PK_OFF_MSG : koAuthError(r.error); cloud.msgKind = 'err'; render(); return; }
     cloud.busy = false; enterCloud(r.data.user || (r.data.session && r.data.session.user));
   }).catch(function (e) { cloud.busy = false; cloud.msg = koAuthError(e && (e.name ? e.name + ' ' + e.message : e)); cloud.msgKind = 'err'; render(); });
 }
@@ -7760,17 +7796,17 @@ function passkeyLoad(force) {
   if (cloud.pkLoading || (cloud.passkeys && !force)) return;
   cloud.pkLoading = true;
   cloud.client.auth.passkey.list().then(function (r) {
-    cloud.pkLoading = false; cloud.pkErr = r.error ? koAuthError(r.error) : '';
+    cloud.pkLoading = false; cloud.pkOff = !!(r.error && pkIsOff(r.error)); cloud.pkErr = r.error && !cloud.pkOff ? koAuthError(r.error) : '';
     cloud.passkeys = (r.data && (r.data.passkeys || r.data)) || []; if (!Array.isArray(cloud.passkeys)) cloud.passkeys = [];
     if (ui.view === 'settings') render();
-  }).catch(function (e) { cloud.pkLoading = false; cloud.passkeys = []; cloud.pkErr = koAuthError(e); if (ui.view === 'settings') render(); });
+  }).catch(function (e) { cloud.pkLoading = false; cloud.passkeys = []; cloud.pkOff = pkIsOff(e); cloud.pkErr = cloud.pkOff ? '' : koAuthError(e); if (ui.view === 'settings') render(); });
 }
 function passkeyAdd() {
   if (!passkeyOk()) { toast('이 주소나 브라우저에서는 패스키를 등록할 수 없습니다'); return; }
   cloud.pkBusy = true; render();
   cloud.client.auth.registerPasskey().then(function (r) {
     cloud.pkBusy = false;
-    if (r.error) { cloud.pkErr = koAuthError(r.error); render(); return; }
+    if (r.error) { if (pkIsOff(r.error)) cloud.pkOff = true; else cloud.pkErr = koAuthError(r.error); render(); return; }
     cloud.pkErr = ''; toast('이 기기에 패스키를 등록했습니다. 다음부터 "패스키로 로그인"을 누르세요'); passkeyLoad(true); render();
   }).catch(function (e) { cloud.pkBusy = false; cloud.pkErr = koAuthError(e && (e.name ? e.name + ' ' + e.message : e)); render(); });
 }
@@ -7785,6 +7821,7 @@ function passkeySection() {
   if (isOffNow()) return '<section class="panel"><h2>패스키 로그인</h2><p class="muted" style="margin:0">인터넷에 연결되면 패스키를 등록하거나 지울 수 있습니다.</p></section>';
   if (!passkeyOk()) return '<section class="panel"><h2>패스키 로그인</h2><p class="muted" style="margin:0">패스키(휴대폰 지문·얼굴, 맥 Touch ID, 윈도 Hello)로 비밀번호 없이 로그인할 수 있습니다. 이 주소나 브라우저에서는 쓸 수 없으니, 웹사이트 주소(https)로 열어 등록하세요.</p></section>';
   passkeyLoad();
+  if (cloud.pkOff) return '<section class="panel"><h2>패스키 로그인</h2><div class="info">' + PK_OFF_MSG + '.</div></section>';
   var list = cloud.passkeys;
   var rows = !list ? '<p class="muted" style="margin:0">불러오는 중…</p>' : !list.length ? '<p class="muted" style="margin:0">등록된 패스키가 없습니다.</p>' :
     '<ul style="list-style:none;margin:0;padding:0;display:grid;gap:6px">' + list.map(function (k) {
