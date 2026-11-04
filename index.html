@@ -1543,6 +1543,16 @@ button.cal-btn { padding: 0; color: var(--ink-2); cursor: pointer; }
 }
 .lic-card .lic-title { grid-column: 1 / -1; gap: 8px; flex-wrap: wrap; }
 .lic-card .policy-head { border-bottom: 0; border-radius: var(--radius); }
+.lic-img { grid-column: 1 / -1; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+.lic-thumb { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; width: 200px; aspect-ratio: 4 / 3; padding: 0; border: 1px solid var(--line); border-radius: 8px; background: #fff; overflow: hidden; cursor: zoom-in; }
+.lic-thumb img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.lic-empty { border: 2px dashed var(--line); background: var(--surface); color: var(--ink-2); cursor: pointer; text-align: center; padding: 8px; }
+.lic-empty:hover { border-color: var(--ok); color: var(--ok); }
+.lic-empty span { font-size: 12.5px; }
+.lic-img-side { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 200px; }
+.lic-img-side .muted { color: var(--ink-2); line-height: 1.5; }
+.lic-big { display: block; max-width: 100%; max-height: calc(70vh / var(--zf, 1)); margin: 0 auto; object-fit: contain; border-radius: 8px; background: #fff; }
+@media (max-width: 520px) { .lic-thumb { width: 100%; } .lic-img-side { min-width: 0; } }
 .lic-card .field.span2 { grid-column: span 2; }
 @media (max-width: 520px) { .lic-card .field.span2 { grid-column: auto; } .lic-card .policy-head { grid-template-columns: 1fr; } }
 </style>
@@ -2182,6 +2192,10 @@ function zoomKeyNow() { return getZoomKey(); }
 // 화면 밝기: auto = 기기 설정 따라, time = 시간대(07~19시 주간), light = 주간, dark = 야간 (이 기기에만 저장)
 // 명함 이미지: 긴 변 1200px 이하 JPEG로 줄여 settings.fc.card(data URL)에 저장 — 계정 동기화 용량을 작게
 function readFcCard(file) {
+  shrinkImage(file, function (url) { store.settings.fc.card = url; store.settings.fc.cardAt = today(); save(); render(); toast('명함 이미지를 저장했습니다'); });
+}
+// 이미지 파일 → 긴 변 1200px 이하 JPEG data URL (명함·라이선스 공용, 2026-11-04)
+function shrinkImage(file, done) {
   if (!/^image\//.test(file.type || '')) { toast('이미지 파일(JPG·PNG)을 골라 주세요'); return; }
   var rd = new FileReader();
   rd.onerror = function () { toast('파일을 읽지 못했습니다'); };
@@ -2194,7 +2208,7 @@ function readFcCard(file) {
       var cx = cv.getContext('2d'); cx.fillStyle = '#fff'; cx.fillRect(0, 0, cv.width, cv.height); cx.drawImage(img, 0, 0, cv.width, cv.height);
       var url = cv.toDataURL('image/jpeg', 0.85);
       if (url.length > 900000) url = cv.toDataURL('image/jpeg', 0.7);
-      store.settings.fc.card = url; store.settings.fc.cardAt = today(); save(); render(); toast('명함 이미지를 저장했습니다');
+      done(url);
     };
     img.src = rd.result;
   };
@@ -2207,6 +2221,14 @@ var LIC_KINDS = ['생명보험 설계사', '손해보험 설계사', '제3보험
 var LIC_ORGS = ['생명보험협회', '손해보험협회', '금융투자협회', '보험연수원', '금융감독원'];
 function licList() { return store.settings.licenses = store.settings.licenses || []; }
 function licDocText() { var L = licList().filter(function (x) { return x.doc && x.kind; }); return L.length ? '보유 자격: ' + L.map(function (x) { return x.kind; }).join('·') : ''; }
+function licImgBlock(x) {
+  var fid = 'licImg-' + x.id, armI = ui.armed === 'licImgDel:' + x.id;
+  return '<div class="lic-img">' + (x.img ? '<button type="button" class="lic-thumb" data-act="licImgView" data-id="' + x.id + '" title="크게 보기"><img src="' + attr(x.img) + '" alt="' + attr((x.kind || '라이선스') + ' 이미지') + '"></button>' :
+    '<label class="lic-thumb lic-empty" for="' + fid + '"><b>자격증 이미지</b><span>눌러서 사진·스캔 파일 고르기</span></label>') +
+    '<div class="lic-img-side"><span class="muted">' + (x.img ? '등록증·자격증 이미지' + (x.imgAt ? ' (' + esc(x.imgAt) + ' 등록)' : '') + '. 누르면 크게 볼 수 있습니다.' : '자격증·등록증을 사진으로 찍거나 스캔 파일을 올려 두세요. 큰 사진은 자동으로 줄여 저장합니다.') + '</span>' +
+    '<div class="row" style="gap:6px"><label class="btn sm' + (x.img ? '' : ' primary') + '" for="' + fid + '">' + (x.img ? '이미지 바꾸기' : '이미지 올리기') + '</label><input type="file" id="' + fid + '" accept="image/*" data-kind="licimg" data-id="' + x.id + '" hidden>' +
+    (x.img ? '<button class="btn sm danger' + (armI ? ' armed' : '') + '" data-act="licImgDel" data-id="' + x.id + '">' + (armI ? '한 번 더 누르면 이미지 삭제' : '이미지 삭제') + '</button>' : '') + '</div></div></div>';
+}
 function licDue(x) { return x.renew ? daysUntil(x.renew) : null; }
 function licensePanel() {
   var L = licList(), soon = L.filter(function (x) { var d = licDue(x); return d != null && d >= 0 && d <= 60; }).length, late = L.filter(function (x) { var d = licDue(x); return d != null && d < 0; }).length;
@@ -2223,12 +2245,12 @@ function licensePanel() {
       lbl('취득·등록일', A('date', x.date || '', { type: 'date', aria: '취득·등록일' })) +
       lbl('다음 보수교육·갱신일', A('renew', x.renew || '', { type: 'date', aria: '다음 보수교육·갱신일' })) +
       lbl('메모', A('memo', x.memo || '', { ph: '예: 소속 회사 등록, 교육 이수 시간', aria: '메모' }), 'span2') +
-      '<div class="field"><span>제안서</span><label class="check">' + A('doc', !!x.doc, { type: 'check' }) + ' 제안서에 표시</label></div></div></article>';
+      '<div class="field"><span>제안서</span><label class="check">' + A('doc', !!x.doc, { type: 'check' }) + ' 제안서에 표시</label></div>' + licImgBlock(x) + '</div></article>';
   }).join('');
   return kpis + '<section class="panel"><div class="row between"><h2>보험 라이선스 ' + L.length + '건</h2><button class="btn primary sm" data-act="licAdd">+ 추가</button></div>' +
     '<datalist id="licOrgs">' + LIC_ORGS.map(function (o) { return '<option value="' + attr(o) + '">'; }).join('') + '</datalist>' +
     (cards || '<div class="empty"><strong>등록한 자격이 없습니다</strong><span>"+ 추가"로 생명보험·손해보험·제3보험 설계사 등록, 변액보험 판매자격 같은 보유 자격을 넣어 두세요.</span></div>') +
-    '<p class="muted" style="margin:0">보수교육·갱신일은 소속 회사나 협회 안내를 보고 직접 넣으세요. 60일 안으로 다가오면 주황색으로 표시됩니다. "제안서에 표시"를 켠 자격은 제안서 머리의 담당 FC 정보에 "보유 자격"으로 함께 나옵니다. 자격증 번호 외에 주민등록번호 같은 정보는 넣지 마세요.</p></section>';
+    '<p class="muted" style="margin:0">보수교육·갱신일은 소속 회사나 협회 안내를 보고 직접 넣으세요. 60일 안으로 다가오면 주황색으로 표시됩니다. "제안서에 표시"를 켠 자격은 제안서 머리의 담당 FC 정보에 "보유 자격"으로 함께 나옵니다. 자격증 이미지는 다른 설정과 함께 이 기기와 내 계정에만 저장됩니다. 주민등록번호가 보이는 사진이면 그 부분을 가리고 올리세요.</p></section>';
 }
 function fcLineText(fc) { return [[fc.org, fc.branch, fc.unit].filter(Boolean).join(' '), fc.name ? '담당: ' + (fc.role || 'FC') + ' ' + fc.name : '', fc.regNo ? '등록번호 ' + fc.regNo : '', fc.phone, fc.email].filter(Boolean).join(' · '); }
 function fcOffice(fc) { return [fc.unitTel ? '지점 ☎ ' + fc.unitTel : '', fc.fax ? '팩스 ' + fc.fax : '', fc.addr || ''].filter(Boolean).join(' · '); }
@@ -6415,6 +6437,8 @@ function doAction(el) {
       save(); toast(addedI ? '보험사 ' + addedI + '곳을 추가했습니다. 연락처를 채워 주세요' : '새로 추가할 보험사가 없습니다');
       break;
     }
+    case 'licImgView': ui.modal = { kind: 'licimg', id: id }; ui.armed = null; break;
+    case 'licImgDel': { var ik = 'licImgDel:' + id; if (ui.armed !== ik) { ui.armed = ik; keepArm = true; break; } var li = licList().filter(function (y) { return y.id === id; })[0]; if (li) { li.img = ''; li.imgAt = ''; save(); toast('라이선스 이미지를 지웠습니다'); } break; }
     case 'licAdd': { licList().push({ id: uid(), kind: '', no: '', org: '', date: '', renew: '', memo: '', doc: false }); save(); break; }
     case 'delLic': { var lk = 'delLic:' + id; if (ui.armed === lk) { store.settings.licenses = licList().filter(function (x) { return x.id !== id; }); save(); } else { ui.armed = lk; keepArm = true; } break; }
     case 'delContact': {
@@ -6866,6 +6890,13 @@ function loadScript(src) {
 function detailModalHtml() {
   var m = ui.modal; if (!m) return '';
   var head = '', body = '', del = '', title = '';
+  if (m.kind === 'licimg') {
+    var lv = licList().filter(function (y) { return y.id === m.id; })[0]; if (!lv || !lv.img) { ui.modal = null; return ''; }
+    return '<div class="dmodal" role="dialog" aria-modal="true" aria-labelledby="dmTitle"><div class="dm-box dm-wide">' +
+      '<div class="dm-head"><div><h2 id="dmTitle">' + esc(lv.kind || '라이선스') + '</h2>' + (lv.no ? '<div class="muted">' + esc(lv.no) + '</div>' : '') + '</div><button class="btn ghost sm" data-act="dmClose" aria-label="닫기">✕</button></div>' +
+      '<div class="dm-body"><img class="lic-big" src="' + attr(lv.img) + '" alt="' + attr((lv.kind || '라이선스') + ' 이미지') + '"></div>' +
+      '<div class="dm-foot"><button class="btn primary" data-act="dmClose" style="margin-left:auto">닫기</button></div></div></div>';
+  }
   if (m.kind === 'staff') {
     var x = store.settings.contacts.staff.filter(function (y) { return y.id === m.id; })[0]; if (!x) { ui.modal = null; return ''; }
     var roles = [['', '직급 선택']].concat(STAFF_ROLES.map(function (r) { return [r, r]; })); if (x.role && STAFF_ROLES.indexOf(x.role) < 0) roles.push([x.role, x.role]);
@@ -7120,6 +7151,7 @@ app.addEventListener('change', function (e) {
   var el = e.target;
   if (el.id === 'importFile') { if (el.files[0]) importJson(el.files[0]); return; }
   if (el.dataset && el.dataset.kind === 'fccard') { if (el.files[0]) readFcCard(el.files[0]); el.value = ''; return; }
+  if (el.dataset && el.dataset.kind === 'licimg') { var lid = el.dataset.id; if (el.files[0]) shrinkImage(el.files[0], function (url) { var lx = licList().filter(function (y) { return y.id === lid; })[0]; if (!lx) return; var tot = licList().reduce(function (t, y) { return t + (y.id === lid ? 0 : String(y.img || '').length); }, 0); if (tot + url.length > 2500000) { toast('라이선스 이미지 용량이 너무 큽니다. 필요 없는 이미지를 지우고 다시 올려 주세요'); return; } lx.img = url; lx.imgAt = today(); save(); render(); toast('라이선스 이미지를 저장했습니다'); }); el.value = ''; return; }
   if (el.dataset && el.dataset.kind === 'rulesjson') { if (el.files[0]) importRules(el.files[0]); el.value = ''; return; }
   if (el.dataset && el.dataset.kind === 'brxlsx') { if (el.files[0]) importBranchesXlsx(el.files[0]); el.value = ''; return; }
   if (el.dataset && el.dataset.kind === 'custxlsx') { if (el.files[0]) importCustXlsx(el.files[0]); el.value = ''; return; }
