@@ -2042,7 +2042,9 @@ function generateDemoData(opt) {
   var roles = ['단장', '지점장', '팀장', 'FC', '총무'];
   for (var rk = roles.length; rk < nStaff; rk++) roles.push(rk % 4 === 0 ? '팀장' : 'FC'); // 입력한 인원만큼 직원 추가 (주로 FC)
   var sn = ['김', '이', '박', '최', '정', '강'], gn = ['영호', '미선', '정훈', '수진', '태호', '은정'];
-  var br = pick(getBranches().filter(function (b) { return b[0] === '사업단'; }));
+  // 지점 목록을 모두 지운 경우에도 멈추지 않게: 사업단이 없으면 아무 지점, 그것도 없으면 '예시사업단' (2026-11-04)
+  var brAll = getBranches() || [], brSa = brAll.filter(function (b) { return b && b[0] === '사업단'; });
+  var br = brSa.length ? pick(brSa) : brAll.length ? pick(brAll) : ['사업단', '', '예시사업단'];
   roles.forEach(function (r, k) {
     var d = new Date(now.getTime() + (k < 5 ? [6, 20, 45, 70, 100][k] : R(1, 364)) * 864e5);
     S.contacts.staff.push({ id: uid(), sample: true, name: pick(sn) + pick(gn) + ' (예시)', role: r, dept: br[2], branch: k < 2 ? '' : pick(['일산지점', '주엽지점', '파주지점']), phone: '', office: '', email: '', memo: '예시 직원', bdCal: k === 2 ? 'lunar' : 'solar', bdMonth: d.getMonth() + 1, bdDay: Math.min(d.getDate(), 28), bdLeap: false });
@@ -3227,10 +3229,10 @@ function renderSettings() {
     body = '<div class="kpis">' + stat('고객', store.customers.length + '<small>명</small>') + stat('계약', nPol + '<small>건</small>') + stat('상담 기록', nNote + '<small>건</small>') +
       stat('일정 · 할 일', s.events.length + ' · ' + s.tasks.length) + stat('직원 · 보험사 연락처', s.contacts.staff.length + ' · ' + s.contacts.insurers.length) + stat('자료 크기', kb + '<small>KB</small>') + '</div>' +
       '<div class="' + (lbDays == null || lbDays > 30 ? 'notice warn-box' : 'info') + '">' + (lb ? '마지막 백업: <b>' + esc(lb) + '</b> (' + (lbDays === 0 ? '오늘' : lbDays + '일 전') + ')' + (lbDays > 30 ? ' — 한 달이 넘었습니다. 백업 파일을 새로 받아 두세요.' : '') : '아직 이 기기에서 백업 파일을 받은 적이 없습니다. 아래 "백업 파일 내보내기"로 받아 두세요.') + '</div>' +
-      localMergePanel() + historyPanel() + renderFilesSection() + offlineSection() + // 오프라인 모드는 자료관리에서 (2026-11-04, 내정보에서 옮김)
+      localMergePanel() + historyPanel() + renderFilesSection() + // 백업(내 컴퓨터로) 다음에 오프라인 모드 (2026-11-04 순서 바꿈)
       '<section class="panel"><h2>백업 (내 컴퓨터로)</h2><div class="info">' + (site.on ? '서버·사이트 저장과 별도로, 전체 자료를 내 컴퓨터에 파일로 받아 둘 수 있습니다.' : '모든 고객·계약·설정은 이 브라우저에만 저장됩니다. 브라우저 기록을 지우거나 다른 컴퓨터로 옮기면 사라지므로 백업 파일로 내보내 두세요.') + ' 백업 파일에는 고객 개인정보가 들어 있으니 안전한 곳에 보관하세요.</div>' +
       '<div class="row"><button class="btn primary" data-act="exportJson">백업 파일 내보내기</button><label class="btn" for="importFile">백업 파일 불러오기</label><input type="file" id="importFile" accept=".json,application/json" hidden>' +
-      '</div></section>' +
+      '</div></section>' + offlineSection() +
       '<section class="panel"><h2>체험용 예시 자료</h2>' +
       '<div class="grid-form demo-n">' + lbl('고객 수 (' + DEMO_CUST[0] + '~' + DEMO_CUST[1] + '명)', f('ui', 'demoCust', ui.demoCust || DEMO_CUST[0], { type: 'num', aria: '예시 고객 수' })) +
         lbl('직원 수 (' + DEMO_STAFF[0] + '~' + DEMO_STAFF[1] + '명)', f('ui', 'demoStaff', ui.demoStaff || DEMO_STAFF[0], { type: 'num', aria: '예시 직원 수' })) + '</div><div class="row">' +
@@ -6719,7 +6721,7 @@ function doAction(el) {
     case 'rulesOut': offerFile('분석기준_' + today() + '.json', new Blob([JSON.stringify({ kind: 'fcp-rules', bench: store.settings.bench, params: store.settings.params, aliases: store.settings.aliases.filter(function (a) { return a.type === 'keyword'; }) }, null, 2)], { type: 'application/json' })); break;
     case 'cleanLearned': { var before = store.settings.aliases.length; store.settings.aliases = store.settings.aliases.filter(function (a) { return a.type !== 'exact' || a.uses; }); save(); toast('학습 규칙 ' + (before - store.settings.aliases.length) + '개를 정리했습니다'); break; }
     case 'addSample': { if (ui.armed !== 'addSample') { ui.armed = 'addSample'; keepArm = true; break; } var sc = randomSampleCustomer(); stampCustomer(sc); store.customers.unshift(sc); go('customer', { cid: sc.id, tab: 'analysis' }); save(); toast('예시 고객 ' + sc.name + '을(를) 만들었습니다'); break; }
-    case 'demoGen': { if (ui.armed !== 'demoGen') { ui.armed = 'demoGen'; keepArm = true; break; } ui.demoCust = demoClamp(ui.demoCust, DEMO_CUST); ui.demoStaff = demoClamp(ui.demoStaff, DEMO_STAFF); var mk = generateDemoData({ cust: ui.demoCust, staff: ui.demoStaff }); go('work', { wsub: 'home' }); toast('예시 자료를 만들었습니다: 고객 ' + mk.cust + '명 · 가구 ' + mk.hh + ' · 직원 ' + mk.staff + ' · 일정 ' + mk.ev + ' · 할 일 ' + mk.tk); break; }
+    case 'demoGen': { if (ui.armed !== 'demoGen') { ui.armed = 'demoGen'; keepArm = true; break; } ui.demoCust = demoClamp(ui.demoCust, DEMO_CUST); ui.demoStaff = demoClamp(ui.demoStaff, DEMO_STAFF); var mk; try { mk = generateDemoData({ cust: ui.demoCust, staff: ui.demoStaff }); } catch (err) { try { removeDemoData(); } catch (e2) {} toast('예시 자료를 만들지 못했습니다(' + (err && err.message || err) + '). 만들던 예시 자료는 지웠습니다'); break; } go('work', { wsub: 'home' }); toast('예시 자료를 만들었습니다: 고객 ' + mk.cust + '명 · 가구 ' + mk.hh + ' · 직원 ' + mk.staff + ' · 일정 ' + mk.ev + ' · 할 일 ' + mk.tk); break; }
     case 'demoDel': { if (ui.armed !== 'demoDel') { ui.armed = 'demoDel'; keepArm = true; break; } var nd = removeDemoData(); toast('예시 고객 ' + nd + '명과 예시 직원·일정·할 일·가구를 지웠습니다'); break; }
     case 'resetAll':
       if (ui.armed === 'resetAll') { store = { customers: [], settings: defaultSettings() }; ui.cid = null; go('list'); save(); toast('모든 데이터를 지웠습니다'); }
