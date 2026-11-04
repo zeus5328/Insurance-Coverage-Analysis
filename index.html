@@ -2234,9 +2234,8 @@ function licImgBlock(x) {
   var thumb = x.img ? '<img src="' + attr(x.img) + '" alt="' + attr((x.kind || '라이선스') + (x.pdf ? ' PDF 1쪽' : ' 이미지')) + '">' : '<span class="lic-pdf-ico">PDF</span>';
   return '<div class="lic-img">' + (has ? '<button type="button" class="lic-thumb" data-act="licImgView" data-id="' + x.id + '" title="크게 보기">' + thumb + (x.pdf ? '<span class="lic-badge">PDF</span>' : '') + '</button>' :
     '<label class="lic-thumb lic-empty" for="' + fid + '"><b>자격증 이미지·PDF</b><span>' + (busy ? '파일 읽는 중…' : '눌러서 사진·스캔 파일이나 PDF 고르기') + '</span></label>') +
-    '<div class="lic-img-side"><span class="muted">' + (busy ? '파일을 읽는 중입니다…' : has ? (x.pdf ? 'PDF 파일' + (x.pdfName ? ' ' + esc(x.pdfName) : '') : '등록증·자격증 이미지') + (x.imgAt ? ' (' + esc(x.imgAt) + ' 등록)' : '') + '. 누르면 크게 볼 수 있습니다.' : '자격증·등록증을 사진으로 찍거나 스캔한 이미지·PDF를 올려 두세요. 큰 사진은 자동으로 줄여 저장합니다.') + '</span>' +
+    '<div class="lic-img-side"><span class="muted">' + (busy ? '파일을 읽는 중입니다…' : has ? (x.pdf ? 'PDF 파일' + (x.pdfName ? ' ' + esc(x.pdfName) : '') : '등록증·자격증 이미지') + (x.imgAt ? ' (' + esc(x.imgAt) + ' 등록)' : '') + '. 누르면 크게 보고 PDF로 내려받을 수 있습니다.' : '자격증·등록증을 사진으로 찍거나 스캔한 이미지·PDF를 올려 두세요. 큰 사진은 자동으로 줄여 저장합니다.') + '</span>' +
     '<div class="row" style="gap:6px;flex-wrap:wrap"><label class="btn sm' + (has ? '' : ' primary') + '" for="' + fid + '">' + (has ? '파일 바꾸기' : '이미지·PDF 올리기') + '</label><input type="file" id="' + fid + '" accept="image/*,application/pdf,.pdf" data-kind="licimg" data-id="' + x.id + '" hidden>' +
-    '<button class="btn sm" data-act="licPdfDown" data-id="' + x.id + '"' + (has ? '' : ' disabled title="먼저 이미지나 PDF를 올리세요"') + '>PDF 다운</button>' +
     (has ? '<button class="btn sm danger' + (armI ? ' armed' : '') + '" data-act="licImgDel" data-id="' + x.id + '">' + (armI ? '한 번 더 누르면 파일 삭제' : '파일 삭제') + '</button>' : '') + '</div></div></div>';
 }
 // 라이선스 파일 저장 (이미지 → img, PDF → pdf + 1쪽 미리보기 img). 합계 3MB 넘으면 거절
@@ -2319,7 +2318,7 @@ function licensePanel() {
   return kpis + '<section class="panel"><div class="row between"><h2>보험 라이선스 ' + L.length + '건</h2><button class="btn primary sm" data-act="licAdd">+ 추가</button></div>' +
     '<datalist id="licOrgs">' + LIC_ORGS.map(function (o) { return '<option value="' + attr(o) + '">'; }).join('') + '</datalist>' +
     (cards || '<div class="empty"><strong>등록한 자격이 없습니다</strong><span>FC 기본 자격 3가지(생명보험·손해보험·제3보험 설계사)를 한 번에 만들거나 "+ 추가"로 하나씩 넣으세요.</span><button class="btn primary sm" data-act="licBase">기본 3가지 만들기</button></div>') +
-    '<p class="muted" style="margin:0">FC 기본 자격 3가지(생명보험·손해보험·제3보험 설계사)는 카드를 미리 만들어 두었습니다. 각 카드에 자격증 이미지나 PDF를 하나씩 올리세요(사진은 자동으로 줄어들고, PDF는 한 개 700KB까지). 보수교육·갱신일은 소속 회사나 협회 안내를 보고 직접 넣으세요. 60일 안으로 다가오면 주황색으로 표시됩니다. "제안서에 표시"를 켠 자격은 제안서 머리의 담당 FC 정보에 "보유 자격"으로 함께 나옵니다. 자격증 이미지·PDF는 다른 설정과 함께 이 기기와 내 계정에만 저장됩니다. "PDF 다운"을 누르면 올린 PDF를, 사진이면 A4 PDF로 만들어 내려받습니다. 주민등록번호가 보이는 파일이면 그 부분을 가리고 올리세요.</p></section>';
+    '<p class="muted" style="margin:0">FC 기본 자격 3가지(생명보험·손해보험·제3보험 설계사)는 카드를 미리 만들어 두었습니다. 각 카드에 자격증 이미지나 PDF를 하나씩 올리세요(사진은 자동으로 줄어들고, PDF는 한 개 700KB까지). 보수교육·갱신일은 소속 회사나 협회 안내를 보고 직접 넣으세요. 60일 안으로 다가오면 주황색으로 표시됩니다. "제안서에 표시"를 켠 자격은 제안서 머리의 담당 FC 정보에 "보유 자격"으로 함께 나옵니다. 자격증 이미지·PDF는 다른 설정과 함께 이 기기와 내 계정에만 저장됩니다. 미리보기를 눌러 연 창의 "PDF 다운"으로 올린 PDF를, 사진이면 A4 PDF로 만들어 내려받습니다. 주민등록번호가 보이는 파일이면 그 부분을 가리고 올리세요.</p></section>';
 }
 function fcLineText(fc) { return [[fc.org, fc.branch, fc.unit].filter(Boolean).join(' '), fc.name ? '담당: ' + (fc.role || 'FC') + ' ' + fc.name : '', fc.regNo ? '등록번호 ' + fc.regNo : '', fc.phone, fc.email].filter(Boolean).join(' · '); }
 function fcOffice(fc) { return [fc.unitTel ? '지점 ☎ ' + fc.unitTel : '', fc.fax ? '팩스 ' + fc.fax : '', fc.addr || ''].filter(Boolean).join(' · '); }
