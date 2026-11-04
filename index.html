@@ -1548,6 +1548,13 @@ button.cal-btn { padding: 0; color: var(--ink-2); cursor: pointer; }
 .tg-more { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); margin-bottom: 8px; }
 .tg-msg { display: flex; flex-direction: column; gap: 4px; margin: 4px 0 10px; }
 .tg-msg textarea { min-height: 64px; }
+.clan-alert { display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border: 1px solid var(--accent); border-radius: var(--r-sm); background: var(--accent-soft); font-size: 13px; }
+.clan-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.clan-grid h3 { margin: 0 0 6px; font-size: 14px; }
+@media (max-width: 700px) { .clan-grid { grid-template-columns: 1fr; } }
+.ct-node { font-size: 13px; }
+.warn-txt { color: var(--accent-ink); font-weight: 600; }
+.clan-matrix .pill { white-space: nowrap; }
 .hh-line { margin: -4px 0 0; font-size: 12.5px; }
 .fam-sum .fam-meta, .fam-sum .fam-names { min-width: 0; max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
 .hh-sug-list { list-style: none; margin: 0; padding: 0; }
@@ -2083,6 +2090,12 @@ function generateDemoData(opt) {
   while (custs.length < nCust) custs.push(randomSampleCustomer()); // 입력한 인원만큼 고객 추가
   var h1 = { id: uid(), name: custs[0].name.replace(' (예시)', '') + ' 가구 (예시)', sample: true, onDoc: true }, h2 = { id: uid(), name: custs[1].name.replace(' (예시)', '') + ' 가구 (예시)', sample: true };
   S.households.push(h1, h2); made.hh = 2;
+  (function () { // 대가족 예시: 첫 가구(부모 세대) + 둘째 가구(자녀 세대)
+    var yy = now.getFullYear(), sb = function (c, age) { if (c && c.birth) c.birth = (yy - age) + c.birth.slice(4); };
+    sb(custs[0], 63); sb(custs[6], 61); sb(custs[1], 36); sb(custs[7], 34);
+    var cl = { id: uid(), name: custs[0].name.replace(' (예시)', '').charAt(0) + '씨 대가족 (예시)', sample: true };
+    S.clans = (S.clans || []); S.clans.push(cl); h1.clanId = cl.id; h1.clanRole = '부모'; h2.clanId = cl.id; h2.clanRole = '자녀';
+  })();
   custs[0].householdId = h1.id; custs[0].relation = '본인'; custs[6].householdId = h1.id; custs[6].relation = '배우자';
   custs[1].householdId = h2.id; custs[1].relation = '본인'; custs[7].householdId = h2.id; custs[7].relation = '배우자'; kid.householdId = h2.id; kid.relation = '자녀';
   // 상담 기록·다음 연락일 (지난 것·오늘·다가오는 것 섞어서)
@@ -2162,6 +2175,7 @@ function removeDemoData(regen) { // regen: 예시 자료생성 직전 정리(체
   var S = store.settings, n = 0, ids = {}, sids = {}, fids = {}, hids = {};
   store.customers = store.customers.filter(function (c) { if (c.sample) { ids[c.id] = 1; n++; return false; } return true; });
   S.households = S.households.filter(function (h) { if (h.sample) { hids[h.id] = 1; return false; } return true; });
+  S.clans = (S.clans || []).filter(function (x) { return !x.sample; }); S.households.forEach(function (h) { if (h.clanId && !S.clans.some(function (x) { return x.id === h.clanId; })) { h.clanId = ''; h.clanRole = ''; } });
   store.customers.forEach(function (c) { if (c.householdId && hids[c.householdId]) { c.householdId = ''; c.relation = ''; } if (c.refBy && ids[c.refBy]) c.refBy = ''; }); // 직접 넣은 고객이 예시 가구에 묶여 있었으면 풀기
   S.contacts.staff = S.contacts.staff.filter(function (x) { if (x.sample) { sids[x.id] = 1; return false; } return true; });
   S.contacts.friends = (S.contacts.friends || []).filter(function (g) { if (g.sample) { fids[g.id] = 1; return false; } return true; });
@@ -2220,6 +2234,7 @@ function fixup(s) {
   s.settings.products = s.settings.products || [];
   s.settings.households = s.settings.households || [];
   s.settings.licenses = s.settings.licenses || [];
+  s.settings.clans = s.settings.clans || [];
   s.settings.events = s.settings.events || [];
   s.settings.tasks = s.settings.tasks || [];
   s.settings.tasks.forEach(function (t) { t.due = fixIso(t.due); });
@@ -3189,7 +3204,7 @@ function renderProposal(c, an) {
     (res.removed.length ? '<p class="callout" style="margin:10px 0 0">해지검토 계약은 해지 시 해지환급금이 납입보험료보다 적을 수 있고, 새 계약은 건강 상태에 따라 가입이 거절되거나 조건이 붙을 수 있으며 면책·감액 기간이 새로 적용됩니다. 새 계약 성립 후 기존 계약 해지 여부를 결정하시기 바랍니다. 기존 계약이 부당하게 소멸된 경우 소멸일부터 6개월 안에 기존 계약의 부활을 청구하고 새 계약을 취소할 수 있습니다(보험업법 제97조).</p>' : '') + '</section>' +
     switchTable(c, res) +
     '<section><h2>3. 신규 설계</h2>' + (addRows ? '<table class="num"><thead><tr><th>담보</th><th class="r">보장금액</th><th class="r">월보험료</th><th>상품·메모</th></tr></thead><tbody>' + addRows + '</tbody></table>' : '<p>추가 설계 없음</p>') + '</section>' +
-    hhDocSection(c) + (fc.card && fc.cardOnDoc !== false ? '<section class="doc-card"><h2>담당 FC</h2><div class="doc-card-row"><img class="doc-card-img" src="' + attr(fc.card) + '" alt="담당 FC 명함"><div class="doc-card-txt">' + (fc.name ? '<b>' + esc((fc.role || 'FC') + ' ' + fc.name) + '</b>' : '') + '<span>' + esc([[fc.org, fc.branch, fc.unit].filter(Boolean).join(' '), fc.phone, fc.email].filter(Boolean).join(' · ')) + '</span>' + (fcOffice(fc) ? '<span>' + esc(fcOffice(fc)) + '</span>' : '') + '<span class="muted">궁금한 점은 언제든 연락 주세요.</span></div></div></section>' : '') +
+    hhDocSection(c) + clanDocSection(c) + (fc.card && fc.cardOnDoc !== false ? '<section class="doc-card"><h2>담당 FC</h2><div class="doc-card-row"><img class="doc-card-img" src="' + attr(fc.card) + '" alt="담당 FC 명함"><div class="doc-card-txt">' + (fc.name ? '<b>' + esc((fc.role || 'FC') + ' ' + fc.name) + '</b>' : '') + '<span>' + esc([[fc.org, fc.branch, fc.unit].filter(Boolean).join(' '), fc.phone, fc.email].filter(Boolean).join(' · ')) + '</span>' + (fcOffice(fc) ? '<span>' + esc(fcOffice(fc)) + '</span>' : '') + '<span class="muted">궁금한 점은 언제든 연락 주세요.</span></div></div></section>' : '') +
     '<p class="fine">본 자료는 고객님의 기존 보험 계약을 바탕으로 작성한 상담 참고 자료이며, 보험 가입·해지를 확정하는 문서가 아닙니다. 권장 금액은 상담 기준표에 따른 참고값입니다. 실제 보장 내용은 각 보험사의 약관이 우선하며, 최종 가입·해지 결정은 고객님 본인이 하십니다. 기존 계약을 해지하고 새 계약에 가입하는 경우 보험업법에 따른 비교 안내를 받으실 수 있습니다.</p>' +
     '</article>';
 }
@@ -5541,7 +5556,117 @@ function hhSuggest() { // 같은 상세 주소(번지·동호수 포함)인데 �
   store.customers.forEach(function (c) { var k = hhAddrKey(c.address); if (k) (g[k] = g[k] || []).push(c); });
   return Object.keys(g).filter(function (k) { var L = g[k]; if (L.length < 2 || skip.indexOf(k) >= 0) return false; var h0 = L[0].householdId; return !h0 || L.some(function (c) { return c.householdId !== h0; }); }).map(function (k) { return { k: k, L: g[k].sort(byName) }; });
 }
+// ===== 가구 → 대가족: 여러 가구를 묶는다 (2026-11-04) =====
+// settings.clans = [{ id, name, onDoc(동의 받은 경우 제안서에 대가족 요약) }], 가구 h.clanId · h.clanRole('부모'|'자녀'|'형제'|'기타')
+var CLAN_ROLES = [['', '관계 선택'], ['부모', '부모 가구'], ['자녀', '자녀 가구'], ['형제', '형제 가구'], ['기타', '기타']];
+var CLAN_ORDER = { '부모': 0, '': 1, '형제': 2, '자녀': 3, '기타': 4 };
+function clanList() { return store.settings.clans = store.settings.clans || []; }
+function clanHhs(cl) { return hhSorted().filter(function (h) { return h.clanId === cl.id; }).sort(function (a, b) { return (CLAN_ORDER[a.clanRole || ''] || 0) - (CLAN_ORDER[b.clanRole || ''] || 0) || String(a.name || '').localeCompare(String(b.name || ''), 'ko'); }); }
+function clanRepName(h) { var o = hhMembers(h), r = o.filter(function (c) { return c.relation === '본인'; })[0] || o[0]; return r ? String(r.name || '').replace(' (예시)', '') : ''; }
+function clanCheck(cl) {
+  var H = clanHhs(cl), o = { H: H, ck: {}, ppl: 0, prem: 0, short: 0, gap: 0, dup: 0, stale: 0 };
+  H.forEach(function (h) { var k = hhCheck(h); o.ck[h.id] = k; o.ppl += k.mem.length; o.prem += k.prem; o.short += k.short; if (k.short > 0) o.gap++; if (k.dupFlag) o.dup++;
+    if (!k.last || -daysUntil(k.last) > 90) o.stale++; });
+  return o;
+}
+function nextHolidays() { // 다가오는 설날·추석 (음력 → 양력, 60일 안)
+  var y = new Date().getFullYear(), out = [];
+  [['설날', 1, 1], ['추석', 8, 15]].forEach(function (x) { [y, y + 1].forEach(function (yy) { birthdaysInYear({ bdCal: 'lunar', bdMonth: x[1], bdDay: x[2], bdLeap: false }, yy).forEach(function (d) { var n = daysUntil(d); if (n >= 0 && n <= 60) out.push({ name: x[0], date: d, days: n }); }); }); });
+  return out.sort(function (a, b) { return a.days - b.days; });
+}
+function clanSuggest() { // 소개 관계가 가구 사이에 있거나, 대표 성이 같고 나이 차가 20세 이상(부모·자녀 세대)
+  var H = hhSorted().filter(function (h) { return hhMembers(h).length; }), skip = store.settings.clanSkip || [], out = [];
+  var repOf = function (h) { var m = hhMembers(h); return m.filter(function (c) { return c.relation === '본인'; })[0] || m[0]; };
+  for (var i = 0; i < H.length; i++) for (var j = i + 1; j < H.length; j++) {
+    var a = H[i], b = H[j]; if (a.clanId && a.clanId === b.clanId) continue;
+    var key = [a.id, b.id].sort().join('|'); if (skip.indexOf(key) >= 0) continue;
+    var ma = hhMembers(a), mb = hhMembers(b), why = '';
+    var ref = ma.some(function (c) { return mb.some(function (d) { return c.refBy === d.id || d.refBy === c.id; }); });
+    if (ref) why = '소개 관계가 있음';
+    else { var ra = repOf(a), rb = repOf(b), aa = ra && ra.birth ? ageOf(ra.birth) : null, ab = rb && rb.birth ? ageOf(rb.birth) : null;
+      if (ra && rb && ra.name && rb.name && ra.name.charAt(0) === rb.name.charAt(0) && aa != null && ab != null && Math.abs(aa - ab) >= 20) why = '대표 성이 같고 나이 차 ' + Math.abs(aa - ab) + '세'; }
+    if (why) out.push({ a: a, b: b, key: key, why: why });
+  }
+  return out.slice(0, 8);
+}
+function clanMatrix(o) { // 담보별로 가구마다 "n명 중 k명 부족"
+  var H = o.H.filter(function (h) { return o.ck[h.id].withPol; }); if (!H.length) return '<p class="muted" style="margin:0">계약을 입력한 가구원이 없어 보장 비교표를 만들 수 없습니다.</p>';
+  return '<div class="tablewrap"><table class="t fam-matrix clan-matrix"><thead><tr><th>담보</th>' + H.map(function (h) { return '<th>' + esc(h.name || '') + (h.clanRole ? ' <span class="muted">' + esc(h.clanRole) + '</span>' : '') + '</th>'; }).join('') + '</tr></thead><tbody>' +
+    FAM_ROWS.map(function (fr) { return '<tr><td><b>' + fr[1] + '</b></td>' + H.map(function (h) { var k = o.ck[h.id], pm = k.mem.filter(function (c) { return (c.policies || []).length; }), sh = pm.filter(function (c) { return k.ans[c.id].rows.some(function (r) { return r.code === fr[0] && r.verdict === 'short'; }); }).length;
+      return '<td>' + (sh ? '<span class="pill v-short">' + pm.length + '명 중 ' + sh + '명 부족</span>' : '<span class="pill v-ok">' + pm.length + '명 적정</span>') + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table></div>';
+}
+function clanTree(o) {
+  var par = o.H.filter(function (h) { return h.clanRole === '부모'; }), rest = o.H.filter(function (h) { return h.clanRole !== '부모'; });
+  var node = function (h) { var k = o.ck[h.id]; return '<span class="ct-node"><b>' + esc(h.name || '이름 없는 가구') + '</b>' + (h.clanRole ? ' <small class="muted">' + esc(h.clanRole) + ' 가구</small>' : '') + '<small class="muted num"> · ' + k.mem.length + '명</small></span>'; };
+  if (!par.length) return '<ul class="ref-tree">' + o.H.map(function (h) { return '<li>' + node(h) + '</li>'; }).join('') + '</ul>';
+  return '<ul class="ref-tree">' + par.map(function (p, i) { return '<li>' + node(p) + (i === par.length - 1 && rest.length ? '<ul>' + rest.map(function (h) { return '<li>' + node(h) + '</li>'; }).join('') + '</ul>' : '') + '</li>'; }).join('') + '</ul>';
+}
+function clanAlerts(cl, o) { // 부모 가구 생신(30일 안) · 명절(60일 안) → 자녀·형제 가구 대표에게 안부
+  var par = o.H.filter(function (h) { return h.clanRole === '부모'; }), kids = o.H.filter(function (h) { return h.clanRole !== '부모'; }), items = [];
+  par.forEach(function (h) { o.ck[h.id].mem.forEach(function (c) { if (c.relation === '자녀') return; var nb = nextBirthday(c); if (nb && nb.days <= 30) items.push('<b>' + esc(c.name || '') + '</b>님 생신 ' + esc(nb.date.slice(5).replace('-', '.')) + ' (' + dLabel(nb.days) + ')'); }); });
+  nextHolidays().forEach(function (hd) { items.push('<b>' + hd.name + '</b> ' + esc(hd.date.slice(5).replace('-', '.')) + ' (' + dLabel(hd.days) + ')'); });
+  if (!items.length) return '';
+  var reps = (kids.length ? kids : o.H).map(function (h) { return o.ck[h.id].rep; }).filter(Boolean);
+  return '<div class="clan-alert"><div>' + items.join(' · ') + '</div><div class="row" style="gap:6px;flex-wrap:wrap"><span class="muted">' + (kids.length ? '자녀·형제 가구에도 안부' : '가구 대표에게 안부') + '</span>' +
+    reps.map(function (c) { return relSms(c.phone, relTpl('{이름}님, 안녕하세요. {FC}입니다. 다가오는 날 가족과 즐거운 시간 보내세요.', c), esc((c.name || '').replace(' (예시)', '')) + ' 문자') + '<button class="btn sm" data-act="rcDone" data-id="' + c.id + '" title="' + attr(c.name || '') + '님에게 연락했다고 기록">' + esc((c.name || '').replace(' (예시)', '')) + ' 연락함</button>'; }).join('') + '</div></div>';
+}
+function clanDocSection(c) { // 동의 받은 대가족만: 가구별 인원·보험료·부족 수 (개인별 담보는 넣지 않음)
+  var h = c.householdId && hhSorted().filter(function (x) { return x.id === c.householdId; })[0], cl = h && h.clanId && clanList().filter(function (x) { return x.id === h.clanId; })[0];
+  if (!cl || !cl.onDoc) return ''; var o = clanCheck(cl); if (o.H.length < 2) return '';
+  return '<section class="doc-hh"><h2>대가족 보장 현황 — ' + esc(cl.name || '') + '</h2><table class="t"><thead><tr><th>가구</th><th>관계</th><th class="r">인원</th><th class="r">월 보험료</th><th class="r">부족 담보</th></tr></thead><tbody>' +
+    o.H.map(function (x) { var k = o.ck[x.id]; return '<tr><td>' + esc(x.name || '') + '</td><td>' + esc(x.clanRole || '') + '</td><td class="r num">' + k.mem.length + '명</td><td class="r num">' + fmtWon(k.prem) + '</td><td class="r num">' + k.short + '개</td></tr>'; }).join('') +
+    '<tr><td><b>합계</b></td><td></td><td class="r num"><b>' + o.ppl + '명</b></td><td class="r num"><b>' + fmtWon(o.prem) + '</b></td><td class="r num"><b>' + o.short + '개</b></td></tr></tbody></table></section>';
+}
+function renderClans() {
+  var CL = clanList(), H = hhSorted(), F2 = ui.clF || '', CK = {}; CL.forEach(function (cl) { CK[cl.id] = clanCheck(cl); });
+  var free = H.filter(function (h) { return !h.clanId || !CL.some(function (cl) { return cl.id === h.clanId; }); });
+  var hit = function (cl) { var o = CK[cl.id]; return F2 === 'gap' ? o.gap > 0 : F2 === 'dup' ? o.dup > 0 : F2 === 'stale' ? o.stale > 0 : true; };
+  var ck = function (key, label, v, tone) { var on = F2 === key; return '<button class="kpi' + (on ? ' on' : '') + (tone && v ? ' ' + tone : '') + '" data-act="uiPick" data-k="clF" data-id="' + key + '" aria-pressed="' + on + '"><span class="k">' + label + '</span><span class="v num">' + v + '<small>곳</small></span></button>'; };
+  var cnt = function (fn) { return CL.filter(function (cl) { return fn(CK[cl.id]); }).length; };
+  var kp = '<div class="kpis">' + ck('gap', '보장 빈 가구가 있는 대가족', cnt(function (o) { return o.gap > 0; }), 'warn') + ck('dup', '중복 담보 가구가 있는 대가족', cnt(function (o) { return o.dup > 0; }), 'warn') +
+    ck('stale', '90일 넘게 연락 안 한 가구가 있는 대가족', cnt(function (o) { return o.stale > 0; }), 'warn') + '<div class="kpi" style="cursor:default"><span class="k">대가족 · 묶이지 않은 가구</span><span class="v num">' + CL.length + '<small>곳 · ' + free.length + '가구</small></span></div></div>';
+  var sug = clanSuggest();
+  var sugP = sug.length ? '<section class="panel hh-sug"><div class="row between"><h2>같은 대가족 같아요 <span class="muted num">' + sug.length + '</span></h2><span class="muted">소개 관계나 성·세대 차이로 찾았습니다</span></div><ul class="hh-sug-list">' + sug.map(function (g) {
+    return '<li><span><b>' + esc(g.a.name || '') + '</b><span class="muted"> · </span><b>' + esc(g.b.name || '') + '</b><br><small class="muted">' + esc(g.why) + '</small></span><span class="row" style="gap:6px"><button class="btn sm primary" data-act="clanMerge" data-id="' + attr(g.key) + '">대가족으로 묶기</button><button class="btn sm ghost" data-act="clanSkip" data-id="' + attr(g.key) + '">아님</button></span></li>'; }).join('') + '</ul></section>' : '';
+  ui.clOpen = ui.clOpen || {};
+  var shown = CL.filter(hit);
+  var cards = shown.map(function (cl) {
+    var o = CK[cl.id], open = ui.clOpen[cl.id] === true, del = ui.armed === 'delClan:' + cl.id;
+    var flags = (o.gap ? ' · <b>보장 빈 가구 ' + o.gap + '</b>' : '') + (o.dup ? ' · <b>중복 ' + o.dup + '</b>' : '') + (o.stale ? ' · <b>연락 오래 ' + o.stale + '</b>' : '');
+    var sum = '<button class="fam-sum" data-act="clanToggle" data-id="' + cl.id + '" aria-expanded="' + open + '"><span class="chev">' + (open ? '▾' : '▸') + '</span><strong>' + esc(cl.name || '이름 없는 대가족') + '</strong>' +
+      '<span class="fam-names">' + (o.H.length ? o.H.map(function (h) { return esc(h.name || '') + (h.clanRole ? '<small>' + esc(h.clanRole) + '</small>' : ''); }).join(' · ') : '가구 없음') + '</span>' +
+      '<span class="num fam-meta">' + o.H.length + '가구 · ' + o.ppl + '명 · 월 ' + fmtWon(o.prem) + flags + '</span></button>';
+    if (!open) return '<div class="fam-row">' + sum + '</div>';
+    var addOpts = [['', '가구 선택…']].concat(H.filter(function (h) { return h.clanId !== cl.id; }).map(function (h) { var other = h.clanId && CL.filter(function (x) { return x.id === h.clanId; })[0]; return [h.id, (h.name || '이름 없는 가구') + (other ? ' (현재 ' + (other.name || '다른 대가족') + ')' : '')]; }));
+    var rows = o.H.map(function (h) { var k = o.ck[h.id], dd = k.last ? -daysUntil(k.last) : null;
+      return '<tr class="crow"><td class="cname"><b>' + esc(h.name || '') + '</b> <small class="muted">' + esc(k.mem.map(function (c) { return (c.name || '').replace(' (예시)', ''); }).join(', ')) + '</small></td>' +
+        '<td data-l="관계">' + f('hhc', 'clanRole', h.clanRole || '', { id: h.id, type: 'select', options: CLAN_ROLES, aria: '대가족 안 관계' }) + '</td>' +
+        '<td data-l="월 보험료" class="r num">' + fmtWon(k.prem) + '</td><td data-l="부족" class="r num">' + (k.short ? '<span class="pill v-short">' + k.short + '</span>' : '0') + '</td>' +
+        '<td data-l="마지막 연락" class="num">' + (dd == null ? '<span class="muted">기록 없음</span>' : dd === 0 ? '오늘' : '<span' + (dd > 90 ? ' class="warn-txt"' : '') + '>' + dd + '일 전</span>') + '</td>' +
+        '<td class="rel-act">' + (k.rep ? telLink(k.rep.phone) + relSms(k.rep.phone) + '<button class="btn sm" data-act="rcDone" data-id="' + k.rep.id + '">연락함</button>' : '') + '<button class="btn ghost sm" data-act="clanOut" data-id="' + h.id + '">빼기</button></td></tr>'; }).join('');
+    return '<section class="panel fam-card clan-card">' + sum +
+      '<div class="row between"><div class="row" style="gap:8px"><span class="muted">대가족 이름</span>' + f('clan', 'name', cl.name || '', { id: cl.id, aria: '대가족 이름' }) + '</div>' +
+      '<button class="btn ghost sm' + (del ? ' danger armed' : '') + '" data-act="delClan" data-id="' + cl.id + '">' + (del ? '한 번 더 누르면 대가족만 삭제 (가구는 유지)' : '대가족 삭제') + '</button></div>' +
+      '<div class="summary num"><div class="stat"><div class="k">대가족 인원</div><div class="v">' + o.ppl + '명</div><div class="sub">' + o.H.length + '가구</div></div><div class="stat"><div class="k">대가족 월 보험료</div><div class="v">' + fmtWon(o.prem) + '</div></div>' +
+      '<div class="stat' + (o.short ? ' hot' : '') + '"><div class="k">부족 담보 합계</div><div class="v">' + o.short + '개</div><div class="sub">보장 빈 가구 ' + o.gap + '곳</div></div><div class="stat"><div class="k">연락 오래된 가구</div><div class="v">' + o.stale + '곳</div><div class="sub">90일 넘게 또는 기록 없음</div></div></div>' +
+      clanAlerts(cl, o) +
+      '<div class="clan-grid"><div><h3>가계도</h3>' + (o.H.length ? clanTree(o) : '<p class="muted">아래에서 가구를 추가하세요.</p>') + '</div><div><h3>가구 추가</h3><div class="field">' + f('clanadd', 'x', '', { id: cl.id, type: 'select', options: addOpts, aria: '대가족에 가구 추가' }) + '</div>' +
+      '<p class="muted" style="margin:6px 0 0;font-size:12px">한 가구는 한 대가족에만 들어갑니다. 다른 대가족에 있던 가구를 고르면 이쪽으로 옮겨집니다.</p></div></div>' +
+      (rows ? '<div class="tablewrap"><table class="t ctable rel-table"><thead><tr><th>가구</th><th>관계</th><th class="r">월 보험료</th><th class="r">부족</th><th>마지막 연락</th><th>연락</th></tr></thead><tbody>' + rows + '</tbody></table></div>' : '') +
+      '<h3 style="margin-top:4px">대가족 보장 한눈에 보기</h3>' + clanMatrix(o) +
+      '<label class="check hh-doc">' + f('clan', 'onDoc', !!cl.onDoc, { id: cl.id, type: 'check' }) + ' 고객 동의를 받았으면, 가구원 제안서에 "대가족 보장 현황"(가구별 인원·보험료·부족 담보 수)을 넣기</label>' +
+      '<p class="muted" style="margin:0;font-size:12px">다른 가구의 보험 내용도 그 사람의 개인정보입니다. 제안서에는 가구별 합계만 들어가고 개인별 담보는 들어가지 않으며, 동의를 받은 경우에만 켜세요.</p></section>';
+  });
+  var list = cards.length ? cards.join('') : (CL.length ? '<section class="panel"><div class="empty"><strong>조건에 맞는 대가족이 없습니다</strong><span>위 숫자 칸을 다시 누르면 전체가 보입니다.</span></div></section>' : '<section class="panel"><div class="empty"><strong>아직 대가족이 없습니다</strong><span>"+ 대가족 만들기"를 누르거나, 위 추천에서 "대가족으로 묶기"를 누르세요. 가구가 2곳 이상 있어야 묶을 수 있습니다.</span></div></section>');
+  return kp + sugP + '<section class="panel fam-bar"><div class="row between fam-headrow"><h2>대가족 ' + shown.length + '곳</h2><button class="btn primary sm" data-act="clanAdd">+ 대가족 만들기</button></div>' +
+    '<p class="muted" style="margin:0">여러 가구(부모 가구·자녀 가구·형제 가구)를 하나로 묶어 봅니다. 가구는 그대로이고, 원하는 가구만 묶으면 됩니다.' + (nextHolidays().length ? ' 다가오는 ' + nextHolidays().map(function (x) { return x.name + '(' + x.date.slice(5).replace('-', '.') + ')'; }).join('·') + '에 맞춰 안부를 챙기세요.' : '') + '</p></section>' + list;
+}
 function renderFamily() {
+  var famSeg = '<div class="seg rel-tabs" role="tablist"><button class="seg-btn' + (ui.famTab !== 'clan' ? ' on' : '') + '" role="tab" data-act="famTab" data-id="hh">가구</button><button class="seg-btn' + (ui.famTab === 'clan' ? ' on' : '') + '" role="tab" data-act="famTab" data-id="clan">대가족 <small class="num">' + clanList().length + '</small></button></div>';
+  if (ui.famTab === 'clan') return famSeg + renderClans();
+  return famSeg + renderFamilyHh();
+}
+function renderFamilyHh() {
   var H = hhSorted(), q = norm(ui.hq);
   ui.hhOpen = ui.hhOpen || {};
   var memOf = function (h) {
@@ -6588,6 +6713,12 @@ function setField(el) {
   } else if (scope === 'snap') {
     var sc2 = custById(id); if (!sc2 || !sc2.snapshots[Number(pid)]) return; var sn2 = sc2.snapshots[Number(pid)]; sn2[k] = v;
     if (k === 'result') { sn2.stageAt = today(); if (v !== '거절' && v !== '보류') sn2.reason = ''; } stampCustomer(sc2);
+  } else if (scope === 'clan') {
+    var cl9 = clanList().filter(function (x) { return x.id === id; })[0]; if (!cl9) return; cl9[k] = v;
+  } else if (scope === 'hhc') {
+    var hc9 = s.households.filter(function (x) { return x.id === id; })[0]; if (!hc9) return; hc9[k] = v;
+  } else if (scope === 'clanadd') {
+    var ha9 = s.households.filter(function (x) { return x.id === v; })[0]; if (!ha9) return; ha9.clanId = id; ha9.clanRole = ha9.clanRole || ''; toast((ha9.name || '가구') + '를 대가족에 넣었습니다. 관계를 고르세요');
   } else if (scope === 'hh') {
     var h2 = s.households.filter(function (x) { return x.id === id; })[0]; if (!h2) return; h2[k] = v;
   }
@@ -6952,6 +7083,18 @@ function doAction(el) {
     case 'newsRefresh': { var nt0 = ui.newsT || 'all'; news.err[nt0] = ''; newsLoad(nt0, true); break; }
     case 'newsCopy': { var nc = news.cache[ui.newsT || 'all'], ni = nc && nc.items[Number(id)]; if (ni) copyText(ni.title + '\n' + ni.link, '기사 링크를 복사했습니다'); return; }
     case 'relTab': ui.relTab = id; ui.armed = null; break;
+    case 'famTab': ui.famTab = id === 'clan' ? 'clan' : ''; break;
+    case 'clanToggle': ui.clOpen = ui.clOpen || {}; ui.clOpen[id] = !ui.clOpen[id]; break;
+    case 'clanAdd': { var ncl = { id: uid(), name: '새 대가족 ' + (clanList().length + 1) }; clanList().unshift(ncl); ui.clOpen = ui.clOpen || {}; ui.clOpen[ncl.id] = true; ui.clF = ''; save(); toast('대가족을 만들었습니다. 이름을 정하고 가구를 추가하세요'); break; }
+    case 'delClan': { var dk = 'delClan:' + id; if (ui.armed !== dk) { ui.armed = dk; keepArm = true; break; } store.settings.clans = clanList().filter(function (x) { return x.id !== id; }); store.settings.households.forEach(function (h) { if (h.clanId === id) { h.clanId = ''; h.clanRole = ''; } }); save(); toast('대가족을 지웠습니다 (가구는 그대로)'); break; }
+    case 'clanOut': { var ho = store.settings.households.filter(function (h) { return h.id === id; })[0]; if (ho) { ho.clanId = ''; ho.clanRole = ''; save(); } break; }
+    case 'clanSkip': store.settings.clanSkip = (store.settings.clanSkip || []).concat([id]); save(); break;
+    case 'clanMerge': { var cm = clanSuggest().filter(function (g) { return g.key === id; })[0]; if (!cm) break;
+      var cid0 = cm.a.clanId && clanList().some(function (x) { return x.id === cm.a.clanId; }) ? cm.a.clanId : cm.b.clanId && clanList().some(function (x) { return x.id === cm.b.clanId; }) ? cm.b.clanId : '';
+      if (!cid0) { var ra0 = hhCheck(cm.a).rep, rb0 = hhCheck(cm.b).rep, aa0 = ra0 && ra0.birth ? ra0.birth : '9999', ab0 = rb0 && rb0.birth ? rb0.birth : '9999', older = aa0 <= ab0 ? cm.a : cm.b, younger = older === cm.a ? cm.b : cm.a;
+        var nc = { id: uid(), name: (clanRepName(older) || '새') + ' 대가족' }; clanList().unshift(nc); cid0 = nc.id;
+        if (/세$/.test(cm.why)) { older.clanRole = older.clanRole || '부모'; younger.clanRole = younger.clanRole || '자녀'; } }
+      [cm.a, cm.b].forEach(function (h) { h.clanId = cid0; }); ui.clOpen = ui.clOpen || {}; ui.clOpen[cid0] = true; save(); toast('두 가구를 대가족으로 묶었습니다. 관계를 확인하세요'); break; }
     case 'hhSkip': store.settings.hhSkip = (store.settings.hhSkip || []).concat([id]); save(); break;
     case 'hhMerge': { var gm = hhSuggest().filter(function (g) { return g.k === id; })[0]; if (!gm) break;
       var hs0 = gm.L.map(function (c) { return c.householdId; }).filter(function (x) { return x && hhSorted().some(function (h) { return h.id === x; }); })[0], hn;
