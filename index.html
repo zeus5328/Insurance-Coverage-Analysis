@@ -1545,7 +1545,10 @@ button.cal-btn { padding: 0; color: var(--ink-2); cursor: pointer; }
 .lic-card .policy-head { border-bottom: 0; border-radius: var(--radius); }
 .lic-img { grid-column: 1 / -1; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
 .lic-thumb { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; width: 200px; aspect-ratio: 4 / 3; padding: 0; border: 1px solid var(--line); border-radius: 8px; background: #fff; overflow: hidden; cursor: zoom-in; }
+.lic-thumb { position: relative; }
 .lic-thumb img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.lic-badge { position: absolute; top: 6px; right: 6px; padding: 2px 6px; border-radius: 4px; background: #C8361D; color: #fff; font-size: 11px; font-weight: 700; }
+.lic-pdf-ico { font-size: 22px; font-weight: 800; color: #C8361D; }
 .lic-empty { border: 2px dashed var(--line); background: var(--surface); color: var(--ink-2); cursor: pointer; text-align: center; padding: 8px; }
 .lic-empty:hover { border-color: var(--ok); color: var(--ok); }
 .lic-empty span { font-size: 12.5px; }
@@ -2221,13 +2224,74 @@ var LIC_KINDS = ['생명보험 설계사', '손해보험 설계사', '제3보험
 var LIC_ORGS = ['생명보험협회', '손해보험협회', '금융투자협회', '보험연수원', '금융감독원'];
 function licList() { return store.settings.licenses = store.settings.licenses || []; }
 function licDocText() { var L = licList().filter(function (x) { return x.doc && x.kind; }); return L.length ? '보유 자격: ' + L.map(function (x) { return x.kind; }).join('·') : ''; }
+function licHas(x) { return !!(x.img || x.pdf); }
 function licImgBlock(x) {
-  var fid = 'licImg-' + x.id, armI = ui.armed === 'licImgDel:' + x.id;
-  return '<div class="lic-img">' + (x.img ? '<button type="button" class="lic-thumb" data-act="licImgView" data-id="' + x.id + '" title="크게 보기"><img src="' + attr(x.img) + '" alt="' + attr((x.kind || '라이선스') + ' 이미지') + '"></button>' :
-    '<label class="lic-thumb lic-empty" for="' + fid + '"><b>자격증 이미지</b><span>눌러서 사진·스캔 파일 고르기</span></label>') +
-    '<div class="lic-img-side"><span class="muted">' + (x.img ? '등록증·자격증 이미지' + (x.imgAt ? ' (' + esc(x.imgAt) + ' 등록)' : '') + '. 누르면 크게 볼 수 있습니다.' : '자격증·등록증을 사진으로 찍거나 스캔 파일을 올려 두세요. 큰 사진은 자동으로 줄여 저장합니다.') + '</span>' +
-    '<div class="row" style="gap:6px"><label class="btn sm' + (x.img ? '' : ' primary') + '" for="' + fid + '">' + (x.img ? '이미지 바꾸기' : '이미지 올리기') + '</label><input type="file" id="' + fid + '" accept="image/*" data-kind="licimg" data-id="' + x.id + '" hidden>' +
-    (x.img ? '<button class="btn sm danger' + (armI ? ' armed' : '') + '" data-act="licImgDel" data-id="' + x.id + '">' + (armI ? '한 번 더 누르면 이미지 삭제' : '이미지 삭제') + '</button>' : '') + '</div></div></div>';
+  var fid = 'licImg-' + x.id, armI = ui.armed === 'licImgDel:' + x.id, has = licHas(x), busy = ui.licBusy === x.id;
+  var thumb = x.img ? '<img src="' + attr(x.img) + '" alt="' + attr((x.kind || '라이선스') + (x.pdf ? ' PDF 1쪽' : ' 이미지')) + '">' : '<span class="lic-pdf-ico">PDF</span>';
+  return '<div class="lic-img">' + (has ? '<button type="button" class="lic-thumb" data-act="licImgView" data-id="' + x.id + '" title="크게 보기">' + thumb + (x.pdf ? '<span class="lic-badge">PDF</span>' : '') + '</button>' :
+    '<label class="lic-thumb lic-empty" for="' + fid + '"><b>자격증 이미지·PDF</b><span>' + (busy ? '파일 읽는 중…' : '눌러서 사진·스캔 파일이나 PDF 고르기') + '</span></label>') +
+    '<div class="lic-img-side"><span class="muted">' + (busy ? '파일을 읽는 중입니다…' : has ? (x.pdf ? 'PDF 파일' + (x.pdfName ? ' ' + esc(x.pdfName) : '') : '등록증·자격증 이미지') + (x.imgAt ? ' (' + esc(x.imgAt) + ' 등록)' : '') + '. 누르면 크게 볼 수 있습니다.' : '자격증·등록증을 사진으로 찍거나 스캔한 이미지·PDF를 올려 두세요. 큰 사진은 자동으로 줄여 저장합니다.') + '</span>' +
+    '<div class="row" style="gap:6px;flex-wrap:wrap"><label class="btn sm' + (has ? '' : ' primary') + '" for="' + fid + '">' + (has ? '파일 바꾸기' : '이미지·PDF 올리기') + '</label><input type="file" id="' + fid + '" accept="image/*,application/pdf,.pdf" data-kind="licimg" data-id="' + x.id + '" hidden>' +
+    '<button class="btn sm" data-act="licPdfDown" data-id="' + x.id + '"' + (has ? '' : ' disabled title="먼저 이미지나 PDF를 올리세요"') + '>PDF 다운</button>' +
+    (has ? '<button class="btn sm danger' + (armI ? ' armed' : '') + '" data-act="licImgDel" data-id="' + x.id + '">' + (armI ? '한 번 더 누르면 파일 삭제' : '파일 삭제') + '</button>' : '') + '</div></div></div>';
+}
+// 라이선스 파일 저장 (이미지 → img, PDF → pdf + 1쪽 미리보기 img). 합계 3MB 넘으면 거절
+function licSaveFile(lid, data) {
+  var lx = licList().filter(function (y) { return y.id === lid; })[0]; if (!lx) return;
+  var tot = licList().reduce(function (t, y) { return t + (y.id === lid ? 0 : String(y.img || '').length + String(y.pdf || '').length); }, 0);
+  if (tot + String(data.img || '').length + String(data.pdf || '').length > 3000000) { toast('라이선스 파일 용량이 너무 큽니다. 필요 없는 파일을 지우거나 더 작은 파일로 올려 주세요'); return; }
+  lx.img = data.img || ''; lx.pdf = data.pdf || ''; lx.pdfName = data.pdfName || ''; lx.imgAt = today(); save(); render();
+  toast(data.pdf ? '라이선스 PDF를 저장했습니다' : '라이선스 이미지를 저장했습니다');
+}
+function licReadFile(lid, file) {
+  var isPdf = file.type === 'application/pdf' || /\.pdf$/i.test(file.name || '');
+  if (!isPdf) { shrinkImage(file, function (url) { licSaveFile(lid, { img: url }); }); return; }
+  if (file.size > 2000000) { toast('PDF가 너무 큽니다(2MB까지). 스캔 해상도를 낮추거나 사진으로 올려 주세요'); return; }
+  ui.licBusy = lid; render();
+  var rd = new FileReader();
+  rd.onerror = function () { ui.licBusy = null; render(); toast('파일을 읽지 못했습니다'); };
+  rd.onload = function () {
+    var url = String(rd.result || '').replace(/^data:[^;,]*/, 'data:application/pdf');
+    var done = function (thumb) { ui.licBusy = null; licSaveFile(lid, { pdf: url, img: thumb || '', pdfName: file.name || '' }); };
+    loadPdfJs().then(function (lib) { return lib.getDocument({ data: dataUrlBytes(url) }).promise; }).then(function (doc) { return doc.getPage(1); }).then(function (pg) {
+      var v1 = pg.getViewport({ scale: 1 }), sc = Math.min(2, 1000 / Math.max(v1.width, v1.height)), vp = pg.getViewport({ scale: sc });
+      var cv = document.createElement('canvas'); cv.width = Math.round(vp.width); cv.height = Math.round(vp.height);
+      var cx = cv.getContext('2d'); cx.fillStyle = '#fff'; cx.fillRect(0, 0, cv.width, cv.height);
+      return pg.render({ canvasContext: cx, viewport: vp }).promise.then(function () { return cv.toDataURL('image/jpeg', 0.8); });
+    }).then(done, function () { done(''); }); // 미리보기를 못 만들어도 PDF는 저장
+  };
+  rd.readAsDataURL(file);
+}
+function dataUrlBytes(url) { var b = atob(String(url).split(',')[1] || ''), u = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u; }
+// JPEG 이미지 1장 → A4 PDF (외부 라이브러리 없이 직접 만든다)
+function jpegToPdf(url) {
+  return new Promise(function (ok, bad) {
+    var im = new Image();
+    im.onerror = function () { bad(new Error('이미지를 열 수 없습니다')); };
+    im.onload = function () {
+      var W = im.naturalWidth, H = im.naturalHeight, jpg = dataUrlBytes(url);
+      var pw = 595.28, ph = 841.89, m = 28, sc = Math.min((pw - 2 * m) / W, (ph - 2 * m) / H), dw = W * sc, dh = H * sc, dx = (pw - dw) / 2, dy = (ph - dh) / 2;
+      var cs = 'q ' + dw.toFixed(2) + ' 0 0 ' + dh.toFixed(2) + ' ' + dx.toFixed(2) + ' ' + dy.toFixed(2) + ' cm /Im0 Do Q';
+      var enc = function (t) { var u = new Uint8Array(t.length); for (var i = 0; i < t.length; i++) u[i] = t.charCodeAt(i) & 255; return u; };
+      var parts = [], off = [], len = 0, push = function (u) { parts.push(u); len += u.length; };
+      push(enc('%PDF-1.4\n%\xE2\xE3\xCF\xD3\n'));
+      var objs = ['<< /Type /Catalog /Pages 2 0 R >>', '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+        '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' + pw + ' ' + ph + '] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>'];
+      objs.forEach(function (o, i) { off.push(len); push(enc((i + 1) + ' 0 obj\n' + o + '\nendobj\n')); });
+      off.push(len); push(enc('4 0 obj\n<< /Type /XObject /Subtype /Image /Width ' + W + ' /Height ' + H + ' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ' + jpg.length + ' >>\nstream\n')); push(jpg); push(enc('\nendstream\nendobj\n'));
+      off.push(len); push(enc('5 0 obj\n<< /Length ' + cs.length + ' >>\nstream\n' + cs + '\nendstream\nendobj\n'));
+      var xref = len, x = 'xref\n0 6\n0000000000 65535 f \n' + off.map(function (o) { return ('000000000' + o).slice(-10) + ' 00000 n \n'; }).join('');
+      push(enc(x + 'trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n' + xref + '\n%%EOF\n'));
+      ok(new Blob(parts, { type: 'application/pdf' }));
+    };
+    im.src = url;
+  });
+}
+function licPdfDown(lid) {
+  var x = licList().filter(function (y) { return y.id === lid; })[0]; if (!x || !licHas(x)) { toast('먼저 이미지나 PDF를 올리세요'); return; }
+  var name = ((x.kind || '라이선스') + (x.no ? '_' + x.no : '')).replace(/[\\/:*?"<>|\s]+/g, '_') + '.pdf';
+  if (x.pdf) { offerFile(name, new Blob([dataUrlBytes(x.pdf)], { type: 'application/pdf' })); return; }
+  jpegToPdf(x.img).then(function (blob) { offerFile(name, blob); }).catch(function (e) { toast('PDF를 만들지 못했습니다: ' + e.message); });
 }
 function licDue(x) { return x.renew ? daysUntil(x.renew) : null; }
 function licensePanel() {
@@ -2250,7 +2314,7 @@ function licensePanel() {
   return kpis + '<section class="panel"><div class="row between"><h2>보험 라이선스 ' + L.length + '건</h2><button class="btn primary sm" data-act="licAdd">+ 추가</button></div>' +
     '<datalist id="licOrgs">' + LIC_ORGS.map(function (o) { return '<option value="' + attr(o) + '">'; }).join('') + '</datalist>' +
     (cards || '<div class="empty"><strong>등록한 자격이 없습니다</strong><span>"+ 추가"로 생명보험·손해보험·제3보험 설계사 등록, 변액보험 판매자격 같은 보유 자격을 넣어 두세요.</span></div>') +
-    '<p class="muted" style="margin:0">보수교육·갱신일은 소속 회사나 협회 안내를 보고 직접 넣으세요. 60일 안으로 다가오면 주황색으로 표시됩니다. "제안서에 표시"를 켠 자격은 제안서 머리의 담당 FC 정보에 "보유 자격"으로 함께 나옵니다. 자격증 이미지는 다른 설정과 함께 이 기기와 내 계정에만 저장됩니다. 주민등록번호가 보이는 사진이면 그 부분을 가리고 올리세요.</p></section>';
+    '<p class="muted" style="margin:0">보수교육·갱신일은 소속 회사나 협회 안내를 보고 직접 넣으세요. 60일 안으로 다가오면 주황색으로 표시됩니다. "제안서에 표시"를 켠 자격은 제안서 머리의 담당 FC 정보에 "보유 자격"으로 함께 나옵니다. 자격증 이미지·PDF는 다른 설정과 함께 이 기기와 내 계정에만 저장됩니다. "PDF 다운"을 누르면 올린 PDF를, 사진이면 A4 PDF로 만들어 내려받습니다. 주민등록번호가 보이는 파일이면 그 부분을 가리고 올리세요.</p></section>';
 }
 function fcLineText(fc) { return [[fc.org, fc.branch, fc.unit].filter(Boolean).join(' '), fc.name ? '담당: ' + (fc.role || 'FC') + ' ' + fc.name : '', fc.regNo ? '등록번호 ' + fc.regNo : '', fc.phone, fc.email].filter(Boolean).join(' · '); }
 function fcOffice(fc) { return [fc.unitTel ? '지점 ☎ ' + fc.unitTel : '', fc.fax ? '팩스 ' + fc.fax : '', fc.addr || ''].filter(Boolean).join(' · '); }
@@ -6437,8 +6501,10 @@ function doAction(el) {
       save(); toast(addedI ? '보험사 ' + addedI + '곳을 추가했습니다. 연락처를 채워 주세요' : '새로 추가할 보험사가 없습니다');
       break;
     }
+    case 'licPdfDown': licPdfDown(id); return;
+    case 'licPdfOpen': { var lo = licList().filter(function (y) { return y.id === id; })[0]; if (!lo || !lo.pdf) return; var bu = URL.createObjectURL(new Blob([dataUrlBytes(lo.pdf)], { type: 'application/pdf' })); var w = window.open(bu, '_blank'); if (!w) { licPdfDown(id); } setTimeout(function () { URL.revokeObjectURL(bu); }, 60000); return; }
     case 'licImgView': ui.modal = { kind: 'licimg', id: id }; ui.armed = null; break;
-    case 'licImgDel': { var ik = 'licImgDel:' + id; if (ui.armed !== ik) { ui.armed = ik; keepArm = true; break; } var li = licList().filter(function (y) { return y.id === id; })[0]; if (li) { li.img = ''; li.imgAt = ''; save(); toast('라이선스 이미지를 지웠습니다'); } break; }
+    case 'licImgDel': { var ik = 'licImgDel:' + id; if (ui.armed !== ik) { ui.armed = ik; keepArm = true; break; } var li = licList().filter(function (y) { return y.id === id; })[0]; if (li) { li.img = ''; li.pdf = ''; li.pdfName = ''; li.imgAt = ''; save(); toast('라이선스 파일을 지웠습니다'); } break; }
     case 'licAdd': { licList().push({ id: uid(), kind: '', no: '', org: '', date: '', renew: '', memo: '', doc: false }); save(); break; }
     case 'delLic': { var lk = 'delLic:' + id; if (ui.armed === lk) { store.settings.licenses = licList().filter(function (x) { return x.id !== id; }); save(); } else { ui.armed = lk; keepArm = true; } break; }
     case 'delContact': {
@@ -6891,11 +6957,12 @@ function detailModalHtml() {
   var m = ui.modal; if (!m) return '';
   var head = '', body = '', del = '', title = '';
   if (m.kind === 'licimg') {
-    var lv = licList().filter(function (y) { return y.id === m.id; })[0]; if (!lv || !lv.img) { ui.modal = null; return ''; }
+    var lv = licList().filter(function (y) { return y.id === m.id; })[0]; if (!lv || !licHas(lv)) { ui.modal = null; return ''; }
     return '<div class="dmodal" role="dialog" aria-modal="true" aria-labelledby="dmTitle"><div class="dm-box dm-wide">' +
       '<div class="dm-head"><div><h2 id="dmTitle">' + esc(lv.kind || '라이선스') + '</h2>' + (lv.no ? '<div class="muted">' + esc(lv.no) + '</div>' : '') + '</div><button class="btn ghost sm" data-act="dmClose" aria-label="닫기">✕</button></div>' +
-      '<div class="dm-body"><img class="lic-big" src="' + attr(lv.img) + '" alt="' + attr((lv.kind || '라이선스') + ' 이미지') + '"></div>' +
-      '<div class="dm-foot"><button class="btn primary" data-act="dmClose" style="margin-left:auto">닫기</button></div></div></div>';
+      '<div class="dm-body">' + (lv.img ? '<img class="lic-big" src="' + attr(lv.img) + '" alt="' + attr((lv.kind || '라이선스') + (lv.pdf ? ' PDF 1쪽' : ' 이미지')) + '">' : '<div class="empty"><strong>미리보기를 만들지 못했습니다</strong><span>"PDF 열기"로 원본을 확인하세요.</span></div>') +
+      (lv.pdf ? '<p class="muted" style="margin:8px 0 0">PDF 1쪽 미리보기입니다. 전체는 "PDF 열기"로 확인하세요.</p>' : '') + '</div>' +
+      '<div class="dm-foot">' + (lv.pdf ? '<button class="btn" data-act="licPdfOpen" data-id="' + lv.id + '">PDF 열기</button>' : '') + '<button class="btn" data-act="licPdfDown" data-id="' + lv.id + '">PDF 다운</button><button class="btn primary" data-act="dmClose" style="margin-left:auto">닫기</button></div></div></div>';
   }
   if (m.kind === 'staff') {
     var x = store.settings.contacts.staff.filter(function (y) { return y.id === m.id; })[0]; if (!x) { ui.modal = null; return ''; }
@@ -7151,7 +7218,7 @@ app.addEventListener('change', function (e) {
   var el = e.target;
   if (el.id === 'importFile') { if (el.files[0]) importJson(el.files[0]); return; }
   if (el.dataset && el.dataset.kind === 'fccard') { if (el.files[0]) readFcCard(el.files[0]); el.value = ''; return; }
-  if (el.dataset && el.dataset.kind === 'licimg') { var lid = el.dataset.id; if (el.files[0]) shrinkImage(el.files[0], function (url) { var lx = licList().filter(function (y) { return y.id === lid; })[0]; if (!lx) return; var tot = licList().reduce(function (t, y) { return t + (y.id === lid ? 0 : String(y.img || '').length); }, 0); if (tot + url.length > 2500000) { toast('라이선스 이미지 용량이 너무 큽니다. 필요 없는 이미지를 지우고 다시 올려 주세요'); return; } lx.img = url; lx.imgAt = today(); save(); render(); toast('라이선스 이미지를 저장했습니다'); }); el.value = ''; return; }
+  if (el.dataset && el.dataset.kind === 'licimg') { if (el.files[0]) licReadFile(el.dataset.id, el.files[0]); el.value = ''; return; }
   if (el.dataset && el.dataset.kind === 'rulesjson') { if (el.files[0]) importRules(el.files[0]); el.value = ''; return; }
   if (el.dataset && el.dataset.kind === 'brxlsx') { if (el.files[0]) importBranchesXlsx(el.files[0]); el.value = ''; return; }
   if (el.dataset && el.dataset.kind === 'custxlsx') { if (el.files[0]) importCustXlsx(el.files[0]); el.value = ''; return; }
