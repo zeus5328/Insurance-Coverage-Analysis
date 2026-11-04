@@ -2222,7 +2222,11 @@ function shrinkImage(file, done) {
 // settings.licenses = [{ id, kind, no(등록·자격번호), org(발급 기관), date(취득·등록일), renew(다음 보수교육·갱신일), memo, doc(제안서 표시) }]
 var LIC_KINDS = ['생명보험 설계사', '손해보험 설계사', '제3보험 설계사', '변액보험 판매자격', '펀드투자권유대행인', '보험대리점 등록', '기타'];
 var LIC_ORGS = ['생명보험협회', '손해보험협회', '금융투자협회', '보험연수원', '금융감독원'];
+var LIC_BASE = ['생명보험 설계사', '손해보험 설계사', '제3보험 설계사']; // FC 기본 보유 자격 3가지
+function licNew(kind) { return { id: uid(), kind: kind || '', no: '', org: kind === '생명보험 설계사' ? '생명보험협회' : kind === '손해보험 설계사' ? '손해보험협회' : '', date: '', renew: '', memo: '', doc: false }; }
 function licList() { return store.settings.licenses = store.settings.licenses || []; }
+// 처음 한 번만 기본 3장(생명·손해·제3보험)을 만들어 둔다. 지운 뒤에는 다시 만들지 않음 (licSeeded)
+function licSeed() { var s = store.settings; if (s.licSeeded) return; s.licSeeded = true; if (!licList().length) s.licenses = LIC_BASE.map(licNew); }
 function licDocText() { var L = licList().filter(function (x) { return x.doc && x.kind; }); return L.length ? '보유 자격: ' + L.map(function (x) { return x.kind; }).join('·') : ''; }
 function licHas(x) { return !!(x.img || x.pdf); }
 function licImgBlock(x) {
@@ -2239,14 +2243,14 @@ function licImgBlock(x) {
 function licSaveFile(lid, data) {
   var lx = licList().filter(function (y) { return y.id === lid; })[0]; if (!lx) return;
   var tot = licList().reduce(function (t, y) { return t + (y.id === lid ? 0 : String(y.img || '').length + String(y.pdf || '').length); }, 0);
-  if (tot + String(data.img || '').length + String(data.pdf || '').length > 3000000) { toast('라이선스 파일 용량이 너무 큽니다. 필요 없는 파일을 지우거나 더 작은 파일로 올려 주세요'); return; }
+  if (tot + String(data.img || '').length + String(data.pdf || '').length > 3300000) { toast('라이선스 파일 용량이 너무 큽니다. 필요 없는 파일을 지우거나 더 작은 파일로 올려 주세요'); return; }
   lx.img = data.img || ''; lx.pdf = data.pdf || ''; lx.pdfName = data.pdfName || ''; lx.imgAt = today(); save(); render();
   toast(data.pdf ? '라이선스 PDF를 저장했습니다' : '라이선스 이미지를 저장했습니다');
 }
 function licReadFile(lid, file) {
   var isPdf = file.type === 'application/pdf' || /\.pdf$/i.test(file.name || '');
   if (!isPdf) { shrinkImage(file, function (url) { licSaveFile(lid, { img: url }); }); return; }
-  if (file.size > 2000000) { toast('PDF가 너무 큽니다(2MB까지). 스캔 해상도를 낮추거나 사진으로 올려 주세요'); return; }
+  if (file.size > 700000) { toast('PDF가 너무 큽니다(한 개 700KB까지). 스캔 해상도를 낮추거나 사진으로 올려 주세요'); return; }
   ui.licBusy = lid; render();
   var rd = new FileReader();
   rd.onerror = function () { ui.licBusy = null; render(); toast('파일을 읽지 못했습니다'); };
@@ -2295,9 +2299,10 @@ function licPdfDown(lid) {
 }
 function licDue(x) { return x.renew ? daysUntil(x.renew) : null; }
 function licensePanel() {
+  if (!store.settings.licSeeded) { licSeed(); save(); }
   var L = licList(), soon = L.filter(function (x) { var d = licDue(x); return d != null && d >= 0 && d <= 60; }).length, late = L.filter(function (x) { var d = licDue(x); return d != null && d < 0; }).length;
   var k = function (label, v, tone) { return '<div class="kpi' + (tone && v ? ' ' + tone : '') + '" style="cursor:default"><span class="k">' + label + '</span><span class="v num">' + v + '<small>건</small></span></div>'; };
-  var kpis = '<div class="kpis">' + k('등록한 자격', L.length) + k('60일 안 교육·갱신', soon, 'warn') + k('교육·갱신일 지남', late, 'warn') + k('제안서에 표시', L.filter(function (x) { return x.doc; }).length) + '</div>';
+  var kpis = '<div class="kpis">' + k('보유 자격', L.length) + '<div class="kpi" style="cursor:default"><span class="k">자격증 파일 올림</span><span class="v num">' + L.filter(licHas).length + '<small>/' + L.length + '</small></span></div>' + k('60일 안 교육·갱신', soon, 'warn') + k('교육·갱신일 지남', late, 'warn') + '</div>';
   var cards = L.map(function (x) {
     var d = licDue(x), arm = ui.armed === 'delLic:' + x.id;
     var A = function (key, v, o) { o = o || {}; o.id = x.id; return f('lic', key, v, o); };
@@ -2306,15 +2311,15 @@ function licensePanel() {
       lbl('자격 종류', A('kind', x.kind || '', { type: 'select', options: [['', '선택']].concat(LIC_KINDS.map(function (v) { return [v, v]; })), aria: '자격 종류' })) +
       lbl('등록·자격번호', A('no', x.no || '', { ph: '예: 협회 등록번호', aria: '등록·자격번호' })) +
       lbl('발급·등록 기관', A('org', x.org || '', { ph: '예: 생명보험협회', list: 'licOrgs', aria: '발급·등록 기관' })) +
-      lbl('취득·등록일', A('date', x.date || '', { type: 'date', aria: '취득·등록일' })) +
-      lbl('다음 보수교육·갱신일', A('renew', x.renew || '', { type: 'date', aria: '다음 보수교육·갱신일' })) +
+      lbl('취득·등록일', A('date', x.date || '', { type: 'date', aria: '취득·등록일', past: true, ph: '예: 20240512', tip: '숫자로 입력하거나 눌러서 달력에서 고르세요. 예: 20240512 · 2024.5.12 · 240512 · 오늘', quick: [['오늘', 0]] })) +
+      lbl('다음 보수교육·갱신일', A('renew', x.renew || '', { type: 'date', aria: '다음 보수교육·갱신일', ph: '예: 20271231', tip: '숫자로 입력하거나 눌러서 달력에서 고르세요. 예: 20271231 · 2027.12.31 · +1년 · +6개월', quick: [['+6개월', 'm6'], ['+1년', 'y1'], ['+2년', 'y2']] })) +
       lbl('메모', A('memo', x.memo || '', { ph: '예: 소속 회사 등록, 교육 이수 시간', aria: '메모' }), 'span2') +
       '<div class="field"><span>제안서</span><label class="check">' + A('doc', !!x.doc, { type: 'check' }) + ' 제안서에 표시</label></div>' + licImgBlock(x) + '</div></article>';
   }).join('');
   return kpis + '<section class="panel"><div class="row between"><h2>보험 라이선스 ' + L.length + '건</h2><button class="btn primary sm" data-act="licAdd">+ 추가</button></div>' +
     '<datalist id="licOrgs">' + LIC_ORGS.map(function (o) { return '<option value="' + attr(o) + '">'; }).join('') + '</datalist>' +
-    (cards || '<div class="empty"><strong>등록한 자격이 없습니다</strong><span>"+ 추가"로 생명보험·손해보험·제3보험 설계사 등록, 변액보험 판매자격 같은 보유 자격을 넣어 두세요.</span></div>') +
-    '<p class="muted" style="margin:0">보수교육·갱신일은 소속 회사나 협회 안내를 보고 직접 넣으세요. 60일 안으로 다가오면 주황색으로 표시됩니다. "제안서에 표시"를 켠 자격은 제안서 머리의 담당 FC 정보에 "보유 자격"으로 함께 나옵니다. 자격증 이미지·PDF는 다른 설정과 함께 이 기기와 내 계정에만 저장됩니다. "PDF 다운"을 누르면 올린 PDF를, 사진이면 A4 PDF로 만들어 내려받습니다. 주민등록번호가 보이는 파일이면 그 부분을 가리고 올리세요.</p></section>';
+    (cards || '<div class="empty"><strong>등록한 자격이 없습니다</strong><span>FC 기본 자격 3가지(생명보험·손해보험·제3보험 설계사)를 한 번에 만들거나 "+ 추가"로 하나씩 넣으세요.</span><button class="btn primary sm" data-act="licBase">기본 3가지 만들기</button></div>') +
+    '<p class="muted" style="margin:0">FC 기본 자격 3가지(생명보험·손해보험·제3보험 설계사)는 카드를 미리 만들어 두었습니다. 각 카드에 자격증 이미지나 PDF를 하나씩 올리세요(사진은 자동으로 줄어들고, PDF는 한 개 700KB까지). 보수교육·갱신일은 소속 회사나 협회 안내를 보고 직접 넣으세요. 60일 안으로 다가오면 주황색으로 표시됩니다. "제안서에 표시"를 켠 자격은 제안서 머리의 담당 FC 정보에 "보유 자격"으로 함께 나옵니다. 자격증 이미지·PDF는 다른 설정과 함께 이 기기와 내 계정에만 저장됩니다. "PDF 다운"을 누르면 올린 PDF를, 사진이면 A4 PDF로 만들어 내려받습니다. 주민등록번호가 보이는 파일이면 그 부분을 가리고 올리세요.</p></section>';
 }
 function fcLineText(fc) { return [[fc.org, fc.branch, fc.unit].filter(Boolean).join(' '), fc.name ? '담당: ' + (fc.role || 'FC') + ' ' + fc.name : '', fc.regNo ? '등록번호 ' + fc.regNo : '', fc.phone, fc.email].filter(Boolean).join(' · '); }
 function fcOffice(fc) { return [fc.unitTel ? '지점 ☎ ' + fc.unitTel : '', fc.fax ? '팩스 ' + fc.fax : '', fc.addr || ''].filter(Boolean).join(' · '); }
@@ -2624,10 +2629,10 @@ function f(scope, k, value, opts) {
   if (t === 'date') {
     var iso = /^\d{4}-\d{2}-\d{2}$/.test(String(value || '')) ? value : '';
     var calId = scope + '-' + k + '-' + (opts.id || opts.pid || 'x') + '-cal';
-    var html = '<span class="dfield"><input type="text"' + common.replace(' data-kind="' + opts.kind + '"', '') + ' data-kind="date" value="' + attr(iso ? iso.replace(/-/g, '.') : '') + '" placeholder="' + attr(opts.ph || '눌러서 날짜 고르기') + '" autocomplete="off" inputmode="numeric" aria-haspopup="dialog" title="눌러서 달력에서 고르거나 숫자로 입력하세요. 예: 1102 · 11/2 · 내일 · +7">' +
+    var html = '<span class="dfield"><input type="text"' + common.replace(' data-kind="' + opts.kind + '"', '') + ' data-kind="date"' + (opts.past ? ' data-past="1"' : '') + ' value="' + attr(iso ? iso.replace(/-/g, '.') : '') + '" placeholder="' + attr(opts.ph || '눌러서 날짜 고르기') + '" autocomplete="off" inputmode="numeric" aria-haspopup="dialog" title="' + attr(opts.tip || '눌러서 달력에서 고르거나 숫자로 입력하세요. 예: 1102 · 11/2 · 내일 · +7') + '">' +
       '<button type="button" class="cal-btn" data-dp="open" tabindex="-1" title="달력에서 고르기" aria-label="' + attr((opts.aria || '날짜') + ' 달력 열기') + '"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 9.5h17M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>' +
       (iso ? '<span class="dweek">' + '일월화수목금토'.charAt(new Date(iso + 'T00:00:00').getDay()) + '</span>' : '') + '</span>';
-    if (opts.quick) html += '<span class="dquick">' + [['오늘', 0], ['내일', 1], ['+1주', 7], ['+2주', 14], ['+1달', 'm1']].map(function (q) {
+    if (opts.quick) html += '<span class="dquick">' + (opts.quick.length ? opts.quick : [['오늘', 0], ['내일', 1], ['+1주', 7], ['+2주', 14], ['+1달', 'm1']]).map(function (q) {
       return '<button type="button" class="qchip" data-act="quickDate" data-pid="' + scope + '|' + k + '|' + (opts.id || '') + '" data-id="' + q[1] + '">' + q[0] + '</button>'; }).join('') + '</span>';
     return html;
   }
@@ -2684,10 +2689,10 @@ function parseDateInput(v) {
   var add = function (days, months) { var d = new Date(t); if (months) d.setMonth(d.getMonth() + months); d.setDate(d.getDate() + (days || 0)); return { ok: true, iso: isoDate(d) }; };
   var kw = { '오늘': 0, '내일': 1, '모레': 2, '글피': 3, '어제': -1, '그제': -2 };
   if (kw[s0] != null) return add(kw[s0]);
-  var rel = s0.replace(/\s/g, '').match(/^([+-]?)(\d+)(일|주|개월|달|월)?(후|뒤|전)?$/);
+  var rel = s0.replace(/\s/g, '').match(/^([+-]?)(\d+)(일|주|개월|달|월|년)?(후|뒤|전)?$/);
   if (rel && (rel[1] || rel[3] || rel[4])) {
     var n = Number(rel[2]) * (rel[1] === '-' || rel[4] === '전' ? -1 : 1), u = rel[3] || '일';
-    return u === '주' ? add(n * 7) : (u === '개월' || u === '달' || u === '월') ? add(0, n) : add(n);
+    return u === '년' ? add(0, n * 12) : u === '주' ? add(n * 7) : (u === '개월' || u === '달' || u === '월') ? add(0, n) : add(n);
   }
   var y, m, d, digits = s0.replace(/\D/g, ''), parts = s0.match(/^(\d{2,4})\s*[.\-/년\s]\s*(\d{1,2})\s*[.\-/월\s]\s*(\d{1,2})\s*일?\.?$/), md = s0.match(/^(\d{1,2})\s*[.\-/월\s]\s*(\d{1,2})\s*일?\.?$/);
   if (parts) { y = Number(parts[1]); m = Number(parts[2]); d = Number(parts[3]); }
@@ -6054,7 +6059,8 @@ function setField(el) {
   if (el.dataset.kind === 'phone') v = formatPhone(v);
   if (el.dataset.kind === 'datecal' && v && !/^\d{4}-\d{2}-\d{2}$/.test(v)) { toast('연도는 4자리로 입력하세요'); return; }
   if (el.dataset.kind === 'date') {
-    var pd = parseDateInput(v);
+    var pb = el.dataset.past && /^\s*\d{6}\s*$/.test(String(v)) ? parseBirth(v) : null; // 지난 날짜 칸: 980312 → 1998.03.12 (생년월일과 같은 방식)
+    var pd = pb && pb.ok && pb.iso ? pb : parseDateInput(v);
     if (!pd.ok) { toast(pd.msg); el.classList.add('input-bad'); el.focus(); el.select && el.select(); return; }
     v = pd.iso;
   }
@@ -6308,8 +6314,9 @@ function doAction(el) {
     case 'editTask': ui.editTask = id || null; if (id) setTimeout(function () { var el2 = document.getElementById('task-title-' + id); if (el2) { el2.focus(); el2.setSelectionRange(el2.value.length, el2.value.length); } }, 0); break;
     case 'taskClearDue': { var tc = store.settings.tasks.filter(function (x) { return x.id === id; })[0]; if (tc) { tc.due = ''; save(); } break; }
     case 'quickDate': {
-      var qp = String(el.dataset.pid || '').split('|'), qd = parseDateInput(id === 'm1' ? '+1개월' : '+' + id).iso;
+      var qm = /^([my])(\d+)$/.exec(String(id)), qp = String(el.dataset.pid || '').split('|'), qd = parseDateInput(qm ? '+' + qm[2] + (qm[1] === 'y' ? '년' : '개월') : '+' + id).iso;
       if (qp[0] === 'ui') ui[qp[1]] = qd;
+      else if (qp[0] === 'lic') { var ql = licList().filter(function (x) { return x.id === qp[2]; })[0]; if (ql) { ql[qp[1]] = qd; save(); } }
       else if (qp[0] === 'task') { var qt = store.settings.tasks.filter(function (x) { return x.id === qp[2]; })[0]; if (qt) { qt[qp[1]] = qd; save(); } }
       break;
     }
@@ -6505,7 +6512,8 @@ function doAction(el) {
     case 'licPdfOpen': { var lo = licList().filter(function (y) { return y.id === id; })[0]; if (!lo || !lo.pdf) return; var bu = URL.createObjectURL(new Blob([dataUrlBytes(lo.pdf)], { type: 'application/pdf' })); var w = window.open(bu, '_blank'); if (!w) { licPdfDown(id); } setTimeout(function () { URL.revokeObjectURL(bu); }, 60000); return; }
     case 'licImgView': ui.modal = { kind: 'licimg', id: id }; ui.armed = null; break;
     case 'licImgDel': { var ik = 'licImgDel:' + id; if (ui.armed !== ik) { ui.armed = ik; keepArm = true; break; } var li = licList().filter(function (y) { return y.id === id; })[0]; if (li) { li.img = ''; li.pdf = ''; li.pdfName = ''; li.imgAt = ''; save(); toast('라이선스 파일을 지웠습니다'); } break; }
-    case 'licAdd': { licList().push({ id: uid(), kind: '', no: '', org: '', date: '', renew: '', memo: '', doc: false }); save(); break; }
+    case 'licAdd': { licList().push(licNew('')); save(); break; }
+    case 'licBase': { var have = licList().map(function (y) { return y.kind; }); LIC_BASE.forEach(function (k) { if (have.indexOf(k) < 0) licList().push(licNew(k)); }); save(); break; }
     case 'delLic': { var lk = 'delLic:' + id; if (ui.armed === lk) { store.settings.licenses = licList().filter(function (x) { return x.id !== id; }); save(); } else { ui.armed = lk; keepArm = true; } break; }
     case 'delContact': {
       var key = 'delK:' + id;
