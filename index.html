@@ -1730,6 +1730,23 @@ html.reduce-motion *, html.reduce-motion *::before, html.reduce-motion *::after 
 .ref-tree li::before { content: ''; position: absolute; left: 0; top: 14px; width: 10px; border-top: 1px solid var(--line); }
 @media (max-width: 760px) { .rel-table td.rel-act { grid-column: 1 / -1; margin-top: 4px; } .rel-table td[data-l="주기"] select { width: 100%; } .rel-table td[data-l="해당"] { grid-column: 1 / -1; } }
 .demo-n { grid-template-columns: repeat(auto-fill, minmax(160px, 220px)); margin-bottom: 12px; }
+.lic-sum { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 0 0 12px; } .lic-sum .chip b { margin-left: 3px; } .lic-sum .lic-next { font-size: 12.5px; margin-left: 4px; } .chip.lic-late { background: var(--danger-soft, #fde8e4); color: var(--danger, #C8361D); }
+.lic-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; margin-bottom: 12px; }
+.lic-wallet { display: flex; gap: 14px; padding: 14px; border: 1px solid var(--line); border-left: 4px solid var(--line); border-radius: 12px; background: var(--surface); cursor: default; min-width: 0; }
+.lic-wallet:hover { border-color: var(--ink-3); } .lic-wallet:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.lic-wallet.lw-ok { border-left-color: var(--ok); } .lic-wallet.lw-soon { border-left-color: var(--accent); } .lic-wallet.lw-late { border-left-color: var(--danger, #C8361D); } .lic-wallet.lw-none { border-left-color: var(--line); }
+.lw-thumb { position: relative; flex: none; width: 104px; height: 74px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface-2); display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 0; cursor: pointer; }
+.lw-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.lw-empty { border-style: dashed; font-size: 12px; color: var(--ink-2); }
+.lw-empty:hover { border-color: var(--accent); color: var(--accent-ink); }
+.lw-body { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1; }
+.lw-kind { font-size: 15px; } .lw-no { font-size: 13.5px; } .lw-meta { font-size: 12px; }
+.lw-st { font-size: 12.5px; display: flex; align-items: center; gap: 6px; margin-top: 2px; } .lw-st i { width: 8px; height: 8px; border-radius: 50%; background: var(--ink-3); flex: none; }
+.lw-ok .lw-st i { background: var(--ok); } .lw-soon .lw-st i { background: var(--accent); } .lw-late .lw-st i { background: var(--danger, #C8361D); } .lw-soon .lw-st, .lw-late .lw-st { font-weight: 600; }
+.lw-foot { display: flex; align-items: center; gap: 6px; margin-top: 8px; } .lw-foot .set-switch { font-size: 12.5px; padding: 0; } .lw-foot .set-switch i { width: 34px; height: 20px; } .lw-foot .set-switch i::after { width: 14px; height: 14px; } .lw-foot .set-switch.on i::after { transform: translateX(14px); }
+.lic-help { border-top: 1px solid var(--line); padding-top: 10px; } .lic-help summary { cursor: pointer; color: var(--ink-2); font-size: 13px; } .lic-help ul { margin: 8px 0 0; padding-left: 18px; font-size: 13px; color: var(--ink-2); line-height: 1.6; } .lic-help b { color: var(--ink); }
+.dm-body .lic-img { margin-top: 2px; }
+@media (max-width: 420px) { .lic-grid { grid-template-columns: 1fr; } .lw-thumb { width: 84px; height: 62px; } }
 .lic-card .lic-title { grid-column: 1 / -1; gap: 8px; flex-wrap: wrap; }
 .lic-card .policy-head { border-bottom: 0; border-radius: var(--radius); }
 .lic-img { grid-column: 1 / -1; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
@@ -2551,28 +2568,49 @@ function licPdfDown(lid) {
   jpegToPdf(x.img).then(function (blob) { offerFile(name, blob); }).catch(function (e) { toast('PDF를 만들지 못했습니다: ' + e.message); });
 }
 function licDue(x) { return x.renew ? daysUntil(x.renew) : null; }
+function licState(x) { var d = licDue(x); return d == null ? { k: 'none', t: '교육·갱신일 미입력' } : d < 0 ? { k: 'late', t: '교육·갱신일 ' + (-d) + '일 지남' } : d <= 60 ? { k: 'soon', t: '교육·갱신 ' + dLabel(d) } : { k: 'ok', t: '다음 교육·갱신 ' + dLabel(d) }; }
+// 라이선스: 자격증 지갑형 카드 (2026-11-05) — 평소에는 작게 보고, 고칠 때만 창(kind 'lic')
 function licensePanel() {
   if (!store.settings.licSeeded) { licSeed(); save(); }
-  var L = licList(), soon = L.filter(function (x) { var d = licDue(x); return d != null && d >= 0 && d <= 60; }).length, late = L.filter(function (x) { var d = licDue(x); return d != null && d < 0; }).length;
-  var k = function (label, v, tone) { return '<div class="kpi' + (tone && v ? ' ' + tone : '') + '" style="cursor:default"><span class="k">' + label + '</span><span class="v num">' + v + '<small>건</small></span></div>'; };
-  var kpis = '<div class="kpis">' + k('보유 자격', L.length) + '<div class="kpi" style="cursor:default"><span class="k">자격증 파일 올림</span><span class="v num">' + L.filter(licHas).length + '<small>/' + L.length + '</small></span></div>' + k('60일 안 교육·갱신', soon, 'warn') + k('교육·갱신일 지남', late, 'warn') + '</div>';
+  var L = licList(), soon = L.filter(function (x) { return licState(x).k === 'soon'; }).length, late = L.filter(function (x) { return licState(x).k === 'late'; }).length, files = L.filter(licHas).length;
+  var next = L.filter(function (x) { return x.renew; }).sort(function (a, b) { return a.renew < b.renew ? -1 : 1; })[0];
+  var sum = '<div class="lic-sum"><span class="chip">보유 <b>' + L.length + '</b></span><span class="chip">자격증 파일 <b>' + files + '/' + L.length + '</b></span>' +
+    (soon ? '<span class="chip warn">교육·갱신 임박 <b>' + soon + '</b></span>' : '') + (late ? '<span class="chip lic-late">지남 <b>' + late + '</b></span>' : '') +
+    (next ? '<span class="muted lic-next">다음: ' + esc(next.kind || '자격') + ' · ' + esc(next.renew.replace(/-/g, '.')) + ' (' + esc(licState(next).t.replace('다음 교육·갱신 ', '')) + ')</span>' : '') + '</div>';
   var cards = L.map(function (x) {
-    var d = licDue(x), arm = ui.armed === 'delLic:' + x.id;
-    var A = function (key, v, o) { o = o || {}; o.id = x.id; return f('lic', key, v, o); };
-    var chip = d == null ? '' : '<span class="chip' + (d <= 60 ? ' warn' : '') + '">' + (d < 0 ? '교육·갱신일 ' + (-d) + '일 지남' : '교육·갱신 ' + dLabel(d)) + '</span>';
-    return '<article class="policy lic-card"><div class="policy-head"><div class="row between lic-title"><b>' + esc(x.kind || '자격 종류를 고르세요') + '</b><span class="row" style="gap:8px">' + chip + '<button class="btn ghost sm' + (arm ? ' danger armed' : '') + '" data-act="delLic" data-id="' + x.id + '">' + (arm ? '한 번 더 누르면 삭제' : '삭제') + '</button></span></div>' +
-      lbl('자격 종류', A('kind', x.kind || '', { type: 'select', options: [['', '선택']].concat(LIC_KINDS.map(function (v) { return [v, v]; })), aria: '자격 종류' })) +
-      lbl('등록·자격번호', A('no', x.no || '', { ph: '예: 협회 등록번호', aria: '등록·자격번호' })) +
-      lbl('발급·등록 기관', A('org', x.org || '', { ph: '예: 생명보험협회', list: 'licOrgs', aria: '발급·등록 기관' })) +
-      lbl('취득·등록일', A('date', x.date || '', { type: 'date', aria: '취득·등록일', past: true, ph: '예: 20240512', tip: '숫자로 입력하거나 눌러서 달력에서 고르세요. 예: 20240512 · 2024.5.12 · 240512 · 오늘', quick: [['오늘', 0]] })) +
-      lbl('다음 보수교육·갱신일', A('renew', x.renew || '', { type: 'date', aria: '다음 보수교육·갱신일', ph: '예: 20271231', tip: '숫자로 입력하거나 눌러서 달력에서 고르세요. 예: 20271231 · 2027.12.31 · +1년 · +6개월', quick: [['+6개월', 'm6'], ['+1년', 'y1'], ['+2년', 'y2']] })) +
-      lbl('메모', A('memo', x.memo || '', { ph: '예: 소속 회사 등록, 교육 이수 시간', aria: '메모' }), 'span2') +
-      '<div class="field"><span>제안서</span><label class="check">' + A('doc', !!x.doc, { type: 'check' }) + ' 제안서에 표시</label></div>' + licImgBlock(x) + '</div></article>';
+    var st = licState(x), has = licHas(x), fid = 'licImgW-' + x.id;
+    var thumb = has ? '<button type="button" class="lw-thumb" data-act="licImgView" data-id="' + x.id + '" title="크게 보기">' + (x.img ? '<img src="' + attr(x.img) + '" alt="' + attr((x.kind || '라이선스') + ' 사본') + '">' : '<span class="lic-pdf-ico">PDF</span>') + (x.pdf ? '<span class="lic-badge">PDF</span>' : '') + '</button>'
+      : '<label class="lw-thumb lw-empty" for="' + fid + '" title="자격증 사진·PDF 올리기">' + (ui.licBusy === x.id ? '읽는 중…' : '＋ 사진·PDF') + '</label><input type="file" id="' + fid + '" accept="image/*,application/pdf,.pdf" data-kind="licimg" data-id="' + x.id + '" hidden>';
+    return '<article class="lic-wallet lw-' + st.k + '" data-dbl="lic:' + x.id + '" tabindex="0">' + thumb +
+      '<div class="lw-body"><b class="lw-kind">' + esc(x.kind || '자격 종류 미입력') + '</b>' +
+      '<span class="lw-no num">' + (x.no ? esc(x.no) : '<span class="muted">등록번호 미입력</span>') + '</span>' +
+      '<span class="lw-meta muted">' + [x.date ? '취득 ' + esc(x.date.replace(/-/g, '.')) : '', x.org ? esc(x.org) : ''].filter(Boolean).join(' · ') + '</span>' +
+      '<span class="lw-st"><i aria-hidden="true"></i>' + esc(st.t) + (x.renew ? ' <span class="muted num">(' + esc(x.renew.slice(5).replace('-', '.')) + ')</span>' : '') + '</span>' +
+      '<div class="lw-foot"><button type="button" class="set-switch' + (x.doc ? ' on' : '') + '" role="switch" aria-checked="' + !!x.doc + '" data-act="licDoc" data-id="' + x.id + '"><i aria-hidden="true"></i><span>제안서 표시</span></button><span class="spacer"></span>' +
+      '<button class="btn sm" data-act="licEdit" data-id="' + x.id + '">수정</button></div></div></article>';
   }).join('');
-  return kpis + '<section class="panel"><div class="row between"><h2>보험 라이선스 ' + L.length + '건</h2><button class="btn primary sm" data-act="licAdd">+ 추가</button></div>' +
-    '<datalist id="licOrgs">' + LIC_ORGS.map(function (o) { return '<option value="' + attr(o) + '">'; }).join('') + '</datalist>' +
-    (cards || '<div class="empty"><strong>등록한 자격이 없습니다</strong><span>FC 기본 자격 3가지(생명보험·손해보험·제3보험 설계사)를 한 번에 만들거나 "+ 추가"로 하나씩 넣으세요.</span><button class="btn primary sm" data-act="licBase">기본 3가지 만들기</button></div>') +
-    '<p class="muted" style="margin:0">FC 기본 자격 3가지(생명보험·손해보험·제3보험 설계사)는 카드를 미리 만들어 두었습니다. 각 카드에 자격증 이미지나 PDF를 하나씩 올리세요(사진은 자동으로 줄어들고, PDF는 한 개 700KB까지). 보수교육·갱신일은 소속 회사나 협회 안내를 보고 직접 넣으세요. 60일 안으로 다가오면 주황색으로 표시됩니다. "제안서에 표시"를 켠 자격은 제안서 머리의 담당 FC 정보에 "보유 자격"으로 함께 나옵니다. 자격증 이미지·PDF는 다른 설정과 함께 이 기기와 내 계정에만 저장됩니다. 미리보기를 눌러 연 창의 "PDF 다운"으로 올린 PDF를, 사진이면 A4 PDF로 만들어 내려받습니다. 주민등록번호가 보이는 파일이면 그 부분을 가리고 올리세요.</p></section>';
+  return '<section class="panel"><div class="row between"><h2>보험 라이선스</h2><button class="btn primary sm" data-act="licAdd">+ 추가</button></div>' + sum +
+    (cards ? '<div class="lic-grid">' + cards + '</div>' : '<div class="empty"><strong>등록한 자격이 없습니다</strong><span>FC 기본 자격 3가지(생명보험·손해보험·제3보험 설계사)를 한 번에 만들거나 "+ 추가"로 하나씩 넣으세요.</span><button class="btn primary sm" data-act="licBase">기본 3가지 만들기</button></div>') +
+    '<details class="lic-help"><summary>도움말</summary><ul>' +
+    '<li>카드의 <b>수정</b>을 누르거나 카드를 두 번 누르면 자격 종류·번호·기관·날짜·메모와 자격증 파일을 고칠 수 있습니다.</li>' +
+    '<li>자격증 사진이나 PDF를 카드마다 하나씩 올리세요. 사진은 자동으로 줄어들고, PDF는 한 개 700KB까지입니다. 사진을 누르면 크게 보고, 그 창의 "PDF 다운"으로 내려받습니다(사진은 A4 PDF로 만들어 줌).</li>' +
+    '<li>보수교육·갱신일은 소속 회사나 협회 안내를 보고 직접 넣으세요. 60일 안이면 주황, 지나면 빨강으로 표시되고 업무 → 오늘·할 일에도 나옵니다.</li>' +
+    '<li><b>제안서 표시</b>를 켠 자격은 제안서 머리의 담당 FC 정보에 "보유 자격"으로 나옵니다.</li>' +
+    '<li>자격증 파일은 다른 설정과 함께 이 기기와 내 계정에만 저장됩니다. 주민등록번호가 보이면 가리고 올리세요.</li></ul></details>' +
+    '<datalist id="licOrgs">' + LIC_ORGS.map(function (o) { return '<option value="' + attr(o) + '">'; }).join('') + '</datalist></section>';
+}
+function licModalBody(x) {
+  var A = function (key, v, o) { o = o || {}; o.id = x.id; return f('lic', key, v, o); };
+  return '<div class="grid-form dm-grid">' +
+    lbl('자격 종류', A('kind', x.kind || '', { type: 'select', options: [['', '선택']].concat(LIC_KINDS.map(function (v) { return [v, v]; })), aria: '자격 종류' })) +
+    lbl('등록·자격번호', A('no', x.no || '', { ph: '예: 협회 등록번호', aria: '등록·자격번호' })) +
+    lbl('발급·등록 기관', A('org', x.org || '', { ph: '예: 생명보험협회', list: 'licOrgs', aria: '발급·등록 기관' })) +
+    lbl('취득·등록일', A('date', x.date || '', { type: 'date', aria: '취득·등록일', past: true, ph: '예: 20240512', tip: '숫자로 입력하거나 눌러서 달력에서 고르세요. 예: 20240512 · 2024.5.12 · 240512 · 오늘', quick: [['오늘', 0]] })) +
+    lbl('다음 보수교육·갱신일', A('renew', x.renew || '', { type: 'date', aria: '다음 보수교육·갱신일', ph: '예: 20271231', tip: '숫자로 입력하거나 눌러서 달력에서 고르세요. 예: 20271231 · 2027.12.31 · +1년 · +6개월', quick: [['+6개월', 'm6'], ['+1년', 'y1'], ['+2년', 'y2']] })) +
+    '<div class="field"><span>제안서</span><button type="button" class="set-switch' + (x.doc ? ' on' : '') + '" role="switch" aria-checked="' + !!x.doc + '" data-act="licDoc" data-id="' + x.id + '"><i aria-hidden="true"></i><span>제안서 머리에 표시</span></button></div>' +
+    lbl('메모', A('memo', x.memo || '', { ph: '예: 소속 회사 등록, 교육 이수 시간', aria: '메모' }), 'span2') +
+    '<div class="field span2"><span>자격증 사본</span>' + licImgBlock(x) + '</div></div>' +
+    '<datalist id="licOrgs">' + LIC_ORGS.map(function (o) { return '<option value="' + attr(o) + '">'; }).join('') + '</datalist>';
 }
 function fcLineText(fc) { return [[fc.org, fc.branch, fc.unit].filter(Boolean).join(' '), fc.name ? '담당: ' + (fc.role || 'FC') + ' ' + fc.name : '', fc.regNo ? '등록번호 ' + fc.regNo : '', fc.phone, fc.email].filter(Boolean).join(' · '); }
 function fcOffice(fc) { return [fc.unitTel ? '지점 ☎ ' + fc.unitTel : '', fc.fax ? '팩스 ' + fc.fax : '', fc.addr || ''].filter(Boolean).join(' · '); }
@@ -3531,7 +3569,8 @@ function renderSettings() {
       P9('시작과 일정', cloud.on ? '모든 기기에 적용' : '자료와 함께 저장',
         R9('첫 화면', '프로그램을 열면 처음 보이는 화면', S9('setStart', sv, [['work', '업무'], ['list', '고객'], ['ins', '보험'], ['office', '지점']])) +
         R9('달력 기본 보기', '업무 → 일정을 열 때', S9('setCalDef', cv, [['month', '월간'], ['week', '주간']])) +
-        R9('다가오는 일정', '업무 → 오늘에 보일 기간', S9('setUpDays', upN, [[7, '7일'], [14, '14일'], [30, '30일']]))) +
+        R9('다가오는 일정', '업무 → 오늘에 보일 기간', S9('setUpDays', upN, [[7, '7일'], [14, '14일'], [30, '30일']])) +
+        R9('다가오는 생일·기념일', '업무 → 오늘의 생일 칸, 업무 → 생일·기념일에 보일 기간', S9('setBdDays', [7, 14, 30].indexOf(bdDaysN()) >= 0 ? bdDaysN() : 7, [[7, '7일'], [14, '14일'], [30, '30일']]))) +
       '<div class="set-reset"><button class="btn sm' + (ui.armed === 'resetDisplay' ? ' danger armed' : '') + '" data-act="resetDisplay">' + (ui.armed === 'resetDisplay' ? '한 번 더 누르면 되돌립니다' : '이 기기의 화면 설정 되돌리기') + '</button><span class="muted">"보기" 항목만 처음 값으로 돌아갑니다. 고객 자료는 그대로입니다.</span></div>';
   } else if (sub === 'rules') {
     var benchRows = STANDARDS.map(function (st) {
@@ -5751,13 +5790,14 @@ function renderTodo() {
       if (ad != null && ad >= -7 && ad <= 30) renew.push({ d: ad, h: '<li><span class="when ' + (ad < 0 ? 'late' : '') + '">' + (ad < 0 ? (-ad) + '일 지남' : dLabel(ad)) + '</span>' + custLink(c, 'info') + '<span class="what"><button class="link-btn" data-act="openAuto" data-id="' + c.id + ':' + a.id + '">자동차보험 ' + esc(autoLabel(a)) + '</button> · 만기 ' + esc(String(a.end).replace(/-/g, '.')) + ' (갱신 견적 비교)</span></li>' });
     });
     var bd = nextBirthday(c);
-    if (bd && bd.days <= num(P.birthdayDays)) birth.push({ d: bd.days, h: '<li><span class="when ' + (bd.days === 0 ? 'now' : '') + '">' + dLabel(bd.days) + '</span><span class="who who-c">고객</span>' + custLink(c, 'info') + '<span class="what">' + Number(bd.date.slice(5, 7)) + '월 ' + Number(bd.date.slice(8, 10)) + '일' + (c.bdCal === 'lunar' ? ' (' + esc(bdDesc(c)) + ')' : '') + (bd.age != null ? ' · 만 ' + bd.age + '세' : '') + '</span>' + (c.phone ? telLink(c.phone) : '') + '</li>' });
+    if (bd && bd.days <= bdDaysN()) birth.push({ d: bd.days, h: '<li><span class="when ' + (bd.days === 0 ? 'now' : '') + '">' + dLabel(bd.days) + '</span><span class="who who-c">고객</span>' + custLink(c, 'info') + '<span class="what">' + Number(bd.date.slice(5, 7)) + '월 ' + Number(bd.date.slice(8, 10)) + '일' + (c.bdCal === 'lunar' ? ' (' + esc(bdDesc(c)) + ')' : '') + (bd.age != null ? ' · 만 ' + bd.age + '세' : '') + '</span>' + (c.phone ? telLink(c.phone) : '') + '</li>' });
     (c.claims || []).forEach(function (x) { var L = claimTodo(c, x).filter(function (it) { return it.date <= tw; }); if (!L.length) return; var it = L.sort(function (a, b) { return a.date < b.date ? -1 : 1; })[0], dn = daysUntil(it.date);
       var dueX = claimDue(x), isDue = it.label.indexOf(' 청구 기한 ') >= 0 && dueX && dueX.left != null, wl = isDue ? (dueX.left < 0 ? '기한 지남' : '기한 ' + dueX.left + '일 남음') : dLabel(dn);
       claimRows.push({ d: isDue ? Math.min(dn, -1) : dn, h: '<li><span class="when ' + (isDue || dn < 0 ? 'late' : dn === 0 ? 'now' : '') + '">' + wl + '</span>' + custLink(c, 'info') + '<span class="what">' + esc(it.label.replace((c.name || '이름 없음') + ' ', '')) + ' (' + esc(x.stage) + ')</span><button class="btn sm" data-act="claimOpen" data-id="' + c.id + '" data-pid="' + x.id + '">청구 보기</button></li>' }); });
     if (!c.consent) consent.push({ d: -999, h: '<li><span class="when late">미동의</span>' + custLink(c, 'info') + '<span class="what">개인(신용)정보 수집·이용 동의를 받지 않았습니다</span></li>' });
     else { var ce = consentExpiry(c), cd = daysUntil(ce); if (ce && cd <= 30) consent.push({ d: cd, h: '<li><span class="when ' + (cd < 0 ? 'late' : '') + '">' + dLabel(cd) + '</span>' + custLink(c, 'info') + '<span class="what">동의 만료 ' + esc(ce) + ' · 다시 받아야 합니다</span></li>' }); }
   });
+  licList().forEach(function (x) { var ld2 = licDue(x); if (ld2 != null && ld2 <= 60) renew.push({ d: ld2, h: '<li><span class="when ' + (ld2 < 0 ? 'late' : '') + '">' + (ld2 < 0 ? (-ld2) + '일 지남' : dLabel(ld2)) + '</span><b>내 자격</b><span class="what">' + esc(x.kind || '자격') + ' 보수교육·갱신 ' + esc(x.renew.replace(/-/g, '.')) + '</span><button class="btn ghost sm" data-act="licEdit" data-id="' + x.id + '">라이선스</button></li>' }); });
   staffWithBd().forEach(function (st) {
     var sb = nextBirthday(st);
     if (sb && sb.days <= num(P.birthdayDays)) birth.push({ d: sb.days, h: '<li><span class="when ' + (sb.days === 0 ? 'now' : '') + '">' + dLabel(sb.days) + '</span><span class="who who-s">직원</span><b>' + esc(st.name || '') + '</b><span class="what">' + Number(sb.date.slice(5, 7)) + '월 ' + Number(sb.date.slice(8, 10)) + '일' + (st.bdCal === 'lunar' ? ' (' + esc(bdDesc(st)) + ')' : '') + (st.role ? ' · ' + esc(st.role) : '') + '</span>' + (st.phone ? telLink(st.phone) : '') + '</li>' });
@@ -6563,6 +6603,7 @@ function sangDate(c) { // 상령일: 생일에서 6개월이 지나면 보험나
 function workItems(from, to) {
   var out = [], inR = function (d) { return d && d >= from && d <= to; };
   store.settings.events.forEach(function (e) { if (!inR(e.date)) return; if (e.org) out.push({ date: e.date, time: e.time, kind: 'org', type: e.type, label: '[' + (e.type || '지점') + '] ' + e.title + (e.place ? ' · ' + e.place : ''), id: e.id }); else out.push({ date: e.date, time: e.time, kind: 'event', type: e.type, label: e.title, cid: e.cid, id: e.id, done: e.done }); });
+  licList().forEach(function (x) { if (x.renew && inR(x.renew)) out.push({ date: x.renew, kind: 'lic', label: '내 자격 보수교육·갱신 · ' + (x.kind || '자격'), lid: x.id }); });
   store.settings.tasks.forEach(function (t) { if (!t.done && inR(t.due)) out.push({ date: t.due, kind: 'task', label: t.title, cid: t.cid, id: t.id }); });
   store.customers.forEach(function (c) {
     var nm = c.name || '이름 없음';
@@ -6593,7 +6634,7 @@ function workItems(from, to) {
   });
   return out.sort(function (a, b) { return String(a.date).localeCompare(String(b.date)) || String(a.time || '99').localeCompare(String(b.time || '99')); });
 }
-var KIND = { claim: ['보험금 청구', 'k-claim'], org: ['지점 일정', 'k-org'], event: ['일정', 'k-event'], task: ['할 일 기한', 'k-task'], follow: ['연락 예정', 'k-follow'], birthday: ['생일', 'k-bd'], sbd: ['직원 생일', 'k-sbd'], sang: ['상령일', 'k-sang'], renew: ['갱신', 'k-renew'], payend: ['납입완료', 'k-pay'], consent: ['동의', 'k-consent'], anniv: ['기념일', 'k-anniv'] };
+var KIND = { lic: ['라이선스', 'k-claim'], claim: ['보험금 청구', 'k-claim'], org: ['지점 일정', 'k-org'], event: ['일정', 'k-event'], task: ['할 일 기한', 'k-task'], follow: ['연락 예정', 'k-follow'], birthday: ['생일', 'k-bd'], sbd: ['직원 생일', 'k-sbd'], sang: ['상령일', 'k-sang'], renew: ['갱신', 'k-renew'], payend: ['납입완료', 'k-pay'], consent: ['동의', 'k-consent'], anniv: ['기념일', 'k-anniv'] };
 function itemLabel(it) { return it.kind === 'event' ? (it.type || '일정') : KIND[it.kind][0]; }
 function evKey(e) { return [e.date, String(e.title || '').replace(/\s+/g, ''), e.cid || ''].join('|'); }
 function evIsDup(id) { // 같은 날짜·내용·고객 일정이 먼저 있으면 중복
@@ -6613,6 +6654,7 @@ function itemRow(it, showDate) {
     it.kind === 'follow' ? '<button class="btn sm tel" data-act="noteDone" data-pid="' + it.cid + '" data-id="' + it.nid + '">연락 완료</button>' :
     it.kind === 'org' ? '<button class="btn ghost sm" data-act="openOrg" data-id="' + it.id + '" title="지점 일정 수정">수정</button>' :
     it.kind === 'anniv' ? '<button class="btn ghost sm" data-act="openAnniv" data-id="' + it.aid + '" title="기념일 수정">수정</button>' :
+    it.kind === 'lic' ? '<button class="btn ghost sm" data-act="licEdit" data-id="' + it.lid + '">라이선스</button>' :
     it.kind === 'claim' ? (it.due ? '<span class="chip warn">' + esc(it.due) + '</span>' : '') + '<button class="btn ghost sm" data-act="claimOpen" data-id="' + it.cid + '" data-pid="' + it.clid + '">청구 보기</button>' : '';
   var link = c ? '<button class="link-btn" data-act="goCust" data-id="' + c.id + '" data-pid="' + (it.tab || 'info') + '">' + esc(c.name || '고객') + '</button>' : '';
   if (it.kind === 'task') act = '';
@@ -6924,8 +6966,8 @@ function bdEventBtn(kind, x) {
 }
 function autoTodoItems() { // 일정을 뺀, 고객 자료에서 생기는 해야 할 일
   var t = today(), lim = isoDate(new Date(Date.now() + Math.max(7, num(store.settings.params.renewDays) || 60) * 864e5));
-  var past = workItems('2000-01-01', isoDate(new Date(Date.now() - 864e5))).filter(function (it) { return it.kind === 'follow' || it.kind === 'claim'; });
-  var next = workItems(t, lim).filter(function (it) { return ['follow', 'renew', 'payend', 'consent', 'sang', 'claim'].indexOf(it.kind) >= 0; });
+  var past = workItems('2000-01-01', isoDate(new Date(Date.now() - 864e5))).filter(function (it) { return it.kind === 'follow' || it.kind === 'claim' || it.kind === 'lic'; });
+  var next = workItems(t, lim).filter(function (it) { return ['follow', 'renew', 'payend', 'consent', 'sang', 'claim', 'lic'].indexOf(it.kind) >= 0; });
   return past.concat(next);
 }
 function workTasks() {
@@ -6935,7 +6977,7 @@ function workTasks() {
   return '<section class="panel"><div class="row between"><h2>남은 할 일 ' + open.length + '건</h2><button class="btn ' + (ui.tkOpen ? '' : 'primary ') + 'sm" data-act="toggleBox" data-id="tkOpen" aria-expanded="' + !!ui.tkOpen + '">' + (ui.tkOpen ? '닫기' : '+ 추가') + '</button></div>' +
     (ui.tkOpen ? '<div class="cal-add kind-tk"><h3 style="margin:0"><span class="kind-dot tk"></span>할 일 추가</h3><p class="kind-help">' + TK_HELP + ' 날짜·시간이 정해진 약속은 <button class="link-btn" data-act="goWork" data-id="calendar">일정</button>에 넣으세요.</p>' + taskForm(false) + '</div>' : '') + (open.length ? '<ul class="wlist tasks">' + open.map(row).join('') + '</ul>' : '<p class="muted" style="margin:0">남은 할 일이 없습니다.</p>') + '</section>' +
     (function () {
-      var A = autoTodoItems(), F = ui.atF || '', kinds = [['', '전체'], ['follow', '연락 예정'], ['claim', '보험금 청구'], ['renew', '갱신'], ['payend', '납입 완료'], ['consent', '동의 만료'], ['sang', '상령일']];
+      var A = autoTodoItems(), F = ui.atF || '', kinds = [['', '전체'], ['follow', '연락 예정'], ['claim', '보험금 청구'], ['lic', '내 자격'], ['renew', '갱신'], ['payend', '납입 완료'], ['consent', '동의 만료'], ['sang', '상령일']];
       var cnt = {}; A.forEach(function (it) { cnt[it.kind] = (cnt[it.kind] || 0) + 1; });
       var L = A.filter(function (it) { return !F || it.kind === F; }), late = A.filter(function (it) { return it.date < today(); }).length;
       return '<section class="panel"><div class="row between"><h2>고객 자료에서 생긴 할 일 ' + A.length + '건' + (late ? ' <span class="chip warn">밀림 ' + late + '</span>' : '') + '</h2><span class="muted">앞으로 ' + (num(store.settings.params.renewDays) || 60) + '일 · 일정 제외</span></div>' +
@@ -7515,6 +7557,7 @@ function doAction(el) {
       else if (mm && mm.kind === 'friend') { store.settings.contacts.friends = friendList().filter(function (y) { return y.id !== mm.id; }); toast('지인을 지웠습니다'); }
       else if (mm && mm.kind === 'notice') { store.settings.notices = noticeList().filter(function (y) { return y.id !== mm.id; }); toast('공지를 지웠습니다'); }
       else if (mm && mm.kind === 'anniv') { store.settings.annivs = annivList().filter(function (y) { return y.id !== mm.id; }); toast('기념일을 지웠습니다'); }
+      else if (mm && mm.kind === 'lic') { store.settings.licenses = licList().filter(function (y) { return y.id !== mm.id; }); toast('자격을 지웠습니다'); }
       else if (mm && mm.kind === 'claim') { var hdl = claimById(mm.cid, mm.id); if (hdl) { hdl.c.claims = hdl.c.claims.filter(function (y) { return y.id !== mm.id; }); stampCustomer(hdl.c); toast('청구 기록을 지웠습니다'); } }
       else if (mm && mm.kind === 'gift') { store.settings.gifts = giftList().filter(function (y) { return y.id !== mm.id; }); toast('선물 기록을 지웠습니다'); }
       else if (mm && mm.kind === 'org') { store.settings.events = store.settings.events.filter(function (y) { return y.id !== mm.id; }); toast('지점 일정을 지웠습니다'); }
@@ -7599,7 +7642,9 @@ function doAction(el) {
     case 'licPdfOpen': { var lo = licList().filter(function (y) { return y.id === id; })[0]; if (!lo || !lo.pdf) return; var bu = URL.createObjectURL(new Blob([dataUrlBytes(lo.pdf)], { type: 'application/pdf' })); var w = window.open(bu, '_blank'); if (!w) { licPdfDown(id); } setTimeout(function () { URL.revokeObjectURL(bu); }, 60000); return; }
     case 'licImgView': ui.modal = { kind: 'licimg', id: id }; ui.armed = null; break;
     case 'licImgDel': { var ik = 'licImgDel:' + id; if (ui.armed !== ik) { ui.armed = ik; keepArm = true; break; } var li = licList().filter(function (y) { return y.id === id; })[0]; if (li) { li.img = ''; li.pdf = ''; li.pdfName = ''; li.imgAt = ''; save(); toast('라이선스 파일을 지웠습니다'); } break; }
-    case 'licAdd': { licList().push(licNew('')); save(); break; }
+    case 'licAdd': { var nl = licNew(''); licList().push(nl); save(); ui.modal = { kind: 'lic', id: nl.id, isNew: true }; break; }
+    case 'licEdit': ui.modal = { kind: 'lic', id: id }; ui.armed = null; break;
+    case 'licDoc': { var ld = licList().filter(function (y) { return y.id === id; })[0]; if (ld) { ld.doc = !ld.doc; save(); } break; }
     case 'licBase': { var have = licList().map(function (y) { return y.kind; }); LIC_BASE.forEach(function (k) { if (have.indexOf(k) < 0) licList().push(licNew(k)); }); save(); break; }
     case 'delLic': { var lk = 'delLic:' + id; if (ui.armed === lk) { store.settings.licenses = licList().filter(function (x) { return x.id !== id; }); save(); } else { ui.armed = lk; keepArm = true; } break; }
     case 'delContact': {
@@ -7813,6 +7858,7 @@ function doAction(el) {
     case 'resetDisplay': { if (ui.armed !== 'resetDisplay') { ui.armed = 'resetDisplay'; keepArm = true; break; } try { ['fcp-theme', 'fcp-zoom', 'fcp-motion', 'fcp-week', 'fcp-glance'].forEach(function (k) { localStorage.removeItem(k); }); } catch (e) {} applyTheme(); applyMotion(); toast('이 기기의 화면 설정을 처음 상태로 돌렸습니다'); break; }
     case 'setMenu': ui.setMenu = !ui.setMenu; break;
     case 'setGlance': try { if (glanceOn()) localStorage.setItem('fcp-glance', '0'); else localStorage.removeItem('fcp-glance'); } catch (e) {} toast('이 기기에 저장했습니다'); break;
+    case 'setBdDays': store.settings.params.birthdayDays = Number(id) || 7; save(); toast('다가오는 생일·기념일을 ' + (Number(id) || 7) + '일간 보여 줍니다'); break;
     case 'setUpDays': store.settings.params.upDays = Number(id) || 7; save(); toast('다가오는 일정을 ' + (Number(id) || 7) + '일간 보여 줍니다'); break;
       ui.view = 'list'; doAction({ dataset: { act: 'addCustomer' } }); return; // 새 고객 만들고 고객 정보 입력으로
     case 'openSearch': openSearch(); return;
@@ -8147,6 +8193,11 @@ function detailModalHtml() {
   var m = ui.modal; if (!m) return '';
   if (m.kind === 'howto') return howtoModalHtml();
   var head = '', body = '', del = '', title = '';
+  if (m.kind === 'lic') {
+    var lm = licList().filter(function (y) { return y.id === m.id; })[0]; if (!lm) { ui.modal = null; return ''; }
+    return '<div class="dmodal" role="dialog" aria-modal="true" aria-labelledby="dmTitle"><div class="dm-box dm-wide"><div class="dm-head"><div><h2 id="dmTitle">' + esc(lm.kind || (m.isNew ? '새 자격' : '자격')) + '</h2><div class="muted">' + esc(licState(lm).t) + '</div></div><button class="btn ghost sm" data-act="dmClose" aria-label="닫기">✕</button></div>' +
+      '<div class="dm-body">' + licModalBody(lm) + '</div><div class="dm-foot"><button class="btn danger' + (ui.armed === 'dmDel' ? ' armed' : '') + '" data-act="dmDel">' + (ui.armed === 'dmDel' ? '한 번 더 누르면 삭제' : '자격 삭제') + '</button><span class="muted dm-hint">입력하면 바로 저장됩니다</span><button class="btn primary" data-act="dmClose">닫기</button></div></div></div>';
+  }
   if (m.kind === 'licimg') {
     var lv = licList().filter(function (y) { return y.id === m.id; })[0]; if (!lv || !licHas(lv)) { ui.modal = null; return ''; }
     return '<div class="dmodal" role="dialog" aria-modal="true" aria-labelledby="dmTitle"><div class="dm-box dm-wide">' +
@@ -8312,6 +8363,7 @@ function openDetail(spec) {
   if (p[0] === 'drvadd') { ui.modal = { kind: 'drvadd' }; ui.armed = null; render(); return; }
   if (p[0] === 'poladd') { ui.modal = { kind: 'poladd' }; ui.armed = null; render(); return; }
   if (p[0] === 'noteadd') { ui.modal = { kind: 'noteadd' }; ui.armed = null; render(); return; }
+  if (p[0] === 'lic') { ui.modal = { kind: 'lic', id: p[1] }; ui.armed = null; render(); return; }
   if (p[0] === 'claimadd') { ui.modal = { kind: 'claimadd' }; ui.armed = null; render(); return; }
   if (p[0] === 'claim') { ui.modal = { kind: 'claim', cid: p[1], id: p[2] }; ui.armed = null; render(); return; }
   if (p[0] === 'custbd') { ui.modal = { kind: 'custbd', id: p[1], prevCid: ui.cid }; ui.cid = p[1]; ui.armed = null; render(); return; }
@@ -8326,6 +8378,7 @@ function closeDetail() {
     if (m.kind === 'friend') { var fz = friendList().filter(function (y) { return y.id === m.id; })[0]; if (fz && !String(fz.name || '').trim() && !hasBirthday(fz)) { store.settings.contacts.friends = friendList().filter(function (y) { return y !== fz; }); save(); } }
     else if (m.kind === 'notice') { var nx2 = noticeList().filter(function (y) { return y.id === m.id; })[0]; if (nx2 && !String(nx2.title || '').trim() && !String(nx2.body || '').trim()) { store.settings.notices = noticeList().filter(function (y) { return y !== nx2; }); save(); } }
     else if (m.kind === 'anniv') { var ax = annivList().filter(function (y) { return y.id === m.id; })[0]; if (ax && !ax.date && !ax.cid && !ax.sid && !String(ax.name || '').trim() && !String(ax.memo || '').trim()) { store.settings.annivs = annivList().filter(function (y) { return y !== ax; }); save(); } }
+    else if (m.kind === 'lic') { var lx2 = licList().filter(function (y) { return y.id === m.id; })[0]; if (lx2 && !lx2.kind && !lx2.no && !lx2.date && !lx2.renew && !lx2.memo && !licHas(lx2)) { store.settings.licenses = licList().filter(function (y) { return y !== lx2; }); save(); } }
     else if (m.kind === 'claim') { var hcl = claimById(m.cid, m.id); if (hcl && !hcl.x.date && !num(hcl.x.req) && !String(hcl.x.memo || '').trim() && !Object.keys(hcl.x.docs || {}).length && hcl.x.stage === '서류 준비') { hcl.c.claims = hcl.c.claims.filter(function (y) { return y !== hcl.x; }); save(); } }
     else if (m.kind === 'gift') { var gx = giftList().filter(function (y) { return y.id === m.id; })[0]; if (gx && !gx.cid && !String(gx.item || '').trim() && !num(gx.amount)) { store.settings.gifts = giftList().filter(function (y) { return y !== gx; }); save(); } }
     else if (m.kind === 'org') { var eo = store.settings.events.filter(function (y) { return y.id === m.id; })[0]; if (eo && !String(eo.title || '').trim()) { store.settings.events = store.settings.events.filter(function (y) { return y !== eo; }); save(); } }
