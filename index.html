@@ -1185,6 +1185,20 @@ td.ltel .btn.sm { padding: 1px 7px; margin-left: 2px; }
 .sub-h { font-size: 13px; margin: 6px 0 -4px; color: var(--ink-2); }
 .auto-table td { vertical-align: middle; }
 .dm-box.dm-wide { width: min(920px, 100%); }
+.demo-what { margin: 0; padding-left: 18px; font-size: 13px; color: var(--ink-2); line-height: 1.6; } .demo-what b { color: var(--ink); }
+.ht-box:focus { outline: none; }
+.ht-sec { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); margin-bottom: 8px; }
+.ht-sec > summary { cursor: pointer; padding: 12px 14px; font-weight: 700; font-size: 15px; color: var(--ink); list-style: none; display: flex; align-items: center; gap: 8px; }
+.ht-sec > summary::-webkit-details-marker { display: none; }
+.ht-sec > summary::before { content: '›'; color: var(--ink-3); font-size: 18px; line-height: 1; transition: transform .15s; }
+.ht-sec[open] > summary::before { transform: rotate(90deg); }
+.ht-body { padding: 0 14px 14px 30px; font-size: 14px; line-height: 1.65; color: var(--ink-2); }
+.ht-body b { color: var(--ink); }
+.ht-body ol, .ht-body ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+.ht-body p { margin: 8px 0 0; }
+.ht-go { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+@media (max-width: 560px) { .ht-body { padding-left: 14px; } }
+
 .dm-grid3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } .dm-grid3 .span2 { grid-column: span 2; } .dm-grid3 .span3 { grid-column: 1 / -1; }
 @media (max-width: 760px) { .dm-grid3 { grid-template-columns: 1fr 1fr; } .dm-grid3 .span2, .dm-grid3 .span3 { grid-column: 1 / -1; } }
 .dm-nav { position: sticky; top: -16px; z-index: 2; display: flex; gap: 6px; flex-wrap: wrap; padding: 16px 0 10px; margin: -16px 0 10px; background: var(--surface); border-bottom: 1px solid var(--line); }
@@ -1513,6 +1527,44 @@ button.cal-btn { padding: 0; color: var(--ink-2); cursor: pointer; }
 .panel.danger-zone { border-color: color-mix(in srgb, var(--danger) 45%, var(--line)); }
 .panel.danger-zone h2 { color: var(--danger); }
 
+@media (max-width: 420px) { .subbar-btn { padding-left: 7px !important; padding-right: 7px !important; font-size: 13.5px; letter-spacing: -.02em; } }
+/* ===== 화면설정: 유니타임즈 방식 (2026-11-05) ===== */
+.set-panel { gap: 0; padding-top: 16px; padding-bottom: 6px; }
+.set-ph { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding-bottom: 6px; }
+.set-ph h2 { margin: 0; }
+.set-scope { font-size: 12px; color: var(--ink-3); }
+.set-row { display: flex; justify-content: space-between; align-items: center; gap: 10px 24px; padding: 14px 0; flex-wrap: wrap; }
+.set-row + .set-row { border-top: 1px solid var(--line); }
+.set-lbl { display: grid; gap: 2px; min-width: 0; } .set-lbl b { font-size: 14px; font-weight: 600; } .set-lbl small { font-size: 12px; color: var(--ink-3); }
+.set-ctl { display: flex; align-items: center; justify-content: flex-end; flex: none; }
+.set-seg { display: inline-flex; border: 1px solid var(--line); border-radius: 9px; padding: 2px; gap: 2px; background: var(--surface-2); }
+.set-seg button { border: 1px solid transparent; border-radius: 7px; padding: 6px 14px; background: none; font: inherit; font-size: 13.5px; font-weight: 500; color: var(--ink-2); cursor: pointer; white-space: nowrap; }
+.set-seg button:hover { color: var(--ink); }
+.set-seg button.on { background: var(--surface); color: var(--ink); font-weight: 700; border-color: var(--accent); box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+.set-switch { display: inline-flex; align-items: center; gap: 8px; background: none; border: 0; padding: 4px 0; font: inherit; font-size: 13.5px; font-weight: 500; color: var(--ink-2); cursor: pointer; }
+.set-switch span { min-width: 2.6em; text-align: left; }
+.set-switch i { width: 40px; height: 24px; border-radius: 99px; background: var(--surface-2); border: 1px solid var(--line); box-sizing: border-box; position: relative; transition: background .15s, border-color .15s; flex: none; }
+.set-switch i::after { content: ''; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border-radius: 50%; background: var(--ink-3); box-shadow: 0 1px 2px rgba(0,0,0,.18); transition: transform .15s, background .15s; }
+.set-switch.on { color: var(--ink); }
+.set-switch.on i { background: var(--accent-soft); border-color: var(--accent); }
+.set-switch.on i::after { background: var(--accent); transform: translateX(16px); }
+.set-reset { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 4px 2px; }
+.set-reset .muted { font-size: 12.5px; }
+@media (max-width: 600px) { .set-row:not(.sw) { flex-direction: column; align-items: stretch; gap: 8px; } .set-row.sw { flex-wrap: nowrap; } .set-ctl { justify-content: flex-start; } .set-ctl .set-seg { display: flex; width: 100%; } .set-seg button { flex: 1; padding: 7px 4px; } }
+@media (max-width: 640px) { .set-row { grid-template-columns: 1fr; } .set-seg { grid-template-columns: repeat(2, 1fr); } }
+/* ===== 하단 기능 메뉴 (2026-11-05) ===== */
+.app-foot { border-top: 1px solid var(--line-strong, var(--line)); margin-top: 8px; padding: 22px max(16px, env(safe-area-inset-left, 0px)) calc(28px + env(safe-area-inset-bottom, 0px)); background: var(--surface); }
+.foot-in { max-width: 1280px; margin: 0 auto; display: flex; justify-content: space-between; align-items: flex-start; gap: 20px 32px; flex-wrap: wrap; }
+.foot-brand { display: grid; gap: 2px; font-size: 12.5px; color: var(--ink-3); }
+.foot-brand b { font-size: 15px; color: var(--ink); letter-spacing: -.02em; }
+.foot-links { display: flex; gap: 14px 24px; flex-wrap: wrap; }
+.foot-grp { display: flex; flex-direction: column; gap: 2px; min-width: 96px; }
+.foot-k { font-size: 11.5px; font-weight: 700; color: var(--ink-3); margin-bottom: 2px; }
+.foot-link { background: none; border: 0; padding: 3px 0; text-align: left; font: inherit; font-size: 13px; color: var(--ink-2); cursor: pointer; }
+.foot-link:hover { color: var(--ink); text-decoration: underline; }
+.foot-note { max-width: 1280px; margin: 16px auto 0; font-size: 11.5px; color: var(--ink-3); }
+@media (max-width: 600px) { .foot-link { padding: 6px 0; font-size: 14px; } }
+@media print { .app-foot { display: none !important; } }
 /* ===== 상단 도구: 검색·빠른 설정 (2026-11-04) ===== */
 .top-tools { display: flex; align-items: center; gap: 2px; }
 .top-tools .icon-btn { width: 36px; height: 36px; display: grid; place-items: center; border: 0; background: none; border-radius: 8px; color: rgba(255,255,255,.82); cursor: pointer; }
@@ -2168,7 +2220,7 @@ function generateDemoData(opt) {
   (function () { var c6 = custs[6], c7 = custs[7];
     if (c6 && c6.policies.length > 1) c6.policies[c6.policies.length - 1].status = '해지';
     if (c7 && c7.policies.length) c7.policies[0].status = '유예'; })();
-  // 오래된 진행 중 제안 예시 (고객 → 제안의 "진행 중 14일 지남")
+  // 오래된 진행 중 제안 예시 (고객 → 제안기록의 "진행 중 14일 지남")
   (function () { var c = custs[6]; if (!c || !c.policies.length) return; var a1 = analyze(c, S), s1 = suggest(c, S, a1), r1 = applyPlan(c, S, s1), a2 = analyze(c, S, r1.after), d = new Date(now.getTime() - R(18, 30) * 864e5);
     c.snapshots = (c.snapshots || []).concat([{ result: '제안함', at: isoDate(d) + ' ' + pad(R(9, 19)) + ':' + pad(R(0, 59)), before: a1.premium, after: a2.premium, shortBefore: a1.counts.short, shortAfter: a2.counts.short, rows: a1.rows.map(function (r) { return { code: r.code, cur: r.cur, verdict: r.verdict }; }) }]); })();
   // 관계 화면 예시: 소개 관계·연락 주기·오래 연락 안 한 고객 (2026-11-04)
@@ -2283,6 +2335,8 @@ function fixup(s) {
   s.settings.households = s.settings.households || [];
   s.settings.licenses = s.settings.licenses || [];
   s.settings.clans = s.settings.clans || [];
+  ['notices', 'gifts', 'annivs'].forEach(function (k) { if (!Array.isArray(s.settings[k])) s.settings[k] = []; });
+  if (!Array.isArray(s.settings.contacts.friends)) s.settings.contacts.friends = [];
   s.settings.events = s.settings.events || [];
   s.settings.tasks = s.settings.tasks || [];
   s.settings.tasks.forEach(function (t) { t.due = fixIso(t.due); });
@@ -2313,7 +2367,7 @@ function saveLabel() {
     var live = cloud.on && cloud.rtStatus === 'SUBSCRIBED' ? ' · 실시간' : '';
     return (lastSaved ? where + '에 저장됨 ' + hhmm(lastSaved) : where + '에 자동 저장') + live;
   }
-  if (!storageOk) return '저장 안 됨: 백업으로 내보내세요';
+  if (!storageOk) return '저장 안 됨: 백업 파일을 받아 두세요';
   if (!lastSaved) return '이 브라우저에 자동 저장';
   return '저장됨 ' + hhmm(lastSaved);
 }
@@ -2513,7 +2567,7 @@ function render() {
   if (ui.view === 'list' && site.localExtra && site.localExtra.length) notice += '<div class="notice" role="alert"><b>이 브라우저에만 저장된 고객 ' + site.localExtra.length + '명</b>이 있습니다 (' + esc(site.localExtra.map(function (c) { return c.name; }).slice(0, 5).join(', ')) + (site.localExtra.length > 5 ? ' 외' : '') + ').' + (cloud.on ? ' 내 계정으로 옮기면 다른 기기에서도 보입니다. 다른 FC의 고객이면 옮기지 마세요.' : ' 사이트로 옮겨야 다른 기기에서도 보입니다.') + '<div class="row" style="margin-top:8px"><button class="btn primary sm" data-act="moveLocal">' + (cloud.on ? '내 계정으로 옮기기' : '사이트로 옮기기') + '</button>' + (cloud.on ? '<button class="btn sm" data-act="skipLocal">옮기지 않기</button>' : '') + '</div></div>';
   if (ui.hhNew && !(ui.view === 'list' && ui.lsub === 'family')) ui.hhNew = ''; // 가족 화면을 벗어나면 새 가족도 가나다 자리로
   var page = ui.view === 'work' ? renderWork() : ui.view === 'office' ? renderOffice() : ui.view === 'settings' ? renderSettings() : ui.view === 'customer' ? renderCustomer() : ui.view === 'insurance' ? renderInsurance() : (ui.lsub && ui.lsub !== 'list' ? renderListSub() : renderList());
-  app.innerHTML = renderTop() + '<main class="main page-' + ui.view + '">' + notice + page + '</main>' + printModalHtml() + detailModalHtml();
+  app.innerHTML = renderTop() + '<main class="main page-' + ui.view + '">' + notice + page + '</main>' + renderFoot() + printModalHtml() + detailModalHtml();
   try { autoFold(); } catch (e) {}
   document.title = ui.view === 'customer' && cur() ? (cur().name || '고객') + ' · 보장설계 매니저' : '보장설계 매니저';
   if (ui.printModal) { fillPrintPreview(); var pb = app.querySelector('.pm-foot .btn.primary'); if (pb) pb.focus(); }
@@ -2530,8 +2584,8 @@ var WORK_SUBS = [['home', '오늘'], ['calendar', '일정'], ['tasks', '할 일'
 var OFFICE_SUBS = [['notice', '공지'], ['news', '뉴스'], ['schedule', '일정'], ['staff', '직원'], ['branch', '지점·사업단']]; // 직원 생일은 업무 → 생일(직원)로 합침(2026-11-03)
 var OFFICE_TITLES = { news: '보험 뉴스', schedule: '지점 일정', staff: '직원 연락처', sbd: '직원 생일' }; // 메뉴 이름은 짧게, 화면 제목은 그대로
 function officeSubs() { return team.info ? OFFICE_SUBS.concat([['team', '팀 현황']]) : OFFICE_SUBS; }
-var LIST_SUBS = [['list', '고객목록'], ['contacts', '관계'], ['family', '가족'], ['notes', '상담'], ['props', '제안']]; // 관리 필요는 고객목록 숫자 칸으로 합침(2026-11-03)
-var LIST_TITLES = { list: '고객목록', contacts: '고객 관계', family: '가족', notes: '상담 기록', props: '제안 기록' }; // 메뉴 이름은 짧게, 화면 제목은 그대로(2026-11-03)
+var LIST_SUBS = [['list', '고객목록'], ['contacts', '고객관계'], ['family', '가족·가구'], ['notes', '고객상담'], ['props', '제안기록']]; // 관리 필요는 고객목록 숫자 칸으로 합침(2026-11-03)
+var LIST_TITLES = { list: '고객목록', contacts: '고객관계', family: '가족·가구', notes: '고객상담', props: '제안기록' }; // 메뉴 이름은 짧게, 화면 제목은 그대로(2026-11-03)
 var INS_SUBS = [['all', '장기'], ['fire', '화재'], ['drv', '운전자'], ['auto', '자동차'], ['insurer', '보험사'], ['guide', '가이드']];
 // 서브메뉴는 짧은 이름, 페이지 제목은 원래 이름 (2026-11-03)
 var INS_TITLES = { all: '장기보험', auto: '자동차보험', fire: '화재보험', drv: '운전자보험', insurer: '보험사 연락처', guide: '보험가이드' };
@@ -2635,6 +2689,7 @@ var TOP_ICON = {
   search: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>',
   gear: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg>'
 };
+function glanceOn() { var k = ''; try { k = localStorage.getItem('fcp-glance') || ''; } catch (e) {} return k !== '0'; }
 function getMotionKey() { var k = ''; try { k = localStorage.getItem('fcp-motion') || ''; } catch (e) {} return k === 'reduce' ? 'reduce' : ''; }
 function weekStartNow() { var k = ''; try { k = localStorage.getItem('fcp-week') || ''; } catch (e) {} return k === 'mon' ? 1 : 0; }
 function applyMotion() { document.documentElement.classList.toggle('reduce-motion', getMotionKey() === 'reduce'); }
@@ -2646,8 +2701,7 @@ function topTools() {
       '<div class="sp-sec"><span class="sp-k">화면 밝기</span><div class="seg">' + seg('setTheme', 'light', tk, '☀ 주간') + seg('setTheme', 'dark', tk, '☾ 야간') + seg('setTheme', 'time', tk, '시간대') + '</div></div>' +
       '<div class="sp-sec"><span class="sp-k">글자 크기</span><div class="seg">' + seg('setZoom', 's', zk, '작게') + seg('setZoom', 'm', zk, '보통') + seg('setZoom', 'l', zk, '크게') + seg('setZoom', 'xl', zk, '아주 크게') + '</div></div>' +
       '<div class="sp-sec"><span class="sp-k">움직임 줄이기</span><div class="seg">' + seg('setMotion', '', mo, '끔') + seg('setMotion', 'reduce', mo, '켬') + '</div></div>' +
-      '<div class="sp-links">' + SETTING_SUBS.map(function (x) { return '<button class="sp-link" data-act="goSettings" data-id="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div>' +
-      '<div class="sp-foot"><button class="btn sm" data-act="exportJson">백업 파일 받기</button><span class="muted">검색 ' + (IS_MAC ? '⌘K' : 'Ctrl+K') + ' · /</span></div></div>' : '';
+      '</div>' : '';
   return '<div class="top-tools"><button class="icon-btn" data-act="openSearch" aria-label="검색 (' + (IS_MAC ? '⌘K' : 'Ctrl+K') + ')" title="검색 (' + (IS_MAC ? '⌘K' : 'Ctrl+K') + ')">' + TOP_ICON.search + '</button>' +
     '<div class="set-wrap"><button class="icon-btn' + (ui.setMenu ? ' on' : '') + '" data-act="setMenu" aria-label="설정 메뉴" aria-expanded="' + !!ui.setMenu + '" title="설정 메뉴">' + TOP_ICON.gear + '</button>' + pop + '</div></div>';
 }
@@ -2659,7 +2713,7 @@ function srItems(q) {
   var hit = function (v) { return t && norm(v).indexOf(t) >= 0; };
   // 메뉴 바로가기
   var MENUS = [['업무 · 오늘', function () { go('work', { wsub: 'home' }); }], ['업무 · 일정 달력', function () { go('work', { wsub: 'calendar' }); }], ['업무 · 생일', function () { go('work', { wsub: 'birthday' }); }], ['업무 · 기념일', function () { go('work', { wsub: 'anniv' }); }],
-    ['고객 · 고객목록', function () { go('list', { lsub: 'list' }); }], ['고객 · 관계', function () { go('list', { lsub: 'contacts' }); }], ['고객 · 가족', function () { go('list', { lsub: 'family' }); }], ['고객 · 상담', function () { go('list', { lsub: 'notes' }); }], ['고객 · 제안', function () { go('list', { lsub: 'props' }); }],
+    ['고객 · 고객목록', function () { go('list', { lsub: 'list' }); }], ['고객 · 고객관계', function () { go('list', { lsub: 'contacts' }); }], ['고객 · 가족·가구', function () { go('list', { lsub: 'family' }); }], ['고객 · 고객상담', function () { go('list', { lsub: 'notes' }); }], ['고객 · 제안기록', function () { go('list', { lsub: 'props' }); }],
     ['보험 · 장기', function () { go('insurance', { isub: 'all' }); }], ['보험 · 자동차', function () { go('insurance', { isub: 'auto' }); }], ['보험 · 화재', function () { go('insurance', { isub: 'fire' }); }], ['보험 · 보험사 연락처', function () { go('insurance', { isub: 'insurer' }); }],
     ['지점 · 공지', function () { go('office', { osub: 'notice' }); }], ['지점 · 뉴스', function () { go('office', { osub: 'news' }); }], ['지점 · 일정', function () { go('office', { osub: 'schedule' }); }], ['지점 · 직원', function () { go('office', { osub: 'staff' }); }]]
     .concat(SETTING_SUBS.map(function (x) { return ['설정 · ' + x[1], function () { go('settings', { sub: x[0] }); }]; }));
@@ -2718,6 +2772,15 @@ document.addEventListener('keydown', function (e) {
 document.addEventListener('mousedown', function (e) { // 빠른 설정 바깥을 누르면 닫기
   if (!ui.setMenu) return; if (e.target.closest && (e.target.closest('.set-wrap'))) return; ui.setMenu = false; render();
 });
+// ===== 하단 기능 메뉴 (유니타임즈 하단 참고, 2026-11-05) =====
+function renderFoot() {
+  var L = function (act, id, label, title) { return '<button class="foot-link" data-act="' + act + '"' + (id != null ? ' data-id="' + id + '"' : '') + (title ? ' title="' + attr(title) + '"' : '') + '>' + label + '</button>'; };
+  return '<footer class="app-foot no-print"><div class="foot-in">' +
+    '<div class="foot-brand"><b>보장설계 매니저</b><span>FC 보장분석 · 고객 관리 · <span class="num">' + esc(saveLabel()) + '</span></span></div>' +
+    '<nav class="foot-links" aria-label="하단 메뉴">' + L('howto', null, '이용방법') + L('goIns', 'guide', '보험가이드') +
+    '</nav></div>' +
+    '<p class="foot-note">' + (cloud.on ? '고객 자료는 이 기기와 내 계정(서버)에만 저장되고 다른 사람은 볼 수 없습니다.' : '고객 자료는 이 브라우저에만 저장됩니다. 백업 파일을 자주 받아 두세요.') + ' 보장분석 결과는 상담 참고용입니다.</p></footer>';
+}
 function renderTop() {
   var who = cloud.on && cloud.user ? ((store.settings.fc && store.settings.fc.name) || cloud.user.email || '') : '';
   return '<div class="appbar no-print"><header class="topbar"><button class="brand" data-act="goWork" data-id="home" aria-label="오늘 업무로">보장설계 매니저</button>' +
@@ -2809,7 +2872,7 @@ function renderList() {
     '<div class="row list-xls"><button class="btn sm" data-act="custXlsOut" title="고객 기본 정보를 엑셀 파일로 받습니다 (파일은 이 기기에서만 만듭니다)">엑셀 받기</button>' +
       '<label class="btn sm file-btn" title="엑셀에 적은 고객 명단을 불러옵니다">엑셀 입력<input type="file" accept=".xlsx,.xls,.csv" data-kind="custxlsx" hidden></label>' +
       '<span class="muted">기본 정보(이름·생년월일·성별·휴대폰·주소·직업 등)만 주고받습니다. 계약·상담 기록은 설정 → 자료관리의 백업 파일을 쓰세요.</span></div>' +
-    '<p class="muted list-foot">' + (cloud.on ? '고객 자료는 입력할 때마다 서버의 내 계정에 저장됩니다. 다른 FC에게는 보이지 않습니다.' : site.on ? '고객 자료는 이 사이트에 저장됩니다.' : '고객 자료는 이 브라우저에 저장됩니다. 설정 → 자료관리에서 백업 파일을 주기적으로 내보내 두세요.') + '</p>' +
+    '<p class="muted list-foot">' + (cloud.on ? '고객 자료는 입력할 때마다 서버의 내 계정에 저장됩니다. 다른 FC에게는 보이지 않습니다.' : site.on ? '고객 자료는 이 사이트에 저장됩니다.' : '고객 자료는 이 브라우저에 저장됩니다. 설정 → 자료관리에서 백업 파일을 주기적으로 받아 두세요.') + '</p>' +
     '</section>';
 }
 
@@ -3375,32 +3438,25 @@ function renderSettings() {
         lbl('기념일 문구 ({이름}, {기념일}, {FC}는 자동으로 바뀝니다)', f('param', 'anMsg', s.params.anMsg || AN_MSG, { type: 'textarea' }), 'span2') +
         lbl('만기 안내 문구 ({이름}, {보험}, {만기일}, {FC}는 자동으로 바뀝니다)', f('param', 'expMsg', s.params.expMsg || EXP_MSG, { type: 'textarea' }), 'span2') + '</div>' +
       '<p class="muted" style="margin:0">업무 → 생일·기념일의 "축하 문자"를 누르면 이 문구로 휴대폰 문자 앱이 열립니다. 만기 안내 문구는 보험 → 자동차·화재에서 만기 30일 안 계약의 "안내 문자 복사"에 쓰입니다.</p></section>';
-  } else if (sub === 'display') {
-    var zk = getZoomKey(), sv = s.params.startView || 'work';
-    var opt = function (act, val, cur, label, sub2) { return '<button class="opt-card' + (cur === val ? ' on' : '') + '" data-act="' + act + '" data-id="' + val + '" aria-pressed="' + (cur === val) + '"><b>' + label + '</b>' + (sub2 ? '<small>' + sub2 + '</small>' : '') + '</button>'; };
-    var tk = getThemeKey();
-    body = '<section class="panel"><h2>첫 화면</h2><div class="opt-row">' + opt('setStart', 'work', sv, '업무 · 오늘', '오늘 일정·할 일·연락할 고객') + opt('setStart', 'list', sv, '고객 · 목록', '고객 목록부터') + opt('setStart', 'ins', sv, '보험 · 장기', '전체 계약 모아보기') + opt('setStart', 'office', sv, '지점 · 공지', '팀·지점 공지부터') + '</div>' +
-      '<p class="muted" style="margin:0">프로그램을 열 때 처음 보이는 화면입니다. 왼쪽 위 "보장설계 매니저"를 누르면 언제든 오늘 업무로 갑니다.</p></section>' +
-      '<section class="panel"><h2>일정 달력 기본 보기</h2><div class="opt-row">' + opt('setCalDef', 'month', s.params.calView === 'week' ? 'week' : 'month', '월간', '한 달을 한눈에') + opt('setCalDef', 'week', s.params.calView === 'week' ? 'week' : 'month', '주간', '이번 주를 자세히') + '</div>' +
-      '<p class="muted" style="margin:0">업무 → 일정을 열 때 처음 보이는 보기입니다. 화면에서 월간·주간을 바꾸면 그 화면을 보는 동안에는 바꾼 보기가 유지됩니다.</p></section>' +
-      '<section class="panel"><h2>화면 밝기 <span class="muted">이 기기에만 적용됩니다</span></h2><div class="opt-row">' +
-      opt('setTheme', 'time', tk, '자동 (시간대)', THEME_DAY_FROM + '시~' + THEME_DAY_TO + '시 주간, 그 밖엔 야간') +
-      opt('setTheme', 'light', tk, '☀ 주간 모드', '밝은 바탕') + opt('setTheme', 'dark', tk, '☾ 야간 모드', '어두운 바탕') + '</div>' +
-      '<p class="muted" style="margin:0">처음에는 주간 모드로 시작합니다. 자동(시간대)은 시계를 보고 저절로 바뀝니다. 고른 밝기는 이 기기의 이 브라우저에만 기억됩니다.</p></section>' +
-      '<section class="panel"><h2>글자 크기 <span class="muted">이 기기에만 적용됩니다</span></h2><div class="opt-row">' +
-      opt('setZoom', 's', zk, '작게', '데스크탑 큰 모니터') + opt('setZoom', 'm', zk, '보통', '데스크탑·노트북 · 모바일') + opt('setZoom', 'l', zk, '크게', '태블릿') + opt('setZoom', 'xl', zk, '아주 크게', '크게 보기 · 발표용') + '</div>' +
-      '<div class="tablewrap"><table class="t zoom-table"><thead><tr><th>기기</th><th>화면 폭</th><th>권장 크기</th></tr></thead><tbody>' +
-        '<tr><td><b>모바일</b></td><td class="num">760px 미만</td><td>보통</td></tr>' +
-        '<tr><td><b>태블릿</b></td><td class="num">760 ~ 1279px (터치 화면)</td><td>크게</td></tr>' +
-        '<tr><td><b>데스크탑 · 노트북</b></td><td class="num">1280px 이상</td><td>보통 (큰 모니터는 작게)</td></tr></tbody></table></div>' +
-      '<p class="muted" style="margin:0">고른 크기는 이 기기의 이 브라우저에만 기억됩니다. 처음에는 보통으로 시작합니다. 맥에서는 ⌘ + / ⌘ − 로도 바꿀 수 있습니다.</p></section>' +
-      '<section class="panel"><h2>달력 한 주의 시작 <span class="muted">이 기기에만 적용됩니다</span></h2><div class="opt-row">' + opt('setWeek', 'sun', weekStartNow() ? 'mon' : 'sun', '일요일', '달력 맨 왼쪽이 일요일') + opt('setWeek', 'mon', weekStartNow() ? 'mon' : 'sun', '월요일', '달력 맨 왼쪽이 월요일') + '</div>' +
-      '<p class="muted" style="margin:0">업무 → 일정 달력과 날짜 고르기 달력에 함께 적용됩니다.</p></section>' +
-      '<section class="panel"><h2>움직임 <span class="muted">이 기기에만 적용됩니다</span></h2><div class="opt-row">' + opt('setMotion', '', getMotionKey(), '보통', '화면 전환 효과 사용') + opt('setMotion', 'reduce', getMotionKey(), '움직임 줄이기', '어지러움·느린 기기에 권장') + '</div>' +
-      '<p class="muted" style="margin:0">움직임 줄이기를 켜면 창이 열리고 닫힐 때의 효과와 부드러운 스크롤을 끕니다.</p></section>' +
-      '<section class="panel"><h2>검색과 빠른 설정</h2><p style="margin:0">위쪽 바의 <b>돋보기</b>를 누르거나 <b>' + (IS_MAC ? '⌘K' : 'Ctrl+K') + '</b> 또는 <b>/</b> 키를 누르면 고객·상담·계약·가족·일정·직원·메뉴를 한 번에 찾을 수 있습니다. 위아래 화살표로 고르고 Enter로 엽니다. <b>톱니바퀴</b>를 누르면 화면 밝기·글자 크기·움직임을 바로 바꾸고 설정 메뉴로 갈 수 있습니다.</p></section>' +
-      '<section class="panel"><h2>화면 설정 처음 상태로</h2><div class="row"><button class="btn' + (ui.armed === 'resetDisplay' ? ' danger armed' : '') + '" data-act="resetDisplay">' + (ui.armed === 'resetDisplay' ? '한 번 더 누르면 처음 상태로' : '처음 상태로') + '</button></div>' +
-      '<p class="muted" style="margin:0">이 기기의 화면 밝기(주간)·글자 크기(보통)·한 주의 시작(일요일)·움직임(보통)을 처음 값으로 돌립니다. 고객 자료와 다른 설정은 그대로입니다.</p></section>';
+  } else if (sub === 'display') { // 유니타임즈 화면 설정 방식: 묶음 패널 + 줄(이름·설명 | 고르기) (2026-11-05)
+    var zk = getZoomKey(), sv = s.params.startView || 'work', tk = getThemeKey(), cv = s.params.calView === 'week' ? 'week' : 'month', upN = [7, 14, 30].indexOf(num(s.params.upDays)) >= 0 ? num(s.params.upDays) : 7;
+    var P9 = function (title, sub2, inner) { return '<section class="panel set-panel"><div class="set-ph"><h2>' + title + '</h2>' + (sub2 ? '<span class="set-scope">' + sub2 + '</span>' : '') + '</div>' + inner + '</section>'; };
+    var R9 = function (label, hint, ctl) { return '<div class="set-row' + (ctl.indexOf('set-switch') >= 0 ? ' sw' : '') + '"><div class="set-lbl"><b>' + label + '</b>' + (hint ? '<small>' + hint + '</small>' : '') + '</div><div class="set-ctl">' + ctl + '</div></div>'; };
+    var S9 = function (act, cur, opts) { return '<div class="set-seg" role="radiogroup">' + opts.map(function (o) { var on = String(cur) === String(o[0]); return '<button type="button" role="radio" aria-checked="' + on + '" class="' + (on ? 'on' : '') + '" data-act="' + act + '" data-id="' + o[0] + '">' + o[1] + '</button>'; }).join('') + '</div>'; };
+    var T9 = function (act, on, label) { return '<button type="button" class="set-switch' + (on ? ' on' : '') + '" role="switch" aria-checked="' + on + '" aria-label="' + label + '" data-act="' + act + '"><i aria-hidden="true"></i><span>' + (on ? '켜짐' : '꺼짐') + '</span></button>'; };
+    var mo = getMotionKey() === 'reduce';
+    body =
+      P9('보기', '이 기기에만 적용',
+        R9('화면 밝기', tk === 'time' ? THEME_DAY_FROM + '~' + THEME_DAY_TO + '시는 주간, 그 밖엔 야간' : '야간은 어두운 바탕이라 밤에 눈이 편합니다', S9('setTheme', tk, [['light', '주간'], ['dark', '야간'], ['time', '시간대 따라']])) +
+        R9('글자 크기', '휴대폰은 보통, 태블릿은 크게를 권합니다' + (IS_MAC ? ' · ⌘ + / ⌘ − 로도 바뀝니다' : ''), S9('setZoom', zk, [['s', '작게'], ['m', '보통'], ['l', '크게'], ['xl', '아주 크게']])) +
+        R9('한 주의 시작', '달력 맨 왼쪽 요일', S9('setWeek', weekStartNow() ? 'mon' : 'sun', [['sun', '일요일'], ['mon', '월요일']])) +
+        R9('한눈에 보기 숫자 칸', '업무 → 오늘 맨 위 숫자 칸', T9('setGlance', glanceOn(), '한눈에 보기 숫자 칸')) +
+        R9('움직임 줄이기', '창이 열리고 닫히는 효과를 끕니다', T9('setMotion', mo, '움직임 줄이기'))) +
+      P9('시작과 일정', cloud.on ? '모든 기기에 적용' : '자료와 함께 저장',
+        R9('첫 화면', '프로그램을 열면 처음 보이는 화면', S9('setStart', sv, [['work', '업무'], ['list', '고객'], ['ins', '보험'], ['office', '지점']])) +
+        R9('달력 기본 보기', '업무 → 일정을 열 때', S9('setCalDef', cv, [['month', '월간'], ['week', '주간']])) +
+        R9('다가오는 일정', '업무 → 오늘에 보일 기간', S9('setUpDays', upN, [[7, '7일'], [14, '14일'], [30, '30일']]))) +
+      '<div class="set-reset"><button class="btn sm' + (ui.armed === 'resetDisplay' ? ' danger armed' : '') + '" data-act="resetDisplay">' + (ui.armed === 'resetDisplay' ? '한 번 더 누르면 되돌립니다' : '이 기기의 화면 설정 되돌리기') + '</button><span class="muted">"보기" 항목만 처음 값으로 돌아갑니다. 고객 자료는 그대로입니다.</span></div>';
   } else if (sub === 'rules') {
     var benchRows = STANDARDS.map(function (st) {
       var b = s.bench[st.code], cells = '';
@@ -3469,25 +3525,30 @@ function renderSettings() {
       '<div class="tablewrap"><table class="t"><thead><tr><th>종류</th><th>담보명 / 키워드</th><th>표준담보</th><th class="r">사용</th><th></th></tr></thead><tbody>' + (aliasRows || '<tr><td colspan="5" class="muted">조건에 맞는 규칙이 없습니다</td></tr>') + '</tbody></table></div><p class="muted" style="margin:0">위에서부터 먼저 맞는 규칙이 적용됩니다. 키워드에서 <b>+</b>는 "모두 포함", <b>!</b>는 "포함하면 제외"입니다. 예: <b>유사암+!제외</b>는 "유사암"이 있고 "제외"가 없는 담보명. 계약 입력에서 표준담보를 직접 고르면 "학습" 규칙이 자동으로 추가됩니다.</p></section>';
   } else {
     var resetArmed = ui.armed === 'resetAll';
-    var nPol = 0, nNote = 0; store.customers.forEach(function (c) { nPol += c.policies.length; nNote += (c.notes || []).length; });
+    var nPol = 0, nNote = 0, nSnap = 0; store.customers.forEach(function (c) { nPol += c.policies.length; nNote += (c.notes || []).length; nSnap += (c.snapshots || []).length; });
     var kb = 0; try { kb = Math.round(JSON.stringify(store).length / 1024); } catch (e) {}
     var lb = s.lastBackup || '', lbDays = lb ? -daysUntil(lb) : null;
     var stat = function (k2, v) { return '<div class="kpi" style="cursor:default"><span class="k">' + k2 + '</span><span class="v num">' + v + '</span></div>'; };
-    body = '<div class="kpis">' + stat('고객', store.customers.length + '<small>명</small>') + stat('계약', nPol + '<small>건</small>') + stat('상담 기록', nNote + '<small>건</small>') +
-      stat('일정 · 할 일', s.events.length + ' · ' + s.tasks.length) + stat('직원 · 보험사 연락처', s.contacts.staff.length + ' · ' + s.contacts.insurers.length) + stat('자료 크기', kb + '<small>KB</small>') + '</div>' +
-      '<div class="' + (lbDays == null || lbDays > 30 ? 'notice warn-box' : 'info') + '">' + (lb ? '마지막 백업: <b>' + esc(lb) + '</b> (' + (lbDays === 0 ? '오늘' : lbDays + '일 전') + ')' + (lbDays > 30 ? ' — 한 달이 넘었습니다. 백업 파일을 새로 받아 두세요.' : '') : '아직 이 기기에서 백업 파일을 받은 적이 없습니다. 아래 "백업 파일 내보내기"로 받아 두세요.') + '</div>' +
+    body = '<div class="kpis">' + stat('고객', store.customers.length + '<small>명</small>') + stat('계약', nPol + '<small>건</small>') + stat('상담 · 제안 기록', nNote + ' · ' + nSnap) +
+      stat('가족 · 대가족', (s.households || []).length + ' · ' + (s.clans || []).length) + stat('일정 · 할 일', s.events.length + ' · ' + s.tasks.length) + stat('직원 · 보험사 연락처', s.contacts.staff.length + ' · ' + s.contacts.insurers.length) + stat('라이선스 사본', licList().filter(function (x) { return licHas(x); }).length + '<small>개</small>') + stat('자료 크기', kb + '<small>KB</small>') + '</div>' +
+      '<div class="' + (lbDays == null || lbDays > 30 ? 'notice warn-box' : 'info') + '">' + (lb ? '마지막 백업: <b>' + esc(lb) + '</b> (' + (lbDays === 0 ? '오늘' : lbDays + '일 전') + ')' + (lbDays > 30 ? ' — 한 달이 넘었습니다. 백업 파일을 새로 받아 두세요.' : '') : '아직 백업 파일을 받은 적이 없습니다. 아래 "백업 파일 받기"로 받아 두세요.') + '</div>' +
       localMergePanel() + historyPanel() + renderFilesSection() + // 백업(내 컴퓨터로) 다음에 오프라인 모드 (2026-11-04 순서 바꿈)
-      '<section class="panel"><h2>백업 (내 컴퓨터로)</h2><div class="info">' + (site.on ? '서버·사이트 저장과 별도로, 전체 자료를 내 컴퓨터에 파일로 받아 둘 수 있습니다.' : '모든 고객·계약·설정은 이 브라우저에만 저장됩니다. 브라우저 기록을 지우거나 다른 컴퓨터로 옮기면 사라지므로 백업 파일로 내보내 두세요.') + ' 백업 파일에는 고객 개인정보가 들어 있으니 안전한 곳에 보관하세요.</div>' +
-      '<div class="row"><button class="btn primary" data-act="exportJson">백업 파일 내보내기</button><label class="btn" for="importFile">백업 파일 불러오기</label><input type="file" id="importFile" accept=".json,application/json" hidden>' +
+      '<section class="panel"><h2>백업 (내 컴퓨터로)</h2><div class="info">' + (site.on ? '서버 저장과 별도로, 전체 자료를 내 컴퓨터에 파일 하나로 받아 둘 수 있습니다.' : '모든 자료는 이 브라우저에만 저장됩니다. 브라우저 기록을 지우거나 다른 컴퓨터로 옮기면 사라지므로 백업 파일을 받아 두세요.') +
+        '<br>백업 파일에는 고객·계약·가족·대가족·상담·제안 기록, 일정·할 일·생일·기념일·선물, 직원·보험사 연락처, 지점 공지, 내정보·라이선스(이미지 포함), 분석기준·담보사전·상품이 모두 들어갑니다. 화면설정의 "보기" 항목(밝기·글자 크기 등)은 기기마다 따로라 들어가지 않습니다. 고객 개인정보가 들어 있으니 안전한 곳에 보관하세요.</div>' +
+      (ui.pendingImport ? (function () { var pi = ui.pendingImport, ar = ui.armed === 'importOk'; return '<div class="notice warn-box" id="importPending"><b>' + esc(pi.name) + '</b>' + (pi.at ? ' (' + esc(pi.at) + ' 백업)' : '') + ': 고객 ' + pi.nCust + '명 · 계약 ' + pi.nPol + '건' + (pi.nSample ? ' (예시 ' + pi.nSample + '명 포함)' : '') + '<br>불러오면 지금 자료(고객 ' + store.customers.length + '명)가 <b>이 파일 내용으로 바뀝니다.</b> 지금 자료가 필요하면 먼저 "백업 파일 받기"를 누르세요.' +
+        '<div class="row" style="margin-top:8px"><button class="btn' + (ar ? ' danger armed' : ' primary') + '" data-act="importOk">' + (ar ? '한 번 더 누르면 바꿉니다' : '이 파일로 바꾸기') + '</button><button class="btn" data-act="exportJson">지금 자료 먼저 받기</button><button class="btn ghost" data-act="importCancel">취소</button></div></div>'; })() : '') +
+      '<div class="row"><button class="btn primary" data-act="exportJson">백업 파일 받기</button><label class="btn" for="importFile">백업 파일 불러오기</label><input type="file" id="importFile" accept=".json,application/json" hidden>' +
       '</div></section>' + offlineSection() +
       '<section class="panel"><h2>체험용 예시 자료</h2>' +
       '<div class="grid-form demo-n">' + lbl('고객 수 (' + DEMO_CUST[0] + '~' + DEMO_CUST[1] + '명)', f('ui', 'demoCust', ui.demoCust || DEMO_CUST[0], { type: 'num', aria: '예시 고객 수' })) +
         lbl('직원 수 (' + DEMO_STAFF[0] + '~' + DEMO_STAFF[1] + '명)', f('ui', 'demoStaff', ui.demoStaff || DEMO_STAFF[0], { type: 'num', aria: '예시 직원 수' })) + '</div><div class="row">' +
       (function () { var a1 = ui.armed === 'demoGen', a2 = ui.armed === 'addSample', a3 = ui.armed === 'demoDel', hasDemo = store.customers.some(function (c) { return c.sample; }) || store.settings.contacts.staff.some(function (x) { return x.sample; });
-        return '<button class="btn' + (a1 ? ' armed' : '') + '" data-act="demoGen" title="고객·가족·상담·제안·일정·할 일·직원·기념일 화면에 모두 샘플이 나오도록 예시 자료를 무작위로 만듭니다">' + (a1 ? '한 번 더 누르면 예시 자료를 만듭니다' : '예시 자료생성') + '</button>' +
-          (hasDemo ? '<button class="btn' + (a3 ? ' danger armed' : '') + '" data-act="demoDel" title="랜덤으로 만든 예시 자료((예시) 표시가 붙은 고객·직원·일정·할 일·가족) 전체를 지웁니다. 직접 입력한 자료는 그대로입니다">' + (a3 ? '한 번 더 누르면 예시 자료 전체를 지웁니다' : '예시 자료삭제') + '</button>' : ''); })() + '<span class="spacer"></span>' +
-      '</div><p class="muted" style="margin:0">고객 수·직원 수를 넣고 "예시 자료생성"을 누르면 그 인원만큼 만듭니다(다시 만들면 기존 예시 자료는 바뀝니다). 예시 자료는 이름에 (예시)가 붙고 전화번호가 비어 있습니다. "예시 자료삭제"는 직접 입력한 자료를 지우지 않습니다. 두 번 눌러야 실행됩니다.</p></section>' +
-      '<section class="panel danger-zone"><h2>전체 초기화</h2><p style="margin:0">고객·계약·일정·연락처·설정을 모두 지우고 처음 상태로 돌립니다. 되돌릴 수 없으니 먼저 백업 파일을 내보내세요.</p><div class="row">' +
+        return '<button class="btn' + (a1 ? ' armed' : '') + '" data-act="demoGen" title="업무·고객·보험·지점 화면 모두에 샘플이 나오도록 예시 자료를 무작위로 만듭니다">' + (a1 ? '한 번 더 누르면 예시 자료를 만듭니다' : '예시 자료생성') + '</button>' +
+          (hasDemo ? '<button class="btn' + (a3 ? ' danger armed' : '') + '" data-act="demoDel" title="(예시) 표시가 붙은 자료 전체를 지웁니다. 직접 입력한 자료는 그대로입니다">' + (a3 ? '한 번 더 누르면 예시 자료 전체를 지웁니다' : '예시 자료삭제') + '</button>' : ''); })() + '<span class="spacer"></span>' +
+      '</div><p class="muted" style="margin:0">고객 수·직원 수를 넣고 "예시 자료생성"을 누르면 그 인원만큼 만듭니다. 다시 만들면 기존 예시 자료는 새것으로 바뀝니다.</p>' +
+      '<ul class="demo-what"><li><b>업무</b>: 오늘·다가오는 일정, 할 일, 고객·직원·지인 생일과 기념일, 선물, 실적</li><li><b>고객</b>: 계약·보장분석, 소개 관계와 연락 주기, 가족·가구와 대가족(본가·처가), 상담 기록, 제안 진행 단계</li><li><b>보험</b>: 자동차·화재 계약(만기 임박·확인 필요 예시 포함)</li><li><b>지점</b>: 공지, 지점 일정, 직원</li></ul>' +
+      '<p class="muted" style="margin:0">예시 자료는 이름에 (예시)가 붙고 전화번호가 비어 있습니다. "예시 자료삭제"는 (예시) 자료만 지우고 직접 입력한 자료와 라이선스는 그대로 둡니다. 두 번 눌러야 실행됩니다.</p></section>' +
+      '<section class="panel danger-zone"><h2>전체 초기화</h2><p style="margin:0">고객·계약·가족·일정·연락처·라이선스·설정을 모두 지우고 처음 상태로 돌립니다(이 기기의 화면설정 "보기" 항목은 그대로). 되돌릴 수 없으니 먼저 "백업 파일 받기"로 받아 두세요.</p><div class="row">' +
       '<button class="btn danger' + (resetArmed ? ' armed' : '') + '" data-act="resetAll">' + (resetArmed ? '한 번 더 누르면 전부 삭제됩니다' : '전체 초기화') + '</button></div></section>';
   }
   var title = SETTING_SUBS.filter(function (x) { return x[0] === sub; })[0][1];
@@ -4330,7 +4391,7 @@ function custContactList() {
 function renderCustContacts() {
   var q = norm(ui.cq), qd = String(ui.cq || '').replace(/\D/g, '');
   var list = custContactList();
-  if (!store.customers.length) return '<div class="empty"><strong>아직 등록한 고객이 없습니다</strong><span>고객 → 목록에서 "+ 추가"로 등록하세요.</span></div>';
+  if (!store.customers.length) return '<div class="empty"><strong>아직 등록한 고객이 없습니다</strong><span>고객 → 고객목록에서 "+ 추가"로 등록하세요.</span></div>';
   if (!list.length) return q || qd ? '<div class="empty"><strong>검색 결과가 없습니다</strong><span>이름이나 전화번호 일부(3자리 이상)로 찾아 보세요.</span></div>' : '<div class="empty"><strong>조건에 맞는 고객이 없습니다</strong><span>빈 칸이 모두 채워져 있습니다.</span></div>';
   var rows = list.map(function (c) {
     var a = c.birth ? ageOf(c.birth) : null;
@@ -5301,13 +5362,13 @@ function renderListSub() {
     var nk = function (key, k2, label, v, tone) { var on = (ui[k2] || '') === key; return '<button class="kpi' + (on ? ' on' : '') + (tone && v ? ' ' + tone : '') + '" data-act="uiPick" data-k="' + k2 + '" data-id="' + key + '"><span class="k">' + label + '</span><span class="v num">' + v + '<small>건</small></span></button>'; };
     if (ui.nF) ui.nF = ''; // 연락 예정 거르기는 고객 → 관계로 옮김 (2026-11-04)
     body = '<div class="kpis">' + nk('this', 'nP', '이번 달 상담', nMonth).replace('<small>건</small>', '<small>건 · 지난달 ' + nLast + '</small>') + nk('대면', 'nMethod', '이번 달 대면', nFace) + nk('전화', 'nMethod', '이번 달 전화·문자', nCall) +
-      '<button class="kpi" data-act="goList" data-id="contacts"><span class="k">연락할 차례 보기</span><span class="v" style="font-size:15px">고객 → 관계 ›</span></button></div>' + noteStats(nAll) +
+      '<button class="kpi" data-act="goList" data-id="contacts"><span class="k">연락할 차례 보기</span><span class="v" style="font-size:15px">고객 → 고객관계 ›</span></button></div>' + noteStats(nAll) +
       '<section class="panel"><div class="row between"><h2>상담 기록 <span id="nqCnt">' + notesFiltered().length + '</span>건</h2><div class="row" style="gap:6px">' +
       '<input type="search" id="nq" class="mini-search" placeholder="고객·내용 검색" value="' + attr(ui.nq) + '" aria-label="상담 기록 검색"><button class="btn primary sm" data-act="noteAddOpen">+ 추가</button></div></div>' +
       '<div class="todos">' + [['', '모든 주제']].concat(NOTE_TOPICS.map(function (t) { return [t, t]; })).map(function (o) { var on = (ui.nTopic || '') === o[0]; return '<button class="todo' + (on ? ' on' : '') + '" data-act="uiPick" data-k="nTopic" data-id="' + attr(o[0]) + '">' + esc(o[1]) + '</button>'; }).join('') + '</div>' +
       (nAll.length ? '<div class="todos">' + [['', '전체', nAll.length]].concat(NOTE_METHODS.filter(function (m) { return nCnt[m] || ui.nMethod === m; }).map(function (m) { return [m, m, nCnt[m] || 0]; })).map(function (o) { var on = (ui.nMethod || '') === o[0]; return '<button class="todo' + (on ? ' on' : '') + '" data-act="uiPick" data-k="nMethod" data-id="' + attr(o[0]) + '">' + esc(o[1]) + ' <b>' + o[2] + '</b></button>'; }).join('') +
         '<span class="org-sep"></span>' + NOTE_PERIODS.map(function (o) { var on = (ui.nP || '') === o[0]; return '<button class="todo' + (on ? ' on' : '') + '" data-act="uiPick" data-k="nP" data-id="' + o[0] + '">' + o[1] + '</button>'; }).join('') + '</div>' : '') +
-      '<div id="nqWrap">' + renderAllNotes() + '</div><p class="muted" style="margin:0">상담 화면은 "무슨 이야기를 했는지" 기록하는 곳입니다. 누구에게 연락할 차례인지는 고객 → 관계에서 봅니다. 다음 연락일을 넣으면 일정 달력과 업무 → 오늘의 연락 할 일에도 자동으로 나옵니다.</p></section>' + noteTimelinePanel(); }
+      '<div id="nqWrap">' + renderAllNotes() + '</div><p class="muted" style="margin:0">상담 화면은 "무슨 이야기를 했는지" 기록하는 곳입니다. 누구에게 연락할 차례인지는 고객 → 고객관계에서 봅니다. 다음 연락일을 넣으면 일정 달력과 업무 → 오늘의 연락 할 일에도 자동으로 나옵니다.</p></section>' + noteTimelinePanel(); }
   else if (sub === 'contacts') body = renderRelation(); // 관계: 연락할 차례·안내 대상·소개 (2026-11-04, 예전 연락처)
   else if (sub === 'props') body = renderProps();
   else if (sub === 'family') body = renderFamily();
@@ -5356,7 +5417,7 @@ function relCareList() {
 }
 function relCareRows() {
   var L = relCareList(), lim = ui.rcAll ? L.length : 30;
-  if (!store.customers.length) return '<div class="empty"><strong>아직 등록한 고객이 없습니다</strong><span>고객 → 목록에서 "+ 추가"로 등록하세요.</span></div>';
+  if (!store.customers.length) return '<div class="empty"><strong>아직 등록한 고객이 없습니다</strong><span>고객 → 고객목록에서 "+ 추가"로 등록하세요.</span></div>';
   if (!L.length) return '<div class="empty"><strong>해당하는 고객이 없습니다</strong><span>위 숫자 칸을 다시 누르면 전체가 보입니다.</span></div>';
   var rows = L.slice(0, lim).map(function (o) {
     var c = o.c, r = o.r, sc = REL_ST[r.st];
@@ -6486,7 +6547,7 @@ function foldList(items, limit, key, rowFn, cls) {
   return '<ul class="' + cls + '">' + shown.map(rowFn).join('') + '</ul>' + (more > 0 ? '<button class="btn sm more-btn" data-act="toggleBox" data-id="' + key + '" aria-expanded="' + open + '">' + (open ? '접기 ▲' : '더보기 (' + more + '건 더) ▼') + '</button>' : '');
 }
 function workHome() {
-  var t = today(), wk = isoDate(new Date(Date.now() + 6 * 864e5)), P = store.settings.params;
+  var t = today(), P = store.settings.params, upN = [7, 14, 30].indexOf(num(P.upDays)) >= 0 ? num(P.upDays) : 7, wk = isoDate(new Date(Date.now() + (upN - 1) * 864e5));
   var sched = workItems('2000-01-01', t).filter(function (it) { return it.kind !== 'task' && (it.date === t || ((it.kind === 'follow' || (it.kind === 'event' && !it.done)) && it.date < t)); });
   var week = workItems(isoDate(new Date(Date.now() + 864e5)), wk).filter(function (it) { return it.kind !== 'task'; });
   var openTasks = sortTasks(store.settings.tasks.filter(function (x) { return !x.done; }));
@@ -6497,7 +6558,7 @@ function workHome() {
   var props = 0, won = 0; store.customers.forEach(function (c) { (c.snapshots || []).forEach(function (sn) { if (String(sn.at).slice(0, 7) === mm) { props++; if (sn.result === '성사') won++; } }); });
   var kpi = function (k, v, unit, sub2, tone) { return '<button class="kpi' + (tone ? ' ' + tone : '') + '" data-act="goWork" data-id="' + sub2 + '"><span class="k">' + k + '</span><span class="v num">' + v + '<small>' + unit + '</small></span></button>'; };
   var schedOpen = sched.filter(function (x) { return !x.done; }).length;
-  return '<div class="kpis">' + kpi('오늘 일정', schedOpen, '건', 'calendar', schedOpen ? 'warn' : '') + kpi('할 일 (오늘까지)', dueNow + ' / ' + openTasks.length, '건', 'tasks', dueNow ? 'warn' : '') +
+  return (glanceOn() ? '<div class="kpis">' : '<div class="kpis" hidden>') + kpi('오늘 일정', schedOpen, '건', 'calendar', schedOpen ? 'warn' : '') + kpi('할 일 (오늘까지)', dueNow + ' / ' + openTasks.length, '건', 'tasks', dueNow ? 'warn' : '') +
     kpi('이번 달 생일', monthBd, '명', 'birthday') + kpi('갱신·납입완료 ' + num(P.renewDays) + '일 안', renew60, '건', 'calendar') + kpi('이번 달 제안 · 성사', props + ' · ' + won, '건', 'stats') + '</div>' +
     '<div class="work-cols">' +
     '<section class="panel kind-ev"><div class="row between"><h2><span class="kind-dot ev"></span>오늘 일정 ' + sched.length + '</h2><div class="row" style="gap:6px">' + dedupBtn() + '<button class="btn sm" data-act="goWork" data-id="calendar">달력 보기</button></div></div>' +
@@ -6508,7 +6569,7 @@ function workHome() {
     '<p class="kind-help">' + TK_HELP + '</p>' +
     (openTasks.length ? foldList(openTasks, 5, 'tkMore', taskRow, 'wlist tasks') : '<p class="muted" style="margin:0">남은 할 일이 없습니다.</p>') +
     '</section></div>' +
-    '<section class="panel"><div class="row between"><h2>다가오는 7일간 일정</h2></div>' + (week.length ? foldList(week, 5, 'weekMore', function (it) { return itemRow(it, true); }, 'wlist') : '<p class="muted" style="margin:0">다가오는 일정이 없습니다.</p>') + '</section>' +
+    '<section class="panel"><div class="row between"><h2>다가오는 ' + upN + '일간 일정</h2></div>' + (week.length ? foldList(week, 5, 'weekMore', function (it) { return itemRow(it, true); }, 'wlist') : '<p class="muted" style="margin:0">다가오는 일정이 없습니다.</p>') + '</section>' +
     renderTodo();
 }
 // 달력 보기: 이번에 고른 보기(ui.calView) → 없으면 설정 → 화면설정의 기본 보기(params.calView) → 월간
@@ -6808,7 +6869,7 @@ function workStats() {
     '<div class="bar-chart">' + bars + '</div>' +
     '<div class="tablewrap"><table class="t ctab"><thead><tr><th>월</th><th class="r">상담</th><th class="r">제안</th><th class="r">성사</th><th class="r">성사율</th><th class="r">성사 고객 월 보험료 절감 합계</th></tr></thead><tbody>' +
     months.slice().reverse().map(function (m) { var x = M[m]; return '<tr><td class="num">' + m.replace('-', '.') + '</td><td class="r num">' + x.notes + '</td><td class="r num">' + x.props + '</td><td class="r num">' + x.won + '</td><td class="r num">' + (x.props ? Math.round(x.won / x.props * 100) + '%' : '–') + '</td><td class="r num">' + fmtWon(x.saved) + '</td></tr>'; }).join('') +
-    '</tbody></table></div><p class="muted" style="margin:0">상담은 상담 기록, 제안·성사는 제안 기록(고객 → 제안 기록에서 결과 표시)을 바탕으로 셉니다.</p></section>';
+    '</tbody></table></div><p class="muted" style="margin:0">상담은 상담 기록, 제안·성사는 제안 기록(고객 → 제안기록에서 결과 표시)을 바탕으로 셉니다.</p></section>';
 }
 
 // ===== 입력 처리 =====
@@ -7188,6 +7249,8 @@ function doAction(el) {
     case 'brMine': ui.bMine = !ui.bMine; break;
     case 'brXlsxOut': exportBranchesXlsx(); break;
     case 'dmClose': closeDetail(); return;
+    case 'howto': ui.modal = { kind: 'howto' }; ui.armed = null; render(); setTimeout(function () { var b = document.querySelector('.dmodal .ht-box'); if (b) b.focus(); }, 0); return;
+    case 'howtoGo': { var hg = String(id || '').split(':'); ui.modal = null; if (hg[0] === 'settings') go('settings', { sub: hg[1] }); else if (hg[0] === 'work') go('work', { wsub: hg[1] }); else if (hg[0] === 'list') go('list', { lsub: hg[1] }); else if (hg[0] === 'insurance') go('insurance', { isub: hg[1] }); else if (hg[0] === 'office') go('office', { osub: hg[1] }); break; }
     case 'dmOpenStaff': openDetail('staff:' + id); return;
     case 'openAuto': openDetail('auto:' + id); return;
     case 'autoF': ui.autoF = id || ''; break;
@@ -7514,14 +7577,21 @@ function doAction(el) {
     case 'delAlias': store.settings.aliases.splice(Number(id), 1); save(); break;
     case 'aliasUp': { var i = Number(id), al = store.settings.aliases; if (i > 0) { var t = al[i - 1]; al[i - 1] = al[i]; al[i] = t; save(); } break; }
     case 'exportJson': exportJson(); break;
+    case 'importOk': if (ui.armed !== 'importOk') { ui.armed = 'importOk'; keepArm = true; break; } importApply(); return;
+    case 'importCancel': ui.pendingImport = null; toast('불러오기를 취소했습니다'); break;
     case 'fcCardDoc': store.settings.fc.cardOnDoc = store.settings.fc.cardOnDoc === false; save(); break;
     case 'fcCardDel': if (ui.armed !== 'fcCardDel') { ui.armed = 'fcCardDel'; keepArm = true; break; } store.settings.fc.card = ''; store.settings.fc.cardAt = ''; save(); toast('명함 이미지를 지웠습니다'); break;
     case 'setTheme': try { localStorage.setItem('fcp-theme', id); } catch (e) {} applyTheme(); break;
     case 'setZoom': try { localStorage.setItem('fcp-zoom', id); } catch (e) {} break;
-    case 'setMotion': try { if (id) localStorage.setItem('fcp-motion', id); else localStorage.removeItem('fcp-motion'); } catch (e) {} applyMotion(); break;
+    case 'setMotion': { var mv = id == null ? (getMotionKey() === 'reduce' ? '' : 'reduce') : id; try { if (mv) localStorage.setItem('fcp-motion', mv); else localStorage.removeItem('fcp-motion'); } catch (e) {} applyMotion(); if (ui.view === 'settings') toast('이 기기에 저장했습니다'); break; }
     case 'setWeek': try { if (id === 'mon') localStorage.setItem('fcp-week', 'mon'); else localStorage.removeItem('fcp-week'); } catch (e) {} break;
-    case 'resetDisplay': { if (ui.armed !== 'resetDisplay') { ui.armed = 'resetDisplay'; keepArm = true; break; } try { ['fcp-theme', 'fcp-zoom', 'fcp-motion', 'fcp-week'].forEach(function (k) { localStorage.removeItem(k); }); } catch (e) {} applyTheme(); applyMotion(); toast('이 기기의 화면 설정을 처음 상태로 돌렸습니다'); break; }
+    case 'resetDisplay': { if (ui.armed !== 'resetDisplay') { ui.armed = 'resetDisplay'; keepArm = true; break; } try { ['fcp-theme', 'fcp-zoom', 'fcp-motion', 'fcp-week', 'fcp-glance'].forEach(function (k) { localStorage.removeItem(k); }); } catch (e) {} applyTheme(); applyMotion(); toast('이 기기의 화면 설정을 처음 상태로 돌렸습니다'); break; }
     case 'setMenu': ui.setMenu = !ui.setMenu; break;
+    case 'setGlance': try { if (glanceOn()) localStorage.setItem('fcp-glance', '0'); else localStorage.removeItem('fcp-glance'); } catch (e) {} toast('이 기기에 저장했습니다'); break;
+    case 'setUpDays': store.settings.params.upDays = Number(id) || 7; save(); toast('다가오는 일정을 ' + (Number(id) || 7) + '일간 보여 줍니다'); break;
+    case 'footTop': try { window.scrollTo({ top: 0, behavior: getMotionKey() === 'reduce' ? 'auto' : 'smooth' }); } catch (e) { window.scrollTo(0, 0); } return;
+    case 'footAdd': if (id === 'task') { go('work', { wsub: 'tasks' }); ui.tkOpen = true; render(); setTimeout(function () { var t = document.getElementById('ui-tkTitle-x'); if (t) { t.scrollIntoView({ block: 'center' }); t.focus(); } }, 60); return; }
+      ui.view = 'list'; doAction({ dataset: { act: 'addCustomer' } }); return; // 새 고객 만들고 고객 정보 입력으로
     case 'openSearch': openSearch(); return;
     case 'setStart': store.settings.params.startView = id; save(); toast('다음부터 ' + ({ list: '고객 목록', ins: '보험 장기', office: '지점 공지' }[id] || '오늘 업무') + '으로 시작합니다'); break;
     case 'setCalDef': store.settings.params.calView = id === 'week' ? 'week' : 'month'; ui.calView = ''; save(); break;
@@ -7531,7 +7601,7 @@ function doAction(el) {
     case 'demoGen': { if (ui.armed !== 'demoGen') { ui.armed = 'demoGen'; keepArm = true; break; } ui.demoCust = demoClamp(ui.demoCust, DEMO_CUST); ui.demoStaff = demoClamp(ui.demoStaff, DEMO_STAFF); var mk; try { mk = generateDemoData({ cust: ui.demoCust, staff: ui.demoStaff }); } catch (err) { try { removeDemoData(); } catch (e2) {} toast('예시 자료를 만들지 못했습니다(' + (err && err.message || err) + '). 만들던 예시 자료는 지웠습니다'); break; } go('work', { wsub: 'home' }); toast('예시 자료를 만들었습니다: 고객 ' + mk.cust + '명 · 가족 ' + mk.hh + ' · 직원 ' + mk.staff + ' · 일정 ' + mk.ev + ' · 할 일 ' + mk.tk); break; }
     case 'demoDel': { if (ui.armed !== 'demoDel') { ui.armed = 'demoDel'; keepArm = true; break; } var nd = removeDemoData(); toast('예시 고객 ' + nd + '명과 예시 직원·일정·할 일·가족을 지웠습니다'); break; }
     case 'resetAll':
-      if (ui.armed === 'resetAll') { store = { customers: [], settings: defaultSettings() }; ui.cid = null; go('list'); save(); toast('모든 데이터를 지웠습니다'); }
+      if (ui.armed === 'resetAll') { store = fixup({ customers: [], settings: defaultSettings() }); ui.cid = null; ui.pendingImport = null; ui.modal = null; go('list'); save(); toast('모든 데이터를 지웠습니다'); }
       else { ui.armed = 'resetAll'; keepArm = true; }
       break;
   }
@@ -7560,11 +7630,18 @@ function importJson(file) {
     try {
       var s = JSON.parse(r.result);
       if (!s || !Array.isArray(s.customers) || !s.settings) throw new Error('보장설계 매니저 백업 파일이 아닙니다');
-      store = fixup(s); ui.cid = null; go('list');
-      save(); render(); toast('고객 ' + store.customers.length + '명을 불러왔습니다');
+      var np = 0; s.customers.forEach(function (c) { np += (c.policies || []).length; });
+      ui.pendingImport = { data: s, name: file.name || '백업 파일', nCust: s.customers.length, nPol: np, nSample: s.customers.filter(function (c) { return c.sample; }).length, at: (s.savedAt ? String(s.savedAt).slice(0, 10) : '') || (s.settings.lastBackup || '') };
+      render(); setTimeout(function () { var el = document.getElementById('importPending'); if (el && el.scrollIntoView) el.scrollIntoView({ block: 'center' }); }, 0);
     } catch (e) { toast('불러오지 못했습니다: ' + e.message); }
   };
   r.readAsText(file);
+}
+function importApply() {
+  var p = ui.pendingImport; if (!p) return;
+  ui.pendingImport = null; ui.armed = null;
+  store = fixup(clone(p.data)); ui.cid = null; ui.modal = null; go('list');
+  save(); render(); toast('백업 파일의 자료로 바꿨습니다 · 고객 ' + store.customers.length + '명');
 }
 
 // 미리보기(다른 페이지 안)에서 열렸는지
@@ -7779,8 +7856,72 @@ function loadScript(src) {
 // 인쇄 창이 실제로 열렸는지 확인하고, 안 열렸으면 PDF 파일 저장으로 대신한다.
 
 // ===== 직원·지점 상세 창 (줄을 두 번 클릭하면 열림) =====
+// ===== 이용방법 (하단 메뉴) =====
+function howtoModalHtml() {
+  var K = IS_MAC ? '⌘K' : 'Ctrl+K';
+  var G = function (spec, label) { return '<button class="btn sm" data-act="howtoGo" data-id="' + spec + '">' + label + ' →</button>'; };
+  var S = function (title, open, body, go) { return '<details class="ht-sec"' + (open ? ' open' : '') + '><summary>' + title + '</summary><div class="ht-body">' + body + (go ? '<div class="ht-go">' + go + '</div>' : '') + '</div></details>'; };
+  var UL = function (arr) { return '<ul>' + arr.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul>'; };
+  var body =
+    S('처음 시작하기', true, '<ol>' +
+      '<li><b>내정보</b>를 먼저 채웁니다. 이름·소속·연락처가 제안서와 안내 문구에 쓰입니다.</li>' +
+      '<li>써 보기만 하려면 <b>설정 → 자료관리 → 체험용 예시 자료</b>에서 예시 고객을 만들어 둘러보세요. 이름에 (예시)가 붙고, 나중에 한 번에 지울 수 있습니다.</li>' +
+      '<li><b>고객 → 고객목록</b>에서 "+ 추가"로 고객을 넣고, 고객 화면의 5단계를 차례로 진행합니다.</li>' +
+      '<li>하루 업무는 <b>업무 → 오늘</b>에서 시작합니다. 오늘 일정·할 일·다가오는 생일·갱신이 한 화면에 모입니다.</li></ol>',
+      G('settings:me', '내정보') + G('settings:data', '자료관리') + G('list:list', '고객목록')) +
+    S('화면 구성', false, UL([
+      '<b>맨 위 메뉴</b>: 업무 · 고객 · 보험 · 지점 · 설정. 메뉴를 누르면 바로 아래에 세부 메뉴가 나옵니다.',
+      '<b>돋보기</b>: 고객 이름·전화번호·메뉴를 한 번에 찾습니다. 키보드 ' + K + ' 또는 / 를 눌러도 열립니다.',
+      '<b>톱니</b>: 화면 밝기(주간·야간·시간대), 글자 크기, 움직임 줄이기를 바로 바꿉니다.',
+      '<b>오른쪽 위 저장 표시</b>: "저장됨"이 보이면 입력한 내용이 저장된 것입니다. 따로 저장 버튼을 누를 필요가 없습니다.'])) +
+    S('고객 한 명 보장분석하기 (5단계)', false, '<ol>' +
+      '<li><b>고객 정보</b>: 생년월일·성별·직업과 개인정보 동의 여부를 넣습니다. 나이와 보장 기준이 여기서 정해집니다.</li>' +
+      '<li><b>계약 입력</b>: 보유 계약과 담보를 넣습니다. 상태(유지·실효·해지 등)를 바꾸면 분석에서 빼거나 다시 넣습니다.</li>' +
+      '<li><b>보장분석</b>: 담보별로 충분·부족을 보여 줍니다. 기준은 설정 → 분석기준에서 바꿀 수 있습니다.</li>' +
+      '<li><b>정리·설계</b>: 계약마다 유지·보완·해지검토를 정하고 새로 넣을 상품을 고릅니다.</li>' +
+      '<li><b>제안서</b>: 고객에게 보여 줄 화면입니다. "인쇄하기"로 종이나 PDF로 남기고, "현재 분석 기록 남기기"를 누르면 제안기록에 쌓입니다.</li></ol>' +
+      '<p class="muted">각 단계 아래 "다음" 버튼으로 차례대로 넘어갈 수 있고, 위쪽 단계 표시를 눌러 바로 이동해도 됩니다. 분석 결과는 상담 참고용입니다.</p>') +
+    S('업무 메뉴', false, UL([
+      '<b>오늘</b>: 오늘 일정·할 일·생일·갱신·제안 숫자와 다가오는 7일 일정.',
+      '<b>일정 · 할 일</b>: 달력과 할 일 목록. 반복 일정과 마감일을 정할 수 있습니다.',
+      '<b>생일 · 기념일 · 선물</b>: 고객·직원·지인의 생일(양력·음력)과 기념일, 보낸 선물 기록.',
+      '<b>실적 · 수수료</b>: 내가 입력한 계약 실적과 수수료를 모아 봅니다.']), G('work:home', '오늘') + G('work:calendar', '일정')) +
+    S('고객 메뉴', false, UL([
+      '<b>고객목록</b>: 전체 고객과 관리가 필요한 고객 숫자. 위 숫자 칸을 누르면 그 고객만 걸러집니다.',
+      '<b>고객관계</b>: 연락할 차례인 고객, 안내 대상 뽑기, 소개해 준 관계를 봅니다.',
+      '<b>가족·가구</b>: 한 집에 사는 가족을 묶고, 본가·처가처럼 큰 가족(대가족)으로도 연결합니다.',
+      '<b>고객상담</b>: 상담 기록을 주제별로 남기고 고객별 상담 흐름을 봅니다.',
+      '<b>제안기록</b>: 보낸 제안서의 진행 단계(제안함·청약·성사·보류 등)와 후속 연락을 관리합니다.']), G('list:list', '고객목록') + G('list:notes', '고객상담')) +
+    S('보험 메뉴', false, UL([
+      '<b>장기 · 화재 · 운전자 · 자동차</b>: 고객들의 계약을 종류별로 모아 봅니다. 만기·갱신이 다가오는 계약을 찾기 좋습니다.',
+      '<b>보험사</b>: 보험사 연락처를 직접 정리해 둡니다.',
+      '<b>가이드</b>: 상담에 참고할 보험 기본 안내입니다.']), G('insurance:all', '장기') + G('insurance:guide', '가이드')) +
+    S('지점 메뉴', false, UL([
+      '<b>공지 · 일정</b>: 지점 공지와 지점 일정을 적어 둡니다.',
+      '<b>뉴스</b>: 실손·자동차·생명·손해보험 등 주제별 보험 뉴스를 모아 봅니다(로그인해야 볼 수 있습니다).',
+      '<b>직원 · 지점·사업단</b>: 함께 일하는 직원과 조직 정보를 정리합니다.']), G('office:notice', '공지') + G('office:news', '뉴스')) +
+    S('설정 메뉴', false, UL([
+      '<b>내정보 · 라이선스 · 계정설정</b>: 내 정보, 보유 자격증(이미지·PDF), 로그인 계정.',
+      '<b>화면설정</b>: 밝기·글자 크기·시작 화면·달력 시작 요일 등. "보기" 묶음은 지금 쓰는 기기에만 적용되어 휴대폰과 컴퓨터를 따로 맞출 수 있습니다.',
+      '<b>자료관리</b>: 백업 파일 받기·불러오기, 오프라인 모드, 체험용 예시 자료.',
+      '<b>분석기준 · 담보사전 · 상품관리</b>: 보장분석 기준 금액, 담보 이름 정리, 제안에 쓸 상품 목록.']), G('settings:display', '화면설정') + G('settings:data', '자료관리')) +
+    S('자료 저장과 백업', false, UL([
+      cloud.on ? '로그인하면 고객 자료가 <b>이 기기와 내 계정(서버)</b>에 함께 저장됩니다. 다른 기기에서 같은 계정으로 로그인하면 같은 자료가 보입니다.' : '지금은 고객 자료가 <b>이 브라우저에만</b> 저장됩니다. 브라우저 기록을 지우면 사라질 수 있습니다.',
+      '인터넷이 끊겨도 입력은 계속됩니다. 다시 연결되면 자동으로 서버에 맞춰집니다.',
+      '<b>설정 → 자료관리 → 백업 파일 받기</b>로 가끔 내 컴퓨터에 백업 파일을 받아 두세요.',
+      '지우기처럼 되돌리기 어려운 버튼은 <b>두 번 눌러야</b> 실행됩니다.']), G('settings:data', '자료관리')) +
+    S('알아 두면 편한 것', false, UL([
+      '날짜 칸은 달력에서 고르거나 <b>숫자만</b> 입력해도 됩니다(예: 20261102). 생년월일 칸은 900115처럼 6자리로 넣으면 됩니다.',
+      '창을 닫을 때는 Esc 키, 화면 바깥 누르기, ✕ 버튼 모두 됩니다.',
+      '휴대폰에서도 같은 주소로 열어 쓸 수 있습니다. 글자가 작으면 톱니 → 글자 크기를 키우세요.']));
+  return '<div class="dmodal" role="dialog" aria-modal="true" aria-labelledby="dmTitle"><div class="dm-box dm-wide ht-box" tabindex="-1">' +
+    '<div class="dm-head"><div><h2 id="dmTitle">이용방법</h2><div class="muted">보장설계 매니저를 처음 쓰실 때 읽어 보세요. 제목을 누르면 펼쳐집니다.</div></div><button class="btn ghost sm" data-act="dmClose" aria-label="닫기">✕</button></div>' +
+    '<div class="dm-body">' + body + '</div>' +
+    '<div class="dm-foot"><button class="btn primary" data-act="dmClose" style="margin-left:auto">닫기</button></div></div></div>';
+}
 function detailModalHtml() {
   var m = ui.modal; if (!m) return '';
+  if (m.kind === 'howto') return howtoModalHtml();
   var head = '', body = '', del = '', title = '';
   if (m.kind === 'licimg') {
     var lv = licList().filter(function (y) { return y.id === m.id; })[0]; if (!lv || !licHas(lv)) { ui.modal = null; return ''; }
@@ -7820,7 +7961,7 @@ function detailModalHtml() {
       lbl('상담 내용', f('ui', 'ndaText', ui.ndaText || '', { type: 'textarea', ph: '예: 실손 중복 설명, 다음 주 증권 받기로 함' }), 'span2') +
       lbl('다음 연락일 (선택)', f('ui', 'ndaNext', ui.ndaNext || '', { type: 'date', quick: true }), 'span2') +
       '<div class="field span2"><button class="btn primary" data-act="ndaGo">기록 추가</button></div></div>'
-      : '<p class="muted">아직 고객이 없습니다. 고객 → 목록에서 먼저 고객을 등록하세요.</p>';
+      : '<p class="muted">아직 고객이 없습니다. 고객 → 고객목록에서 먼저 고객을 등록하세요.</p>';
     del = '';
   } else if (m.kind === 'poladd') {
     var PL = store.customers.slice().sort(function (a, b) { return (a.sample ? 1 : 0) - (b.sample ? 1 : 0) || byName(a, b); });
@@ -7829,7 +7970,7 @@ function detailModalHtml() {
     body = '<div class="grid-form dm-grid">' + (PL.length ? lbl('고객', f('ui', 'polaCid', ui.polaCid || '', { type: 'select', options: PL.map(function (c) { return [c.id, (c.name || '이름 없음') + ' · 계약 ' + c.policies.length + '건']; }) }), 'span2') +
       '<div class="field span2"><button class="btn primary" data-act="polaGo">이 고객 계약 입력</button></div>' +
       '<p class="muted span2" style="margin:0">고객의 계약 입력 화면에 빈 계약이 새로 생깁니다. 보험사·상품·보험료·담보를 넣으면 이 화면에 바로 반영됩니다. 증권 PDF가 있으면 그 계약의 "증권 PDF에서 찾기"로 담보 후보를 찾을 수 있습니다.</p>'
-      : '<p class="muted span2">아직 고객이 없습니다. 고객 → 목록에서 먼저 고객을 등록하세요.</p>') + '</div>';
+      : '<p class="muted span2">아직 고객이 없습니다. 고객 → 고객목록에서 먼저 고객을 등록하세요.</p>') + '</div>';
     del = '';
   } else if (m.kind === 'drvadd') {
     var DL = store.customers.slice().sort(function (a, b) { return (a.sample ? 1 : 0) - (b.sample ? 1 : 0) || byName(a, b); });
@@ -7839,7 +7980,7 @@ function detailModalHtml() {
     body = '<div class="grid-form dm-grid">' + (DL.length ? lbl('고객', f('ui', 'drvaCid', ui.drvaCid || '', { type: 'select', options: DL.map(function (c) { return [c.id, (c.name || '이름 없음') + drvNote(c)]; }) }), 'span2') +
       '<div class="field span2"><button class="btn primary" data-act="drvaGo">이 고객 운전자보험 입력</button></div>' +
       '<p class="muted span2" style="margin:0">고객의 계약 입력 화면에 "운전자보험" 계약이 새로 생기고, 교통사고처리지원금·변호사선임비용·벌금 담보 줄이 미리 들어갑니다. 보험사·보험료·가입금액을 넣으면 이 화면에 바로 반영됩니다. 장기보험 안의 운전자 특약은 그 계약의 담보로 넣으면 됩니다.</p>'
-      : '<p class="muted span2">아직 고객이 없습니다. 고객 → 목록에서 먼저 고객을 등록하세요.</p>') + '</div>';
+      : '<p class="muted span2">아직 고객이 없습니다. 고객 → 고객목록에서 먼저 고객을 등록하세요.</p>') + '</div>';
     del = '';
   } else if (m.kind === 'bdadd') {
     var BW = ui.bdaW === 's' ? 's' : 'c', sortN = function (L) { return L.slice().sort(function (a, b) { return (a.sample ? 1 : 0) - (b.sample ? 1 : 0) || byName(a, b); }); };
@@ -8043,7 +8184,7 @@ app.addEventListener('submit', function (e) {
 });
 app.addEventListener('change', function (e) {
   var el = e.target;
-  if (el.id === 'importFile') { if (el.files[0]) importJson(el.files[0]); return; }
+  if (el.id === 'importFile') { if (el.files[0]) importJson(el.files[0]); el.value = ''; return; }
   if (el.dataset && el.dataset.kind === 'fccard') { if (el.files[0]) readFcCard(el.files[0]); el.value = ''; return; }
   if (el.dataset && el.dataset.kind === 'licimg') { if (el.files[0]) licReadFile(el.dataset.id, el.files[0]); el.value = ''; return; }
   if (el.dataset && el.dataset.kind === 'rulesjson') { if (el.files[0]) importRules(el.files[0]); el.value = ''; return; }
@@ -8319,7 +8460,10 @@ function restoreCustomerVersion(hid) {
 function restoreSettingsVersion(hid) {
   cloud.client.from('settings_history').select('data,changed_at').eq('hid', hid).maybeSingle().then(function (r) {
     if (r.error || !r.data) { toast('기록을 찾지 못했습니다'); return; }
-    store.settings = fixup({ customers: [], settings: r.data.data }).settings; save(); render();
+    var keep = {}; licList().forEach(function (x) { if (licHas(x)) keep[x.id] = x; }); // 기록에는 라이선스 이미지가 없으므로 지금 이미지를 그대로 둔다
+    store.settings = fixup({ customers: [], settings: r.data.data }).settings;
+    licList().forEach(function (x) { var k = keep[x.id]; if (k && !licHas(x)) { x.img = k.img; x.pdf = k.pdf; x.pdfName = k.pdfName; x.imgAt = k.imgAt; } });
+    save(); render();
     toast('설정·연락처·일정을 ' + fmtHistTime(r.data.changed_at) + ' 버전으로 되돌렸습니다');
   });
 }
@@ -8327,7 +8471,7 @@ function fmtHistTime(iso) { var d = new Date(iso); return isNaN(d) ? '' : (d.get
 function historyPanel() {
   if (!cloud.on) return '';
   var h = ui.hist, head = '<section class="panel"><div class="row between"><h2>변경 기록 (자동 백업)</h2><button class="btn sm" data-act="histLoad">' + (h ? '새로고침' : '기록 보기') + '</button></div>' +
-    '<div class="info">서버가 고객 자료를 고치기 직전 내용(같은 고객은 10분에 한 번)과 지우기 직전 내용을 자동으로 남깁니다. 설정·연락처·일정·할 일은 30분에 한 번 남깁니다. 기록은 90일 동안 보관되고 내 계정에서만 보입니다. 실수로 지우거나 잘못 고쳤으면 "되돌리기"를 누르세요.</div>';
+    '<div class="info">서버가 고객 자료를 고치기 직전 내용(같은 고객은 10분에 한 번)과 지우기 직전 내용을 자동으로 남깁니다. 설정·연락처·일정·할 일은 30분에 한 번 남깁니다(라이선스 이미지·PDF는 용량 때문에 빼고 남기며, 되돌려도 지금 이미지는 그대로입니다). 기록은 90일 동안 보관되고 내 계정에서만 보입니다. 실수로 지우거나 잘못 고쳤으면 "되돌리기"를 누르세요.</div>';
   if (!h) return head + '</section>';
   if (h.loading) return head + '<p class="muted" style="margin:0">불러오는 중…</p></section>';
   if (h.err) return head + '<div class="notice">' + esc(h.err) + '</div></section>';
