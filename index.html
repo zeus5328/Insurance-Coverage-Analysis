@@ -1592,6 +1592,9 @@ button.cal-btn { padding: 0; color: var(--ink-2); cursor: pointer; }
 .sp-links { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px 8px; border-top: 1px solid var(--line); padding-top: 10px; }
 .sp-link { text-align: left; background: none; border: 0; padding: 7px 8px; border-radius: 8px; font: inherit; font-size: 13.5px; color: var(--ink); cursor: pointer; }
 .sp-link:hover { background: var(--surface-2); }
+.sp-foot .sp-link { padding: 6px 8px; font-size: 13px; }
+.sp-foot .sp-all { font-weight: 600; }
+@media (max-width: 600px) { .set-pop { position: fixed; left: 12px; right: 12px; top: 50px; width: auto; max-height: calc(100vh - 62px); overflow-y: auto; } }
 .sp-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; border-top: 1px solid var(--line); padding-top: 10px; font-size: 12px; }
 .sr-overlay { position: fixed; inset: 0; z-index: 200; background: rgba(15,23,42,.45); display: flex; justify-content: center; align-items: flex-start; padding: max(56px, 8vh) 12px 12px; }
 .sr-box { width: min(640px, 100%); max-height: calc(100vh / var(--zf, 1) - 16vh); display: flex; flex-direction: column; background: var(--surface); color: var(--ink); border-radius: 14px; box-shadow: 0 20px 48px rgba(0,0,0,.28); overflow: hidden; }
@@ -2790,6 +2793,7 @@ function topTools() {
       '<div class="sp-sec"><span class="sp-k">화면 밝기</span><div class="seg">' + seg('setTheme', 'light', tk, '☀ 주간') + seg('setTheme', 'dark', tk, '☾ 야간') + seg('setTheme', 'time', tk, '시간대') + '</div></div>' +
       '<div class="sp-sec"><span class="sp-k">글자 크기</span><div class="seg">' + seg('setZoom', 's', zk, '작게') + seg('setZoom', 'm', zk, '보통') + seg('setZoom', 'l', zk, '크게') + seg('setZoom', 'xl', zk, '아주 크게') + '</div></div>' +
       '<div class="sp-sec"><span class="sp-k">움직임 줄이기</span><div class="seg">' + seg('setMotion', '', mo, '끔') + seg('setMotion', 'reduce', mo, '켬') + '</div></div>' +
+      '<div class="sp-foot"><button class="sp-link" data-act="goSettings" data-id="display">화면 설정 더 보기 ›</button><button class="sp-link sp-all" data-act="goSettings" data-id="me">⚙️ 전체 설정</button></div>' +
       '</div>' : '';
   return '<div class="top-tools"><button class="icon-btn" data-act="openSearch" aria-label="검색 (' + (IS_MAC ? '⌘K' : 'Ctrl+K') + ')" title="검색 (' + (IS_MAC ? '⌘K' : 'Ctrl+K') + ')">' + TOP_ICON.search + '</button>' +
     '<div class="set-wrap"><button class="icon-btn' + (ui.setMenu ? ' on' : '') + '" data-act="setMenu" aria-label="설정 메뉴" aria-expanded="' + !!ui.setMenu + '" title="설정 메뉴">' + TOP_ICON.gear + '</button>' + pop + '</div></div>';
@@ -3570,7 +3574,7 @@ function renderSettings() {
         R9('첫 화면', '프로그램을 열면 처음 보이는 화면', S9('setStart', sv, [['work', '업무'], ['list', '고객'], ['ins', '보험'], ['office', '지점']])) +
         R9('달력 기본 보기', '업무 → 일정을 열 때', S9('setCalDef', cv, [['month', '월간'], ['week', '주간']])) +
         R9('다가오는 일정', '업무 → 오늘에 보일 기간', S9('setUpDays', upN, [[7, '7일'], [14, '14일'], [30, '30일']])) +
-        R9('다가오는 생일·기념일', '업무 → 오늘의 생일 칸, 업무 → 생일·기념일에 보일 기간', S9('setBdDays', [7, 14, 30].indexOf(bdDaysN()) >= 0 ? bdDaysN() : 7, [[7, '7일'], [14, '14일'], [30, '30일']]))) +
+        R9('다가오는 생일·기념일·선물', '업무 → 오늘의 생일 칸, 업무 → 생일·기념일, 업무 → 선물의 "선물 기록 없음" 목록에 보일 기간', S9('setBdDays', [7, 14, 30].indexOf(bdDaysN()) >= 0 ? bdDaysN() : 7, [[7, '7일'], [14, '14일'], [30, '30일']]))) +
       '<div class="set-reset"><button class="btn sm' + (ui.armed === 'resetDisplay' ? ' danger armed' : '') + '" data-act="resetDisplay">' + (ui.armed === 'resetDisplay' ? '한 번 더 누르면 되돌립니다' : '이 기기의 화면 설정 되돌리기') + '</button><span class="muted">"보기" 항목만 처음 값으로 돌아갑니다. 고객 자료는 그대로입니다.</span></div>';
   } else if (sub === 'rules') {
     var benchRows = STANDARDS.map(function (st) {
@@ -3601,7 +3605,7 @@ function renderSettings() {
       '<section class="panel"><h2>업무 알림 기간</h2><div class="grid-form">' +
       lbl('연락 예정 표시 (며칠 안)', f('param', 'followDays', s.params.followDays, { type: 'num' })) +
       lbl('갱신·납입완료 예정 표시 (며칠 안)', f('param', 'renewDays', s.params.renewDays, { type: 'num' })) +
-      lbl('생일·기념일 표시 (며칠 안)', f('param', 'birthdayDays', s.params.birthdayDays, { type: 'num' })) +
+      lbl('생일·기념일·선물 표시 (며칠 안)', f('param', 'birthdayDays', s.params.birthdayDays, { type: 'num' })) +
       lbl('기본 연락 주기', f('param', 'contactCycle', String(relCycleDef()), { type: 'select', options: CYCLE_OPTS }) + '<span class="field-hint">고객관계 → 연락할 차례와 같은 값입니다. 고객마다 다른 주기는 고객 정보에서 정합니다</span>') +
       lbl('개인정보 동의 보유 기간 (개월)', f('param', 'consentMonths', s.params.consentMonths, { type: 'num' }) + '<span class="field-hint">회사 규정 기간을 넣으세요. 0이면 만료 안내를 하지 않습니다</span>') +
       '</div><p class="muted" style="margin:0">업무 → 오늘·할 일·생일·기념일, 고객관계에 언제부터 보여 줄지 정합니다. 보장 판단 결과에는 영향을 주지 않습니다.</p></section>' +
@@ -4541,9 +4545,9 @@ function giftPanel() {
   // 다가오는 생일 중 올해 선물 기록이 없는 고객
   // 다가오는 생일·기념일(고객) 중 올해 같은 계기의 선물 기록이 없는 것
   var occOf = function (it) { if (it.kind === 'birthday') return '생일'; var an = annivList().filter(function (a) { return a.id === it.aid; })[0]; return an && an.type === '결혼기념일' ? '결혼기념일' : '기념일(개업·입사 등)'; };
-  var soon = workItems(t, isoDate(new Date(Date.now() + 30 * 864e5))).filter(function (it) { if (!((it.kind === 'birthday' || it.kind === 'anniv') && it.cid)) return false; var oc = occOf(it); it._occ = oc; return !yG.some(function (g) { return g.cid === it.cid && g.occ === oc; }); });
+  var gfN = bdDaysN(), soon = workItems(t, isoDate(new Date(Date.now() + gfN * 864e5))).filter(function (it) { if (!((it.kind === 'birthday' || it.kind === 'anniv') && it.cid)) return false; var oc = occOf(it); it._occ = oc; return !yG.some(function (g) { return g.cid === it.cid && g.occ === oc; }); });
   var nB = soon.filter(function (it) { return it.kind === 'birthday'; }).length;
-  var remind = soon.length ? '<section class="panel"><div class="row between"><h2>30일 안 생일 · 기념일 · 선물 기록 없음 <span class="muted num">' + soon.length + '</span></h2><span class="muted">생일 ' + nB + ' · 기념일 ' + (soon.length - nB) + '</span></div>' + foldList(soon, 5, 'gfSoonMore', function (it) {
+  var remind = soon.length ? '<section class="panel"><div class="row between"><h2>다가오는 ' + gfN + '일간 생일 · 기념일 · 선물 기록 없음 <span class="muted num">' + soon.length + '</span></h2><span class="muted">생일 ' + nB + ' · 기념일 ' + (soon.length - nB) + '</span></div>' + foldList(soon, 5, 'gfSoonMore', function (it) {
     var c = custById(it.cid), d = daysUntil(it.date);
     return '<li><span class="wdate num">' + it.date.slice(5).replace('-', '.') + '</span><span class="kchip ' + (it.kind === 'anniv' ? 'k-anniv' : 'k-bd') + '">' + dLabel(d) + '</span><span class="what">' + esc(it.label) + '</span>' + (c ? custLink(c, 'info') : '') + '<button class="btn sm tel" data-act="giftNew" data-id="' + it.cid + '" data-k="' + attr(it._occ) + '">선물 기록</button></li>'; }, 'wlist') + '</section>' : '';
   var chips = '<div class="todos">' + Object.keys(years).sort().reverse().map(function (y) { return '<button class="todo' + (yr === y ? ' on' : '') + '" data-act="gfY" data-id="' + y + '">' + y + '년</button>'; }).join('') + '<button class="todo' + (yr === 'all' ? ' on' : '') + '" data-act="gfY" data-id="all">전체</button>' +
@@ -7858,7 +7862,7 @@ function doAction(el) {
     case 'resetDisplay': { if (ui.armed !== 'resetDisplay') { ui.armed = 'resetDisplay'; keepArm = true; break; } try { ['fcp-theme', 'fcp-zoom', 'fcp-motion', 'fcp-week', 'fcp-glance'].forEach(function (k) { localStorage.removeItem(k); }); } catch (e) {} applyTheme(); applyMotion(); toast('이 기기의 화면 설정을 처음 상태로 돌렸습니다'); break; }
     case 'setMenu': ui.setMenu = !ui.setMenu; break;
     case 'setGlance': try { if (glanceOn()) localStorage.setItem('fcp-glance', '0'); else localStorage.removeItem('fcp-glance'); } catch (e) {} toast('이 기기에 저장했습니다'); break;
-    case 'setBdDays': store.settings.params.birthdayDays = Number(id) || 7; save(); toast('다가오는 생일·기념일을 ' + (Number(id) || 7) + '일간 보여 줍니다'); break;
+    case 'setBdDays': store.settings.params.birthdayDays = Number(id) || 7; save(); toast('다가오는 생일·기념일·선물을 ' + (Number(id) || 7) + '일간 보여 줍니다'); break;
     case 'setUpDays': store.settings.params.upDays = Number(id) || 7; save(); toast('다가오는 일정을 ' + (Number(id) || 7) + '일간 보여 줍니다'); break;
       ui.view = 'list'; doAction({ dataset: { act: 'addCustomer' } }); return; // 새 고객 만들고 고객 정보 입력으로
     case 'openSearch': openSearch(); return;
