@@ -2581,8 +2581,8 @@ function render() {
 var STEPS = [['info', '고객 정보'], ['policies', '계약 입력'], ['analysis', '보장분석'], ['plan', '정리·설계'], ['proposal', '제안서']];
 var SETTING_SUBS = [['me', '내정보'], ['license', '라이선스'], ['account', '계정설정'], ['display', '화면설정'], ['data', '자료관리'], ['rules', '분석기준'], ['dict', '담보사전'], ['products', '상품관리']];
 var WORK_SUBS = [['home', '오늘'], ['calendar', '일정'], ['tasks', '할 일'], ['birthday', '생일'], ['anniv', '기념일'], ['gifts', '선물'], ['stats', '실적'], ['comm', '수수료']];
-var OFFICE_SUBS = [['notice', '공지'], ['news', '뉴스'], ['schedule', '일정'], ['staff', '직원'], ['branch', '지점·사업단']]; // 직원 생일은 업무 → 생일(직원)로 합침(2026-11-03)
-var OFFICE_TITLES = { news: '보험 뉴스', schedule: '지점 일정', staff: '직원 연락처', sbd: '직원 생일' }; // 메뉴 이름은 짧게, 화면 제목은 그대로
+var OFFICE_SUBS = [['news', '보험뉴스'], ['notice', '공지사항'], ['schedule', '지점일정'], ['staff', '직원정보'], ['branch', '지사·사업단']]; // 직원 생일은 업무 → 생일(직원)로 합침(2026-11-03)
+var OFFICE_TITLES = { sbd: '직원 생일' }; // 메뉴 이름은 짧게, 화면 제목은 그대로
 function officeSubs() { return team.info ? OFFICE_SUBS.concat([['team', '팀 현황']]) : OFFICE_SUBS; }
 var LIST_SUBS = [['list', '고객목록'], ['contacts', '고객관계'], ['family', '가족·가구'], ['notes', '고객상담'], ['props', '제안기록']]; // 관리 필요는 고객목록 숫자 칸으로 합침(2026-11-03)
 var LIST_TITLES = { list: '고객목록', contacts: '고객관계', family: '가족·가구', notes: '고객상담', props: '제안기록' }; // 메뉴 이름은 짧게, 화면 제목은 그대로(2026-11-03)
@@ -2715,7 +2715,7 @@ function srItems(q) {
   var MENUS = [['업무 · 오늘', function () { go('work', { wsub: 'home' }); }], ['업무 · 일정 달력', function () { go('work', { wsub: 'calendar' }); }], ['업무 · 생일', function () { go('work', { wsub: 'birthday' }); }], ['업무 · 기념일', function () { go('work', { wsub: 'anniv' }); }],
     ['고객 · 고객목록', function () { go('list', { lsub: 'list' }); }], ['고객 · 고객관계', function () { go('list', { lsub: 'contacts' }); }], ['고객 · 가족·가구', function () { go('list', { lsub: 'family' }); }], ['고객 · 고객상담', function () { go('list', { lsub: 'notes' }); }], ['고객 · 제안기록', function () { go('list', { lsub: 'props' }); }],
     ['보험 · 장기', function () { go('insurance', { isub: 'all' }); }], ['보험 · 자동차', function () { go('insurance', { isub: 'auto' }); }], ['보험 · 화재', function () { go('insurance', { isub: 'fire' }); }], ['보험 · 보험사 연락처', function () { go('insurance', { isub: 'insurer' }); }],
-    ['지점 · 공지', function () { go('office', { osub: 'notice' }); }], ['지점 · 뉴스', function () { go('office', { osub: 'news' }); }], ['지점 · 일정', function () { go('office', { osub: 'schedule' }); }], ['지점 · 직원', function () { go('office', { osub: 'staff' }); }]]
+    ['지점 · 보험뉴스', function () { go('office', { osub: 'news' }); }], ['지점 · 공지사항', function () { go('office', { osub: 'notice' }); }], ['지점 · 지점일정', function () { go('office', { osub: 'schedule' }); }], ['지점 · 직원정보', function () { go('office', { osub: 'staff' }); }], ['지점 · 지사·사업단', function () { go('office', { osub: 'branch' }); }]]
     .concat(SETTING_SUBS.map(function (x) { return ['설정 · ' + x[1], function () { go('settings', { sub: x[0] }); }]; }));
   MENUS.forEach(function (m) { if (hit(m[0])) add('메뉴', m[0], '', m[1]); });
   var C = store.customers, n = 0;
@@ -6202,7 +6202,7 @@ function orgSchedulePanel() {
       (d != null && d >= 0 && d <= 7 ? '<span class="chip warn">' + dLabel(d) + '</span>' : '') +
       '<span class="edu-count" title="참석 인원">참석 <b class="num">' + n + '</b><small> / ' + staff.length + '명</small></span><span class="chev">' + (open ? '▾' : '▸') + '</span></button>' +
       (open ? '<div class="edu-body">' + (staff.length ? '<div class="chk-chips">' + who + '</div>' + (names.length ? '<p class="edu-names"><b>참석 ' + names.length + '명</b> · ' + esc(names.join(', ')) + '</p>' : '<p class="edu-names muted">아직 체크한 직원이 없습니다.</p>')
-          : '<div class="empty"><strong>직원 연락처가 비어 있습니다</strong><span>지점 → 직원 연락처에 직원을 넣으면 여기서 참석을 체크할 수 있습니다.</span><button class="btn primary sm" data-act="goOffice" data-id="staff">직원 연락처로</button></div>') +
+          : '<div class="empty"><strong>직원 연락처가 비어 있습니다</strong><span>지점 → 직원정보에 직원을 넣으면 여기서 참석을 체크할 수 있습니다.</span><button class="btn primary sm" data-act="goOffice" data-id="staff">직원 연락처로</button></div>') +
         '<div class="row edu-actions">' + (staff.length ? '<button class="btn sm" data-act="eduAll" data-id="' + e.id + '">모두 체크</button><button class="btn ghost sm" data-act="eduNone" data-id="' + e.id + '">모두 해제</button><button class="btn ghost sm" data-act="copyAtt" data-id="o:' + e.id + ':yes">참석자 명단 복사</button><button class="btn ghost sm" data-act="copyAtt" data-id="o:' + e.id + ':none">미체크 명단 복사</button>' : '') + '<span class="spacer"></span>' +
         (e.memo ? '<span class="muted edu-memo">' + esc(e.memo) + '</span>' : '') + '<button class="btn sm" data-act="openOrg" data-id="' + e.id + '">일정 수정</button><button class="btn ghost sm' + (del ? ' danger armed' : '') + '" data-act="delOrg" data-id="' + e.id + '">' + (del ? '한 번 더 누르면 삭제' : '삭제') + '</button></div></div>' : '') + '</div>';
   }).join('');
@@ -6211,8 +6211,8 @@ function orgSchedulePanel() {
     '<button class="kpi' + (T === '공지' ? ' on' : '') + (ntNew ? ' warn' : '') + '" data-act="orgT" data-id="' + (T === '공지' ? '' : '공지') + '" title="누르면 공지만 보기"><span class="k">게시 중 공지</span><span class="v num">' + ntOn.length + '<small>건' + (ntNew ? ' · 안 읽음 ' + ntNew : '') + '</small></span></button>' +
     '<button class="kpi" data-act="goWork" data-id="calendar"><span class="k">업무 → 일정 달력</span><span class="v" style="font-size:15px">달력에서 보기 ›</span></button></div>' +
     '<section class="panel"><div class="row between"><h2>지점 일정 ' + list.length + '건</h2><div class="row" style="gap:6px">' + (team.info && team.info.role === 'manager' && !ui.teEdit ? '<button class="btn sm" data-act="teNew" title="팀원 모두에게 보이는 일정">+ 팀 일정</button>' : '') + '<button class="btn primary sm" data-act="orgNew" data-id="' + attr(T || '조회') + '">+ 추가</button></div></div>' + teamEventForm() + chips +
-    (cards ? '<div class="edu-list">' + cards + '</div>' : '<div class="empty"><strong>' + (F === 'past' ? '지난 지점 일정이 없습니다' : '다가오는 지점 일정이 없습니다') + '</strong><span>"+ 추가"로 조회·회의·교육·시상·회식 일정을 넣으세요. 지점 → 공지에 쓴 공지도 여기에 함께 보입니다.</span></div>') +
-    '<p class="muted" style="margin:0">일정을 누르면 펼쳐져 직원 참석을 체크하고(바로 저장), 일정 수정·삭제를 할 수 있습니다. 가장 가까운 일정은 자동으로 펼쳐집니다. 지점 → 공지의 공지도 공지 날짜에 함께 나오고(게시 중이면 다가오는 일정, 게시가 끝나면 지난 일정), 누르면 내용을 보고 수정할 수 있습니다. 지점 일정은 업무 → 일정 달력에도 함께 보입니다.</p></section>';
+    (cards ? '<div class="edu-list">' + cards + '</div>' : '<div class="empty"><strong>' + (F === 'past' ? '지난 지점 일정이 없습니다' : '다가오는 지점 일정이 없습니다') + '</strong><span>"+ 추가"로 조회·회의·교육·시상·회식 일정을 넣으세요. 지점 → 공지사항에 쓴 공지도 여기에 함께 보입니다.</span></div>') +
+    '<p class="muted" style="margin:0">일정을 누르면 펼쳐져 직원 참석을 체크하고(바로 저장), 일정 수정·삭제를 할 수 있습니다. 가장 가까운 일정은 자동으로 펼쳐집니다. 지점 → 공지사항의 공지도 공지 날짜에 함께 나오고(게시 중이면 다가오는 일정, 게시가 끝나면 지난 일정), 누르면 내용을 보고 수정할 수 있습니다. 지점 일정은 업무 → 일정 달력에도 함께 보입니다.</p></section>';
 }
 // ===== 지점 → 공지: 지점 공지 메모 (FC 본인 계정에 저장) =====
 // settings.notices = [{ id, date, title, body, cat, imp(중요), pin(고정), until(게시 끝, 선택), read, sample? }]
@@ -6462,14 +6462,14 @@ function eventForm(dateDefault) {
     '<div class="field"><span>&nbsp;</span><button class="btn primary ev-btn" data-act="addEvent">일정 추가</button></div></div>';
 }
 // ===== 지점 → 뉴스: 네이버 뉴스 검색 (Supabase 서버 기능 'news' 경유, 2026-11-04) =====
-// 키(NAVER_CLIENT_ID/SECRET)는 Supabase 비밀값에만 있다. 앱은 정해진 주제(topic)만 보내고 고객 정보는 보내지 않는다.
+// 키(NCP_API_KEY_ID/NCP_API_KEY = NAVER API HUB, 또는 예전 개발자센터 NAVER_CLIENT_ID/SECRET)는 Supabase 비밀값에만 있다. 앱은 정해진 주제(topic)만 보내고 고객 정보는 보내지 않는다.
 var NEWS_TOPICS = [['all', '전체'], ['silson', '실손'], ['auto', '자동차'], ['life', '생명'], ['nonlife', '손해'], ['fc', '설계사'], ['fss', '감독·제도']];
 var NEWS_LINKS = [['금융감독원', 'https://www.fss.or.kr'], ['금융위원회', 'https://www.fsc.go.kr'], ['생명보험협회', 'https://www.klia.or.kr'], ['손해보험협회', 'https://www.knia.or.kr']];
 var news = { cache: {}, busy: '', err: {} };
 var NEWS_ERR = {
   login: '로그인한 상태에서만 뉴스를 볼 수 있습니다.',
   offline: '지금은 오프라인이라 뉴스를 불러올 수 없습니다. 인터넷이 연결되면 "새로고침"을 누르세요.',
-  not_configured: '아직 네이버 뉴스 키가 서버에 등록되지 않았습니다. 관리자가 Supabase → Edge Functions → Secrets에 NAVER_CLIENT_ID와 NAVER_CLIENT_SECRET을 넣으면 바로 보입니다.',
+  not_configured: '아직 네이버 뉴스 키가 서버에 등록되지 않았습니다. 네이버 클라우드 NAVER API HUB에서 검색 API 키(Client ID·Client Secret)를 받아 Supabase → Edge Functions → Secrets에 NCP_API_KEY_ID와 NCP_API_KEY로 넣으면 바로 보입니다.',
   auth: '네이버 키가 맞지 않습니다. Supabase에 넣은 Client ID·Client Secret을 다시 확인하세요.',
   limit: '오늘 뉴스 조회 한도를 넘었습니다. 내일 다시 시도하세요.',
   nofn: '뉴스 서버 기능을 찾지 못했습니다. 관리자에게 알려 주세요.',
@@ -7897,9 +7897,9 @@ function howtoModalHtml() {
       '<b>보험사</b>: 보험사 연락처를 직접 정리해 둡니다.',
       '<b>가이드</b>: 상담에 참고할 보험 기본 안내입니다.']), G('insurance:all', '장기') + G('insurance:guide', '가이드')) +
     S('지점 메뉴', false, UL([
-      '<b>공지 · 일정</b>: 지점 공지와 지점 일정을 적어 둡니다.',
-      '<b>뉴스</b>: 실손·자동차·생명·손해보험 등 주제별 보험 뉴스를 모아 봅니다(로그인해야 볼 수 있습니다).',
-      '<b>직원 · 지점·사업단</b>: 함께 일하는 직원과 조직 정보를 정리합니다.']), G('office:notice', '공지') + G('office:news', '뉴스')) +
+      '<b>공지사항 · 지점일정</b>: 지점 공지와 지점 일정을 적어 둡니다.',
+      '<b>보험뉴스</b>: 실손·자동차·생명·손해보험 등 주제별 보험 뉴스를 모아 봅니다(로그인해야 볼 수 있습니다).',
+      '<b>직원정보 · 지사·사업단</b>: 함께 일하는 직원과 조직 정보를 정리합니다.']), G('office:news', '보험뉴스') + G('office:notice', '공지사항')) +
     S('설정 메뉴', false, UL([
       '<b>내정보 · 라이선스 · 계정설정</b>: 내 정보, 보유 자격증(이미지·PDF), 로그인 계정.',
       '<b>화면설정</b>: 밝기·글자 크기·시작 화면·달력 시작 요일 등. "보기" 묶음은 지금 쓰는 기기에만 적용되어 휴대폰과 컴퓨터를 따로 맞출 수 있습니다.',
@@ -8698,7 +8698,7 @@ function teamSection() {
   return '<section class="panel"><div class="row between"><h2>팀 · ' + esc(team.info.name) + ' <span class="chip' + (mgr ? ' warn' : '') + '">' + (mgr ? '관리자' : 'FC') + '</span></h2><button class="btn sm" data-act="teamRefresh"' + busy + '>새로 고침</button></div>' + err +
     (mgr ? '<div class="team-code"><span class="muted">초대 코드</span><b class="num">' + esc(team.info.code) + '</b><button class="btn sm" data-act="teamCopy">복사</button>' +
       '<button class="btn ghost sm' + (ui.armed === 'tmRotate' ? ' danger armed' : '') + '" data-act="teamRotate"' + busy + '>' + (ui.armed === 'tmRotate' ? '한 번 더 누르면 새 코드 (예전 코드는 막힘)' : '새 코드 만들기') + '</button></div>' +
-      '<p class="muted" style="margin:6px 0 10px">FC에게 이 코드를 알려 주면 설정 → 계정설정 → 팀에서 코드를 넣고 들어옵니다. 팀 공지는 지점 → 공지에서 올리고, FC 실적은 지점 → 팀 현황에서 봅니다.</p>'
+      '<p class="muted" style="margin:6px 0 10px">FC에게 이 코드를 알려 주면 설정 → 계정설정 → 팀에서 코드를 넣고 들어옵니다. 팀 공지는 지점 → 공지사항에서 올리고, FC 실적은 지점 → 팀 현황에서 봅니다.</p>'
       : '<div class="field" style="margin:4px 0 10px"><span>관리자에게 실적 숫자 공유 <small class="muted">고객 수, 이번 달 상담·제안·성사, 갱신 예정, 할 일 건수만. 고객 이름·연락처는 안 보냅니다.</small></span>' +
         '<span class="seg seg-f"><button type="button" class="seg-btn' + (me.share_stats ? ' on' : '') + '" data-act="teamShare" data-id="1"' + busy + '>공유</button><button type="button" class="seg-btn' + (!me.share_stats ? ' on' : '') + '" data-act="teamShare" data-id=""' + busy + '>안 함</button></span></div>') +
     '<h3 class="sub-h">구성원 ' + team.members.length + '명</h3><ul class="team-list">' + rows + '</ul>' +
