@@ -851,6 +851,8 @@ input[type=time] { background: var(--surface); border: 1px solid var(--line); bo
 .wlist li { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
 .celeb-list li.celeb-gh { gap: 8px; padding: 10px 0 4px; border-bottom: 0; font-size: 12.5px; color: var(--ink-2); }
 .celeb-list li.celeb-gh:first-child { padding-top: 0; }
+#licSec { scroll-margin-top: 120px; }
+#fcCardSec .fc-card { border: 0; padding: 0; margin: 0; background: none; }
 .celeb-btn.on { color: var(--ok); border-color: var(--ok); background: var(--surface); }
 li.celeb-done > :not(.celeb-btn), tr.celeb-done > td:not(:last-child) { opacity: .5; }
 li.celeb-done .what { text-decoration: line-through; }
@@ -2668,16 +2670,16 @@ function render() {
 
 // ===== 화면 이동 (주소 # 으로 기억 → 뒤로가기 동작) =====
 var STEPS = [['info', '고객 정보'], ['policies', '계약 입력'], ['analysis', '보장분석'], ['plan', '정리·설계'], ['proposal', '제안서']];
-var SETTING_SUBS = [['me', '내정보'], ['license', '라이선스'], ['account', '계정설정'], ['display', '화면설정'], ['data', '자료관리'], ['rules', '분석기준'], ['dict', '담보사전'], ['products', '상품관리']];
+var SETTING_SUBS = [['me', '내정보'], ['account', '계정설정'], ['display', '화면설정'], ['data', '자료관리'], ['rules', '분석기준'], ['dict', '담보사전'], ['products', '상품관리']];
 var WORK_SUBS = [['home', '오늘'], ['calendar', '일정'], ['tasks', '할 일'], ['birthday', '생일'], ['anniv', '기념일'], ['gifts', '선물'], ['stats', '실적'], ['comm', '수수료']];
 var OFFICE_SUBS = [['news', '보험뉴스'], ['notice', '공지사항'], ['schedule', '지점일정'], ['staff', '직원정보'], ['branch', '지사·사업단']]; // 직원 생일은 업무 → 생일(직원)로 합침(2026-11-03)
 var OFFICE_TITLES = { sbd: '직원 생일' }; // 메뉴 이름은 짧게, 화면 제목은 그대로
 function officeSubs() { return team.info ? OFFICE_SUBS.concat([['team', '지점현황']]) : OFFICE_SUBS; }
-var LIST_SUBS = [['list', '고객목록'], ['contacts', '고객관계'], ['family', '가족·가구'], ['notes', '고객상담'], ['props', '제안기록'], ['claims', '보험금청구']]; // 관리 필요는 고객목록 숫자 칸으로 합침(2026-11-03)
+var LIST_SUBS = [['list', '고객목록'], ['family', '가족·가구'], ['contacts', '고객관계'], ['notes', '고객상담'], ['props', '제안기록'], ['claims', '보험금청구']]; // 관리 필요는 고객목록 숫자 칸으로 합침(2026-11-03)
 var LIST_TITLES = { list: '고객목록', contacts: '고객관계', family: '가족·가구', notes: '고객상담', props: '제안기록', claims: '보험금청구' }; // 메뉴 이름은 짧게, 화면 제목은 그대로(2026-11-03)
-var INS_SUBS = [['all', '장기'], ['fire', '화재'], ['drv', '운전자'], ['auto', '자동차'], ['insurer', '보험사'], ['guide', '가이드']];
+var INS_SUBS = [['all', '보장보험'], ['fire', '화재보험'], ['drv', '운전자보험'], ['auto', '자동차보험'], ['insurer', '보험사'], ['guide', '가이드']]; // 2026-11-05 이름 변경
 // 서브메뉴는 짧은 이름, 페이지 제목은 원래 이름 (2026-11-03)
-var INS_TITLES = { all: '장기보험', auto: '자동차보험', fire: '화재보험', drv: '운전자보험', insurer: '보험사 연락처', guide: '보험가이드' };
+var INS_TITLES = { all: '보장보험', auto: '자동차보험', fire: '화재보험', drv: '운전자보험', insurer: '보험사 연락처', guide: '보험가이드' };
 function routeHash() {
   if (ui.view === 'work') return '#work-' + (ui.wsub || 'home');
   if (ui.view === 'office') return '#office-' + (ui.osub || 'notice');
@@ -2709,7 +2711,7 @@ function applyHash() {
   if ((m = h.match(/^#c-([A-Za-z0-9]+)-(info|policies|analysis|plan|proposal)$/)) && store.customers.some(function (c) { return c.id === m[1]; })) {
     ui.view = 'customer'; ui.cid = m[1]; ui.tab = m[2];
   } else if ((m = h.match(/^#settings(?:-(me|license|account|display|rules|dict|products|data))?$/))) {
-    ui.view = 'settings'; ui.sub = m[1] || 'me';
+    ui.view = 'settings'; ui.sub = m[1] === 'license' ? 'me' : (m[1] || 'me'); // 라이선스는 내정보 안으로 (2026-11-05)
   } else if ((h === '' || h === '#') && store.settings.params.startView === 'list') {
     ui.view = 'list'; ui.lsub = 'list';
   } else if ((h === '' || h === '#') && store.settings.params.startView === 'ins') {
@@ -2814,7 +2816,8 @@ function srItems(q) {
     ['고객 · 고객목록', function () { go('list', { lsub: 'list' }); }], ['고객 · 고객관계', function () { go('list', { lsub: 'contacts' }); }], ['고객 · 가족·가구', function () { go('list', { lsub: 'family' }); }], ['고객 · 고객상담', function () { go('list', { lsub: 'notes' }); }], ['고객 · 제안기록', function () { go('list', { lsub: 'props' }); }], ['고객 · 보험금청구', function () { go('list', { lsub: 'claims' }); }],
     ['보험 · 장기', function () { go('insurance', { isub: 'all' }); }], ['보험 · 자동차', function () { go('insurance', { isub: 'auto' }); }], ['보험 · 화재', function () { go('insurance', { isub: 'fire' }); }], ['보험 · 보험사 연락처', function () { go('insurance', { isub: 'insurer' }); }],
     ['지점 · 보험뉴스', function () { go('office', { osub: 'news' }); }], ['지점 · 공지사항', function () { go('office', { osub: 'notice' }); }], ['지점 · 지점일정', function () { go('office', { osub: 'schedule' }); }], ['지점 · 직원정보', function () { go('office', { osub: 'staff' }); }], ['지점 · 지사·사업단', function () { go('office', { osub: 'branch' }); }]]
-    .concat(SETTING_SUBS.map(function (x) { return ['설정 · ' + x[1], function () { go('settings', { sub: x[0] }); }]; }));
+    .concat(SETTING_SUBS.map(function (x) { return ['설정 · ' + x[1], function () { go('settings', { sub: x[0] }); }]; }))
+    .concat([['설정 · 내정보 · 라이선스', function () { go('settings', { sub: 'me' }); setTimeout(function () { var el = document.getElementById('licSec'); if (el) el.scrollIntoView({ block: 'start' }); }, 60); }]]);
   WORK_SUBS.forEach(function (x) { MENUS.push(['업무 · ' + x[1], function () { go('work', { wsub: x[0] }); }]); }); INS_SUBS.forEach(function (x) { MENUS.push(['보험 · ' + x[1] + (x[0] === 'insurer' ? ' 연락처' : x[0] === 'guide' ? ' (보험가이드)' : ''), function () { go('insurance', { isub: x[0] }); }]); });
   var seenM = {}; MENUS = MENUS.filter(function (m) { var k = m[0].replace(/\s/g, ''); if (seenM[k]) return false; seenM[k] = 1; return true; });
   MENUS.forEach(function (m) { if (hit(m[0])) add('메뉴', m[0], '', m[1]); });
@@ -2833,7 +2836,7 @@ function srItems(q) {
   (CT.friends || []).forEach(function (x) { if (hit(x.name) || hit(x.rel)) add('지인', x.name || '이름 없음', x.rel || '', function () { go('work', { wsub: 'birthday' }); openDetail('friend:' + x.id); }); });
   (CT.insurers || []).forEach(function (x) { if (hit(x.name)) add('보험사', x.name, [x.tel || x.phone, x.claim].filter(Boolean).join(' · '), function () { go('insurance', { isub: 'insurer' }); }); });
   noticeList().forEach(function (x) { if (hit(x.title) || hit(x.body)) add('공지', x.title || '공지', String(x.date || '').replace(/-/g, '.'), function () { go('office', { osub: 'notice' }); }); });
-  licList().forEach(function (x) { if (hit(x.kind) || hit(x.no) || hit(x.org)) add('라이선스', x.kind || '자격', x.no || '', function () { go('settings', { sub: 'license' }); }); });
+  licList().forEach(function (x) { if (hit(x.kind) || hit(x.no) || hit(x.org)) add('라이선스', x.kind || '자격', x.no || '', function () { go('settings', { sub: 'me' }); setTimeout(function () { var el = document.getElementById('licSec'); if (el) el.scrollIntoView({ block: 'start' }); }, 60); }); });
   return out.slice(0, 40);
 }
 function srDraw() {
@@ -3533,8 +3536,8 @@ function renderProposal(c, an) {
 
 function renderSettings() {
   var s = store.settings, sub = ui.sub || 'me', body = '';
-  if (sub === 'license') { body = licensePanel();
-  } else if (sub === 'account') { // 계정설정: 내 계정·팀·패스키 로그인 (2026-11-04, 내정보에서 나눔)
+  if (sub === 'license') sub = ui.sub = 'me'; // 라이선스는 내정보 안으로 (2026-11-05)
+  if (sub === 'account') { // 계정설정: 내 계정·팀·패스키 로그인 (2026-11-04, 내정보에서 나눔)
     body = renderAccountSection() + teamSection() + passkeySection();
     if (!cloud.on || !cloud.user) body = '<div class="info">로그인 없이 이 기기에만 저장하는 방식으로 쓰고 있습니다. 내 계정·패스키 로그인은 로그인해서 쓸 때 여기에 나옵니다.</div>' + body;
   } else if (sub === 'me') {
@@ -3549,6 +3552,9 @@ function renderSettings() {
       lbl('지점 주소', f('fc', 'addr', s.fc.addr || '', { ph: '예: 경기도 고양시 일산동구 중앙로 1234, 5층' }), 'fc-addr') + '</div>' +
       '<div class="fc-preview"><span class="muted">제안서 표시</span><b>' + (fcLine ? esc(fcLine) : '<span class="muted">아직 입력한 정보가 없습니다</span>') + '</b>' + (fcOffice(s.fc) ? '<span class="fc-office">' + esc(fcOffice(s.fc)) + '</span>' : '') + '</div>' +
       (miss.length ? '<div class="notice">' + miss.join('·') + '을(를) 넣으면 제안서 아래에 담당자 정보가 제대로 나옵니다.</div>' : '') +
+'</section>' +
+      '<div id="licSec">' + licensePanel() + '</div>' +
+      '<section class="panel" id="fcCardSec"><h2>명함 <span class="muted">제안서 마지막에 넣을 수 있습니다</span></h2>' +
       (function () { var card = s.fc.card, armed = ui.armed === 'fcCardDel';
         return '<div class="fc-card"><div class="fc-card-body">' + (card ? '<img class="fc-card-img" src="' + attr(card) + '" alt="내 명함">' : '<label class="fc-card-empty" for="fcCardFile"><b>명함 이미지</b><span>눌러서 사진이나 스캔 파일을 고르세요</span></label>') + '</div>' +
           '<div class="fc-card-side"><b>명함 이미지</b><span class="muted">JPG·PNG 사진이나 스캔 파일. 휴대폰에서는 바로 촬영할 수도 있습니다. 큰 사진은 자동으로 줄여 저장합니다.' + (s.fc.cardAt ? ' (' + esc(s.fc.cardAt) + ' 등록)' : '') + '</span>' +
@@ -3560,7 +3566,7 @@ function renderSettings() {
         lbl('기념일 문구 ({이름}, {기념일}, {FC}는 자동으로 바뀝니다)', f('param', 'anMsg', s.params.anMsg || AN_MSG, { type: 'textarea' }), 'span2') +
         lbl('만기 안내 문구 ({이름}, {보험}, {만기일}, {FC}는 자동으로 바뀝니다)', f('param', 'expMsg', s.params.expMsg || EXP_MSG, { type: 'textarea' }), 'span2') +
         lbl('보험금 지급 안내 문구 ({이름}, {청구}, {금액}, {FC}는 자동으로 바뀝니다)', f('param', 'payMsg', s.params.payMsg || PAY_MSG, { type: 'textarea' }), 'span2') + '</div>' +
-      '<p class="muted" style="margin:0">업무 → 생일·기념일의 "축하 문자"를 누르면 이 문구로 휴대폰 문자 앱이 열립니다. 만기 안내 문구는 보험 → 자동차·화재에서 만기 30일 안 계약의 "안내 문자 복사"에 쓰입니다.</p></section>';
+      '<p class="muted" style="margin:0">업무 → 생일·기념일의 "축하 문자"를 누르면 이 문구로 휴대폰 문자 앱이 열립니다. 만기 안내 문구는 보험 → 자동차보험·화재보험에서 만기 30일 안 계약의 "안내 문자 복사"에 쓰입니다.</p></section>';
   } else if (sub === 'display') { // 유니타임즈 화면 설정 방식: 묶음 패널 + 줄(이름·설명 | 고르기) (2026-11-05)
     var zk = getZoomKey(), sv = s.params.startView || 'work', tk = getThemeKey(), cv = s.params.calView === 'week' ? 'week' : 'month', upN = [7, 14, 30].indexOf(num(s.params.upDays)) >= 0 ? num(s.params.upDays) : 7;
     var P9 = function (title, sub2, inner) { return '<section class="panel set-panel"><div class="set-ph"><h2>' + title + '</h2>' + (sub2 ? '<span class="set-scope">' + sub2 + '</span>' : '') + '</div>' + inner + '</section>'; };
@@ -5322,7 +5328,7 @@ function renderInsurance() {
   } else if (sub === 'drv') { body = polViewTabs('drv') + ((ui.drvV || 'all') === 'all' ? drvPanel() : drvByInsPanel());
   } else if (sub === 'guide') { body = insGuidePanel();
   } else body = productsPanel();
-  if (sub === 'all' || sub === 'byins' || sub === 'byowner') body = '<div class="seg long-tabs" role="tablist" aria-label="장기보험 보기">' + [['all', '전체 계약'], ['byins', '보험사별 계약']].map(function (t) { return '<button class="seg-btn' + (sub === t[0] ? ' on' : '') + '" role="tab" aria-selected="' + (sub === t[0]) + '" data-act="goIns" data-id="' + t[0] + '">' + t[1] + '</button>'; }).join('') + '</div>' + body;
+  if (sub === 'all' || sub === 'byins' || sub === 'byowner') body = '<div class="seg long-tabs" role="tablist" aria-label="보장보험 보기">' + [['all', '전체 계약'], ['byins', '보험사별 계약']].map(function (t) { return '<button class="seg-btn' + (sub === t[0] ? ' on' : '') + '" role="tab" aria-selected="' + (sub === t[0]) + '" data-act="goIns" data-id="' + t[0] + '">' + t[1] + '</button>'; }).join('') + '</div>' + body;
   return subPage('보험', INS_SUBS, (sub === 'byins' || sub === 'byowner') ? 'all' : sub, 'goIns', '보험 메뉴', body, INS_TITLES);
 }
 // 자주 제안하는 상품 기본 목록 (상품명은 공개 기사 기준, 담보·금액은 이 상품군의 흔한 예시 구성 — 보험료는 넣지 않음)
@@ -8201,15 +8207,15 @@ function howtoModalHtml() {
       '<b>제안기록</b>: 보낸 제안서의 진행 단계(제안함·청약·성사·보류 등)와 후속 연락을 관리합니다.',
       '<b>보험금청구</b>: 고객의 청구 건마다 서류 체크, 진행 단계(서류 준비 → 접수 → 심사 → 지급·부지급), 지급액을 관리합니다. 사고·진료일부터 3년인 청구 기한도 알려 줍니다.']), G('list:list', '고객목록') + G('list:claims', '보험금청구')) +
     S('보험 메뉴', false, UL([
-      '<b>장기 · 화재 · 운전자 · 자동차</b>: 고객들의 계약을 종류별로 모아 봅니다. 만기·갱신이 다가오는 계약을 찾기 좋습니다.',
+      '<b>보장보험 · 화재보험 · 운전자보험 · 자동차보험</b>: 고객들의 계약을 종류별로 모아 봅니다. 만기·갱신이 다가오는 계약을 찾기 좋습니다.',
       '<b>보험사</b>: 보험사 연락처를 직접 정리해 둡니다.',
-      '<b>가이드</b>: 상담에 참고할 보험 기본 안내입니다.']), G('insurance:all', '장기') + G('insurance:guide', '가이드')) +
+      '<b>가이드</b>: 상담에 참고할 보험 기본 안내입니다.']), G('insurance:all', '보장보험') + G('insurance:guide', '가이드')) +
     S('지점 메뉴', false, UL([
       '<b>공지사항 · 지점일정</b>: 지점 공지와 지점 일정을 적어 둡니다.',
       '<b>보험뉴스</b>: 실손·자동차·생명·손해보험 등 주제별 보험 뉴스를 모아 봅니다(로그인해야 볼 수 있습니다).',
       '<b>직원정보 · 지사·사업단</b>: 함께 일하는 직원과 조직 정보를 정리합니다.']), G('office:news', '보험뉴스') + G('office:notice', '공지사항')) +
     S('설정 메뉴', false, UL([
-      '<b>내정보 · 라이선스 · 계정설정</b>: 내 정보, 보유 자격증(이미지·PDF), 로그인 계정.',
+      '<b>내정보 · 계정설정</b>: 내 정보와 보유 자격증(라이선스, 이미지·PDF), 축하·안내 문자 문구, 로그인 계정.',
       '<b>화면설정</b>: 밝기·글자 크기·시작 화면·달력 시작 요일 등. "보기" 묶음은 지금 쓰는 기기에만 적용되어 휴대폰과 컴퓨터를 따로 맞출 수 있습니다.',
       '<b>자료관리</b>: 백업 파일 받기·불러오기, 오프라인 모드, 체험용 예시 자료.',
       '<b>분석기준 · 담보사전 · 상품관리</b>: 보장분석 기준 금액, 담보 이름 정리, 제안에 쓸 상품 목록.']), G('settings:display', '화면설정') + G('settings:data', '자료관리')) +
@@ -8291,7 +8297,7 @@ function detailModalHtml() {
   } else if (m.kind === 'poladd') {
     var PL = store.customers.slice().sort(function (a, b) { return (a.sample ? 1 : 0) - (b.sample ? 1 : 0) || byName(a, b); });
     if (!custById(ui.polaCid || '') && PL[0]) ui.polaCid = PL[0].id;
-    title = '장기보험 계약 추가'; head = '어느 고객의 계약을 넣을지 고르세요';
+    title = '보장보험 계약 추가'; head = '어느 고객의 계약을 넣을지 고르세요';
     body = '<div class="grid-form dm-grid">' + (PL.length ? lbl('고객', f('ui', 'polaCid', ui.polaCid || '', { type: 'select', options: PL.map(function (c) { return [c.id, (c.name || '이름 없음') + ' · 계약 ' + c.policies.length + '건']; }) }), 'span2') +
       '<div class="field span2"><button class="btn primary" data-act="polaGo">이 고객 계약 입력</button></div>' +
       '<p class="muted span2" style="margin:0">고객의 계약 입력 화면에 빈 계약이 새로 생깁니다. 보험사·상품·보험료·담보를 넣으면 이 화면에 바로 반영됩니다. 증권 PDF가 있으면 그 계약의 "증권 PDF에서 찾기"로 담보 후보를 찾을 수 있습니다.</p>'
