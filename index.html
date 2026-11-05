@@ -849,6 +849,11 @@ input[type=time] { background: var(--surface); border: 1px solid var(--line); bo
 .work-cols { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 14px; align-items: start; }
 .wlist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
 .wlist li { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.celeb-list li.celeb-gh { gap: 8px; padding: 10px 0 4px; border-bottom: 0; font-size: 12.5px; color: var(--ink-2); }
+.celeb-list li.celeb-gh:first-child { padding-top: 0; }
+.celeb-btn.on { color: var(--ok); border-color: var(--ok); background: var(--surface); }
+li.celeb-done > :not(.celeb-btn), tr.celeb-done > td:not(:last-child) { opacity: .5; }
+li.celeb-done .what { text-decoration: line-through; }
 .wlist li:last-child { border-bottom: 0; }
 .wlist li.is-done .what { text-decoration: line-through; color: var(--ink-3); }
 .wlist .what { flex: 1 1 200px; min-width: 0; }
@@ -5794,7 +5799,7 @@ function renderTodo() {
       if (ad != null && ad >= -7 && ad <= 30) renew.push({ d: ad, h: '<li><span class="when ' + (ad < 0 ? 'late' : '') + '">' + (ad < 0 ? (-ad) + '일 지남' : dLabel(ad)) + '</span>' + custLink(c, 'info') + '<span class="what"><button class="link-btn" data-act="openAuto" data-id="' + c.id + ':' + a.id + '">자동차보험 ' + esc(autoLabel(a)) + '</button> · 만기 ' + esc(String(a.end).replace(/-/g, '.')) + ' (갱신 견적 비교)</span></li>' });
     });
     var bd = nextBirthday(c);
-    if (bd && bd.days <= bdDaysN()) birth.push({ d: bd.days, h: '<li><span class="when ' + (bd.days === 0 ? 'now' : '') + '">' + dLabel(bd.days) + '</span><span class="who who-c">고객</span>' + custLink(c, 'info') + '<span class="what">' + Number(bd.date.slice(5, 7)) + '월 ' + Number(bd.date.slice(8, 10)) + '일' + (c.bdCal === 'lunar' ? ' (' + esc(bdDesc(c)) + ')' : '') + (bd.age != null ? ' · 만 ' + bd.age + '세' : '') + '</span>' + (c.phone ? telLink(c.phone) : '') + '</li>' });
+    if (bd && bd.days <= bdDaysN()) birth.push({ d: bd.days, k: celebKey('bc', c.id, bd.date), h: '<li><span class="when ' + (bd.days === 0 ? 'now' : '') + '">' + dLabel(bd.days) + '</span><span class="who who-c">고객</span>' + custLink(c, 'info') + '<span class="what">' + Number(bd.date.slice(5, 7)) + '월 ' + Number(bd.date.slice(8, 10)) + '일' + (c.bdCal === 'lunar' ? ' (' + esc(bdDesc(c)) + ')' : '') + (bd.age != null ? ' · 만 ' + bd.age + '세' : '') + '</span>' + (c.phone ? telLink(c.phone) : '') + '</li>' });
     (c.claims || []).forEach(function (x) { var L = claimTodo(c, x).filter(function (it) { return it.date <= tw; }); if (!L.length) return; var it = L.sort(function (a, b) { return a.date < b.date ? -1 : 1; })[0], dn = daysUntil(it.date);
       var dueX = claimDue(x), isDue = it.label.indexOf(' 청구 기한 ') >= 0 && dueX && dueX.left != null, wl = isDue ? (dueX.left < 0 ? '기한 지남' : '기한 ' + dueX.left + '일 남음') : dLabel(dn);
       claimRows.push({ d: isDue ? Math.min(dn, -1) : dn, h: '<li><span class="when ' + (isDue || dn < 0 ? 'late' : dn === 0 ? 'now' : '') + '">' + wl + '</span>' + custLink(c, 'info') + '<span class="what">' + esc(it.label.replace((c.name || '이름 없음') + ' ', '')) + ' (' + esc(x.stage) + ')</span><button class="btn sm" data-act="claimOpen" data-id="' + c.id + '" data-pid="' + x.id + '">청구 보기</button></li>' }); });
@@ -5804,14 +5809,21 @@ function renderTodo() {
   licList().forEach(function (x) { var ld2 = licDue(x); if (ld2 != null && ld2 <= 60) renew.push({ d: ld2, h: '<li><span class="when ' + (ld2 < 0 ? 'late' : '') + '">' + (ld2 < 0 ? (-ld2) + '일 지남' : dLabel(ld2)) + '</span><b>내 자격</b><span class="what">' + esc(x.kind || '자격') + ' 보수교육·갱신 ' + esc(x.renew.replace(/-/g, '.')) + '</span><button class="btn ghost sm" data-act="licEdit" data-id="' + x.id + '">라이선스</button></li>' }); });
   staffWithBd().forEach(function (st) {
     var sb = nextBirthday(st);
-    if (sb && sb.days <= num(P.birthdayDays)) birth.push({ d: sb.days, h: '<li><span class="when ' + (sb.days === 0 ? 'now' : '') + '">' + dLabel(sb.days) + '</span><span class="who who-s">직원</span><b>' + esc(st.name || '') + '</b><span class="what">' + Number(sb.date.slice(5, 7)) + '월 ' + Number(sb.date.slice(8, 10)) + '일' + (st.bdCal === 'lunar' ? ' (' + esc(bdDesc(st)) + ')' : '') + (st.role ? ' · ' + esc(st.role) : '') + '</span>' + (st.phone ? telLink(st.phone) : '') + '</li>' });
+    if (sb && sb.days <= bdDaysN()) birth.push({ d: sb.days, k: celebKey('bs', st.id, sb.date), h: '<li><span class="when ' + (sb.days === 0 ? 'now' : '') + '">' + dLabel(sb.days) + '</span><span class="who who-s">직원</span><b>' + esc(st.name || '') + '</b><span class="what">' + Number(sb.date.slice(5, 7)) + '월 ' + Number(sb.date.slice(8, 10)) + '일' + (st.bdCal === 'lunar' ? ' (' + esc(bdDesc(st)) + ')' : '') + (st.role ? ' · ' + esc(st.role) : '') + '</span>' + (st.phone ? telLink(st.phone) : '') + '</li>' });
   });
+  annivList().forEach(function (a) { // 기념일도 같은 칸에 (2026-11-05)
+    var nx = annivNext(a); if (!nx || nx.days > bdDaysN()) return;
+    var ac = a.who === 'c' ? custById(a.cid) : null, ast = a.who === 's' ? store.settings.contacts.staff.filter(function (y) { return y.id === a.sid; })[0] : null, aph = ac ? ac.phone : ast ? ast.phone : '';
+    birth.push({ d: nx.days, k: celebKey('an', a.id, nx.date), h: '<li><span class="when ' + (nx.days === 0 ? 'now' : '') + '">' + dLabel(nx.days) + '</span><span class="who ' + (a.who === 's' ? 'who-s">직원' : a.who === 'e' ? 'who-e">지인' : 'who-c">고객') + '</span>' + (ac ? custLink(ac, 'info') : '<b>' + esc(annivWho(a)) + '</b>') + '<span class="what">' + Number(nx.date.slice(5, 7)) + '월 ' + Number(nx.date.slice(8, 10)) + '일 · ' + esc(a.type || '기념일') + esc(annivYears(a, nx.date)) + '</span>' + (aph ? telLink(aph) : '') + '<button class="btn ghost sm" data-act="openAnniv" data-id="' + a.id + '">수정</button></li>' });
+  });
+  var bLeft = birth.filter(function (x) { return !celebOn(x.k); }).length;
+  birth.forEach(function (x) { x.h = celebMark(x.h, x.k); if (celebOn(x.k)) x.d += 0.5; });
   var srt = function (a) { return a.sort(function (x, y) { return x.d - y.d; }).map(function (x) { return x.h; }); };
   return '<p class="muted" style="margin:0">' + today() + ' 기준 · 기간은 설정 → 분석기준에서 바꿀 수 있습니다.</p>' +
     '<div class="todo-grid">' +
     todoCard('연락할 고객', '다음 연락일 ' + num(P.followDays) + '일 안·지난 것', srt(follow), '연락 예정인 고객이 없습니다. 고객 정보 → 상담 기록에서 다음 연락일을 넣으세요.', 'tmFollow') +
     todoCard('갱신·납입 완료 예정', num(P.renewDays) + '일 안', srt(renew), '예정된 갱신·납입 완료가 없습니다. 계약 입력에서 다음 갱신일을 넣으면 여기에 보입니다.', 'tmRenew') +
-    todoCard('생일', bdDaysN() + '일 안', srt(birth), '가까운 생일이 없습니다.', 'tmBirth') +
+    todoCard('생일·기념일', bdDaysN() + '일 안' + (birth.length ? ' · 축하 남음 ' + bLeft : ''), srt(birth), '가까운 생일·기념일이 없습니다.', 'tmBirth') +
     todoCard('보험금 청구', '확인할 때가 된 청구', srt(claimRows), '챙길 청구가 없습니다. 고객 → 보험금청구에서 청구를 기록하면 여기에 보입니다.', 'tmClaim') +
     todoCard('개인정보 동의', num(P.consentMonths) ? '미동의·만료 30일 안' : '미동의 (보유 기간 미설정)', srt(consent), '확인할 동의가 없습니다.', 'tmConsent') +
     '</div>';
@@ -6528,6 +6540,23 @@ function expMsgBtn(kind, c, a, d) { return d != null && d <= 30 && d >= -30 ? ' 
 function annivMsg(a, iso) { var t = (a.type || '기념일') + (iso ? annivYears(a, iso) : ''); return String(store.settings.params.anMsg || AN_MSG).replace(/\{이름\}/g, annivWho(a)).replace(/\{기념일\}/g, t).replace(/\{FC\}/g, store.settings.fc.name || '담당 FC'); }
 var ANNIV_TYPES = ['결혼기념일', '개업일', '첫 계약일', '입사일', '자녀 생일', '기타'];
 function whoSeg(act, cur, items) { return '<span class="seg who-seg" role="radiogroup" aria-label="보이는 대상">' + items.map(function (o) { var on = cur === o[0]; return '<button type="button" class="seg-btn' + (on ? ' on' : '') + '" role="radio" aria-checked="' + on + '" data-act="' + act + '" data-id="' + o[0] + '">' + o[1] + (o[2] != null ? ' <b class="num">' + o[2] + '</b>' : '') + '</button>'; }).join('') + '</span>'; }
+// ===== 축하 완료 표시 (2026-11-05) — settings.celebDone[키] = 완료한 날. 키에 그해 날짜가 들어가 해마다 새로 시작 =====
+function celebKey(t, id, date) { return t + ':' + id + ':' + date; }
+function celebOn(k) { var m = store.settings.celebDone; return !!(m && k && m[k]); }
+function celebBtn(k) { var on = celebOn(k); return '<button class="btn sm celeb-btn' + (on ? ' on' : '') + '" data-act="celebDone" data-id="' + attr(k) + '" aria-pressed="' + on + '" title="' + (on ? '다시 누르면 완료 취소' : '축하를 마쳤으면 누르세요') + '">' + (on ? '✓ 축하 완료' : '축하 완료') + '</button>'; }
+function celebMark(h, k) { // 줄(li/tr) 끝에 완료 버튼, 끝낸 줄은 흐리게
+  var on = celebOn(k);
+  if (/^<li/.test(h)) { h = h.replace(/<\/li>$/, celebBtn(k) + '</li>'); return on ? h.replace(/^<li( class="([^"]*)")?/, function (m0, a, c) { return '<li class="celeb-done' + (c ? ' ' + c : '') + '"'; }) : h; }
+  h = h.replace(/<\/td><\/tr>$/, ' ' + celebBtn(k) + '</td></tr>'); return on ? h.replace(/^<tr( class="([^"]*)")?/, function (m0, a, c) { return '<tr class="celeb-done' + (c ? ' ' + c : '') + '"'; }) : h;
+}
+function celebGroup(d) { return d <= 0 ? '오늘' : d === 1 ? '내일' : d <= 6 ? '이번 주' : '그 뒤'; }
+function celebGroupH(shown, all, daysFn, keyFn, rowFn, unit) { // 다가오는 목록을 오늘 · 내일 · 이번 주 · 그 뒤로 묶음
+  var cnt = {}; all.forEach(function (x) { var g = celebGroup(daysFn(x)); cnt[g] = cnt[g] || [0, 0]; cnt[g][0]++; if (celebOn(keyFn(x))) cnt[g][1]++; });
+  var prev = null;
+  return shown.map(function (x) { var g = celebGroup(daysFn(x)), c = cnt[g], h = g !== prev ? '<li class="celeb-gh"><b>' + g + '</b><span class="muted">' + c[0] + (unit || '건') + (c[1] ? ' · 남음 ' + (c[0] - c[1]) : '') + '</span></li>' : ''; prev = g; return h + celebMark(rowFn(x), keyFn(x)); }).join('');
+}
+function anCelebKey(o) { return celebKey('an', o.a.id, o.nx.date); }
+function bdCelebKey(x) { return celebKey(x.c ? 'bc' : x.s ? 'bs' : 'bf', (x.c || x.s || x.f).id, x.nb.date); }
 function annivList() { return store.settings.annivs = store.settings.annivs || []; }
 function annivWho(a) { if (a.who === 's') { var st = store.settings.contacts.staff.filter(function (x) { return x.id === a.sid; })[0]; return st ? (st.name || '직원') : '직원'; } if (a.who === 'e') return a.name || '이름 없음'; var c = custById(a.cid); return c ? (c.name || '고객') : (a.name || '고객 미선택'); }
 function annivDateIn(a, y) { if (!/^\d{4}-\d{2}-\d{2}$/.test(String(a.date || ''))) return '';
@@ -6545,7 +6574,7 @@ function annivPanel() {
   var AW = /^(s|e|o)$/.test(ui.anW || '') ? 'o' : (ui.anW === 'c' ? 'c' : ''), anShow = function (a) { return !AW || (AW === 'c' ? a.who === 'c' : a.who !== 'c'); }, fl = function (L) { return L.filter(function (x) { return anShow(x.a); }); };
   var tabs = '<div class="month-tabs">' + [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(function (mo) { var n = fl(by[mo]).length; return '<button class="todo' + (mo === m ? ' on' : '') + '" data-act="anM" data-id="' + mo + '">' + mo + '월' + (n ? ' <b>' + n + '</b>' : '') + '</button>'; }).join('') + '</div>';
   var fchips = '<button class="btn primary sm" data-act="annivNew">+ 추가</button>';
-  var anMonList = fl(by[m]), rows = foldCut(anMonList, 5, 'anMonMore').map(function (x) {
+  var anMonList = fl(by[m]), rows = foldCut(anMonList, 5, 'anMonMore').map(function (x) { return celebMark((function () {
     var isA = x.k === 'anniv', c = x.c || (isA && x.a.who === 'c' ? custById(x.a.cid) : null), st = isA && x.a.who === 's' ? store.settings.contacts.staff.filter(function (y) { return y.id === x.a.sid; })[0] : null;
     var nx = isA ? annivNext(x.a) : nextBirthday(x.c), n = daysUntil(x.d);
     var whoH = (isA ? '<span class="who ' + (x.a.who === 's' ? 'who-s">직원' : x.a.who === 'e' ? 'who-e">지인' : 'who-c">고객') + '</span> ' : '') + (c ? custLink(c, 'info') : '<b>' + esc(x.who) + '</b>');
@@ -6561,15 +6590,16 @@ function annivPanel() {
       '<td data-l="남은 날"><span class="chip' + (n != null && n >= 0 && n <= 7 ? ' warn' : '') + '">' + (n != null && n < 0 && nx ? '지남 · 다음 ' + dLabel(nx.days) : dLabel(n)) + '</span></td>' +
       '<td class="num" data-l="주년·나이">' + ext + '</td><td class="num" data-l="연락처">' + (phone ? esc(phone) : '<span class="muted">연락처 없음</span>') + '</td>' +
       '<td style="white-space:nowrap">' + (ph ? '<a class="btn sm tel" href="sms:' + attr(ph) + SMS_SEP + 'body=' + encodeURIComponent(msg) + '">축하 문자</a> ' : '') + (c ? '<button class="btn sm" data-act="giftNew" data-id="' + c.id + '" data-k="' + attr(gOcc) + '">선물 기록</button> ' : '') + (isA ? '<button class="btn ghost sm" data-act="openAnniv" data-id="' + x.a.id + '">수정</button>' : '') + '</td></tr>';
-  }).join('');
+  })(), celebKey('an', x.a.id, x.d)); }).join('');
   // 생일 화면과 같은 구조: 다가오는 7일간 기념일(2026-11-04 30일→7일) → 월별 기념일 → 축하 문자 문구
-  var bdN = bdDaysN(), up = A.map(function (a) { return { a: a, nx: annivNext(a) }; }).filter(function (o) { return o.nx && o.nx.days <= bdN && anShow(o.a); }).sort(function (a, b) { return a.nx.days - b.nx.days; });
-  var upH = '<section class="panel"><div class="row between"><h2>다가오는 ' + bdN + '일간 기념일 ' + up.length + '건 <small class="muted">(고객 ' + up.filter(function (o) { return o.a.who === 'c'; }).length + ' · 직원 ' + up.filter(function (o) { return o.a.who !== 'c'; }).length + ')</small></h2>' + whoSeg('anW', AW, [['', '전체', A.length], ['c', '고객', A.filter(function (a) { return a.who === 'c'; }).length], ['o', '직원', A.filter(function (a) { return a.who !== 'c'; }).length]]) + '</div>' +
-    (up.length ? '<ul class="wlist">' + foldCut(up, 5, 'anUpMore').map(function (o) {
+  var bdN = bdDaysN(), up = A.map(function (a) { return { a: a, nx: annivNext(a) }; }).filter(function (o) { return o.nx && o.nx.days <= bdN && anShow(o.a); }).sort(function (a, b) { return a.nx.days - b.nx.days || celebOn(anCelebKey(a)) - celebOn(anCelebKey(b)); });
+  var anLeft = up.filter(function (o) { return !celebOn(anCelebKey(o)); }).length;
+  var upH = '<section class="panel"><div class="row between"><h2>다가오는 ' + bdN + '일간 기념일 ' + up.length + '건 <small class="muted">(고객 ' + up.filter(function (o) { return o.a.who === 'c'; }).length + ' · 직원 ' + up.filter(function (o) { return o.a.who !== 'c'; }).length + ')' + (up.length ? ' · 축하 남음 ' + anLeft : '') + '</small></h2>' + whoSeg('anW', AW, [['', '전체', A.length], ['c', '고객', A.filter(function (a) { return a.who === 'c'; }).length], ['o', '직원', A.filter(function (a) { return a.who !== 'c'; }).length]]) + '</div>' +
+    (up.length ? '<ul class="wlist celeb-list">' + celebGroupH(foldCut(up, 5, 'anUpMore'), up, function (o) { return o.nx.days; }, anCelebKey, function (o) {
       var a = o.a, c = a.who === 'c' ? custById(a.cid) : null, st = a.who === 's' ? store.settings.contacts.staff.filter(function (y) { return y.id === a.sid; })[0] : null, phone = c ? c.phone : st ? st.phone : '', ph = String(phone || '').replace(/[^\d+]/g, '');
       var whoCls = a.who === 's' ? 'who-s">직원' : a.who === 'e' ? 'who-e">지인' : 'who-c">고객';
       return '<li class="row-dbl" data-dbl="anniv:' + a.id + '" tabindex="0" title="두 번 누르면 수정"><span class="kchip k-anniv">' + dLabel(o.nx.days) + '</span><span class="who ' + whoCls + '</span><span class="what">' + esc(annivWho(a)) + ' · ' + Number(o.nx.date.slice(5, 7)) + '월 ' + Number(o.nx.date.slice(8, 10)) + '일 · ' + esc(a.type || '기념일') + esc(annivYears(a, o.nx.date)) + '</span>' +
-        (c ? custLink(c, 'info') : '') + (ph ? '<a class="btn sm tel" href="sms:' + attr(ph) + SMS_SEP + 'body=' + encodeURIComponent(annivMsg(a, o.nx.date)) + '">축하 문자</a>' : '') + '<button class="btn ghost sm" data-act="openAnniv" data-id="' + a.id + '">수정</button></li>'; }).join('') + '</ul>' + foldMore(up, 5, 'anUpMore')
+        (c ? custLink(c, 'info') : '') + (ph ? '<a class="btn sm tel" href="sms:' + attr(ph) + SMS_SEP + 'body=' + encodeURIComponent(annivMsg(a, o.nx.date)) + '">축하 문자</a>' : '') + '<button class="btn ghost sm" data-act="openAnniv" data-id="' + a.id + '">수정</button></li>'; }, '건') + '</ul>' + foldMore(up, 5, 'anUpMore')
       : '<p class="muted" style="margin:0">7일 안에 다가오는 기념일이 없습니다. 그 뒤 기념일은 아래 월별 목록에서 볼 수 있습니다.</p>') + '</section>';
   var hasWed = {}; A.forEach(function (a) { if (a.type === '결혼기념일' && a.who === 'c' && a.cid) hasWed[a.cid] = 1; });
   var noWed = store.customers.filter(function (c) { return c.spouse && !hasWed[c.id]; }).sort(byName);
@@ -6916,7 +6946,7 @@ function workBirthday() {
   var cnt = {}; people.forEach(function (o) { var mo = Number(o.d.slice(5, 7)); cnt[mo] = (cnt[mo] || 0) + 1; });
   var tabs = '<div class="month-tabs">' + [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(function (i) { return '<button class="todo' + (i === m ? ' on' : '') + '" data-act="bdMonth" data-id="' + i + '">' + i + '월' + (cnt[i] ? ' <b>' + cnt[i] + '</b>' : '') + '</button>'; }).join('') + '</div>';
   var list = people.filter(function (o) { return Number(o.d.slice(5, 7)) === m; }).sort(function (a, b) { return a.d.localeCompare(b.d) || String((a.c || a.s || a.f).name || '').localeCompare(String((b.c || b.s || b.f).name || '')); });
-  var rows = foldCut(list, 5, 'bdMonMore').map(function (o) {
+  var rows = foldCut(list, 5, 'bdMonMore').map(function (o) { return celebMark((function () {
     if (o.f) { var y = o.f, nbf = nextBirthday(y), phf = String(y.phone || '').replace(/[^\d+]/g, ''), agef = num(y.bdYear) ? Number(o.d.slice(0, 4)) - num(y.bdYear) : 0;
       return '<tr class="row-dbl" data-dbl="friend:' + y.id + '" tabindex="0" title="두 번 누르면 수정"><td><span class="who who-e">' + esc(y.rel || '지인') + '</span> <b>' + esc(y.name || '이름 없음') + '</b></td><td class="num">' + esc(bdDesc(y)) + '</td>' +
         '<td class="num">' + Number(o.d.slice(5, 7)) + '월 ' + Number(o.d.slice(8, 10)) + '일</td><td>' + (nbf ? '<span class="chip' + (nbf.days <= 7 ? ' warn' : '') + '">' + dLabel(nbf.days) + '</span>' : '–') + '</td>' +
@@ -6934,18 +6964,19 @@ function workBirthday() {
       '<td class="num">' + (c.birth ? '만 ' + ageOf(c.birth) + '세' : '<span class="muted">생년월일 없음</span>') + '</td><td class="num">' + (sd ? esc(sd.date) + ' <span class="muted">(' + dLabel(sd.days) + ')</span>' : '–') + '</td>' +
       '<td class="num">' + (c.phone ? esc(c.phone) : '<span class="muted">연락처 없음</span>') + '</td>' +
       '<td style="white-space:nowrap">' + (ph ? '<a class="btn sm tel" href="sms:' + attr(ph) + SMS_SEP + 'body=' + encodeURIComponent(bdText(c)) + '">축하 문자</a> ' : '') + bdEventBtn('c', c) + ' ' + '<button class="btn ghost sm" data-act="openCustBd" data-id="' + c.id + '">수정</button>' + '</td></tr>';
-  }).join('');
+  })(), celebKey(o.c ? 'bc' : o.s ? 'bs' : 'bf', (o.c || o.s || o.f).id, o.d)); }).join('');
   var upcoming = store.customers.filter(hasBirthday).map(function (c) { return { c: c, nb: nextBirthday(c) }; }).filter(function (o) { return o.nb; }) // 음력 변환이 안 되는 브라우저에서 고객 한 명 때문에 화면 전체가 멈추던 것 막음 (2026-11-04)
     .concat(staffWithBd().map(function (x) { return { s: x, nb: nextBirthday(x) }; }).filter(function (o) { return o.nb; }))
     .concat(friendsWithBd().map(function (x) { return { f: x, nb: nextBirthday(x) }; }).filter(function (o) { return o.nb; }))
-    .filter(function (x) { return x.nb.days <= bdDaysN() && (x.c ? showC : x.s ? showS : showF); }).sort(function (a, b) { return a.nb.days - b.nb.days; });
+    .filter(function (x) { return x.nb.days <= bdDaysN() && (x.c ? showC : x.s ? showS : showF); }).sort(function (a, b) { return a.nb.days - b.nb.days || celebOn(bdCelebKey(a)) - celebOn(bdCelebKey(b)); });
+  var bdLeft = upcoming.filter(function (x) { return !celebOn(bdCelebKey(x)); }).length;
   var lunarN = DANGI ? 0 : store.customers.concat(store.settings.contacts.staff || [], friendList()).filter(function (x) { return x.bdCal === 'lunar' && num(x.bdMonth); }).length;
   return (lunarN ? '<div class="notice">이 브라우저는 음력 날짜 계산을 지원하지 않아 음력 생일 ' + lunarN + '명을 날짜에 표시하지 못했습니다. 브라우저(사파리·크롬)를 최신으로 업데이트하거나 다른 브라우저로 열어 보세요.</div>' : '') +
-    '<section class="panel"><div class="row between"><h2>다가오는 ' + bdDaysN() + '일간 생일 ' + upcoming.length + '명 <small class="muted">(고객 ' + upcoming.filter(function (x) { return x.c; }).length + ' · 직원 ' + upcoming.filter(function (x) { return !x.c; }).length + ')</small></h2>' + whoSeg('bdW', W, [['', '전체', withBd.length + sWith.length + fWith.length], ['c', '고객', withBd.length], ['o', '직원', sWith.length + fWith.length]]) + '</div>' +
-    (upcoming.length ? '<ul class="wlist">' + foldCut(upcoming, 5, 'bdUpMore').map(function (x) {
+    '<section class="panel"><div class="row between"><h2>다가오는 ' + bdDaysN() + '일간 생일 ' + upcoming.length + '명 <small class="muted">(고객 ' + upcoming.filter(function (x) { return x.c; }).length + ' · 직원 ' + upcoming.filter(function (x) { return !x.c; }).length + ')' + (upcoming.length ? ' · 축하 남음 ' + bdLeft : '') + '</small></h2>' + whoSeg('bdW', W, [['', '전체', withBd.length + sWith.length + fWith.length], ['c', '고객', withBd.length], ['o', '직원', sWith.length + fWith.length]]) + '</div>' +
+    (upcoming.length ? '<ul class="wlist celeb-list">' + celebGroupH(foldCut(upcoming, 5, 'bdUpMore'), upcoming, function (x) { return x.nb.days; }, bdCelebKey, function (x) {
       if (x.f) { var fph = String(x.f.phone || '').replace(/[^\d+]/g, ''); return '<li class="row-dbl" data-dbl="friend:' + x.f.id + '" tabindex="0" title="두 번 누르면 수정"><span class="kchip k-bd">' + dLabel(x.nb.days) + '</span><span class="who who-e">' + esc(x.f.rel || '지인') + '</span><span class="what">' + esc(x.f.name || '이름 없음') + ' · ' + Number(x.nb.date.slice(5, 7)) + '월 ' + Number(x.nb.date.slice(8, 10)) + '일' + (x.f.bdCal === 'lunar' ? ' (' + esc(bdDesc(x.f)) + ')' : '') + (x.f.memo ? ' · ' + esc(String(x.f.memo).slice(0, 20)) : '') + '</span>' + (fph ? '<a class="btn sm tel" href="sms:' + attr(fph) + SMS_SEP + 'body=' + encodeURIComponent(bdText({ name: x.f.name })) + '">축하 문자</a>' : '') + '<button class="btn ghost sm" data-act="openFriend" data-id="' + x.f.id + '">수정</button>' + '</li>'; }
       if (x.s) return '<li class="row-dbl" data-dbl="staff:' + x.s.id + '" tabindex="0" title="두 번 누르면 수정"><span class="kchip k-bd">' + dLabel(x.nb.days) + '</span><span class="who who-s">직원</span><span class="what">' + esc(x.s.name || '직원') + ' · ' + Number(x.nb.date.slice(5, 7)) + '월 ' + Number(x.nb.date.slice(8, 10)) + '일' + (x.s.bdCal === 'lunar' ? ' (' + esc(bdDesc(x.s)) + ')' : '') + (x.s.role || x.s.dept ? ' · ' + esc([x.s.role, x.s.dept].filter(Boolean).join(' · ')) : '') + '</span>' + (x.s.phone ? telLink(x.s.phone) : '') + '<button class="btn ghost sm" data-act="openStaffBd" data-id="' + x.s.id + '">수정</button>' + '</li>';
-      return '<li class="row-dbl" data-dbl="custbd:' + x.c.id + '" tabindex="0" title="두 번 누르면 수정"><span class="kchip k-bd">' + dLabel(x.nb.days) + '</span><span class="who who-c">고객</span><span class="what">' + esc(x.c.name || '고객') + ' · ' + Number(x.nb.date.slice(5, 7)) + '월 ' + Number(x.nb.date.slice(8, 10)) + '일' + (x.c.bdCal === 'lunar' ? ' (' + esc(bdDesc(x.c)) + ')' : '') + (x.nb.age != null ? ' · 만 ' + x.nb.age + '세' : '') + '</span>' + custLink(x.c, 'info', '고객 보기') + (x.c.phone ? telLink(x.c.phone) : '') + '<button class="btn ghost sm" data-act="openCustBd" data-id="' + x.c.id + '">수정</button>' + '</li>'; }).join('') + '</ul>' + foldMore(upcoming, 5, 'bdUpMore', '명') : '<p class="muted" style="margin:0">7일 안에 생일인 고객·직원이 없습니다. 그 뒤 생일은 아래 월별 목록에서 볼 수 있습니다.</p>') + '</section>' +
+      return '<li class="row-dbl" data-dbl="custbd:' + x.c.id + '" tabindex="0" title="두 번 누르면 수정"><span class="kchip k-bd">' + dLabel(x.nb.days) + '</span><span class="who who-c">고객</span><span class="what">' + esc(x.c.name || '고객') + ' · ' + Number(x.nb.date.slice(5, 7)) + '월 ' + Number(x.nb.date.slice(8, 10)) + '일' + (x.c.bdCal === 'lunar' ? ' (' + esc(bdDesc(x.c)) + ')' : '') + (x.nb.age != null ? ' · 만 ' + x.nb.age + '세' : '') + '</span>' + custLink(x.c, 'info', '고객 보기') + (x.c.phone ? telLink(x.c.phone) : '') + '<button class="btn ghost sm" data-act="openCustBd" data-id="' + x.c.id + '">수정</button>' + '</li>'; }, '명') + '</ul>' + foldMore(upcoming, 5, 'bdUpMore', '명') : '<p class="muted" style="margin:0">7일 안에 생일인 고객·직원이 없습니다. 그 뒤 생일은 아래 월별 목록에서 볼 수 있습니다.</p>') + '</section>' +
     '<section class="panel"><div class="row between"><h2>월별 생일</h2><button class="btn primary sm" data-act="bdAdd" title="고객·직원·지인 생일 입력">+ 추가</button></div>' + tabs +
     (rows ? '<div class="tablewrap"><table class="t ctab"><thead><tr><th>이름</th><th>실제 생일</th><th>올해 양력</th><th>남은 날</th><th>나이</th><th>상령일 (보험나이 +1)</th><th>연락처</th><th></th></tr></thead><tbody>' + rows + '</tbody></table></div>' + foldMore(list, 5, 'bdMonMore', '명') : '<p class="muted" style="margin:0">' + m + '월 생일인 ' + (W === 'c' ? '고객이' : W === 'o' ? '직원·지인이' : '사람이') + ' 없습니다.</p>') +
     (store.customers.length > withBd.length || store.settings.contacts.staff.length > sWith.length ? '<p class="muted" style="margin:0">생일 정보가 없는 ' + [store.customers.length > withBd.length ? '고객 ' + (store.customers.length - withBd.length) + '명' : '', store.settings.contacts.staff.length > sWith.length ? '직원 ' + (store.settings.contacts.staff.length - sWith.length) + '명' : ''].filter(Boolean).join(' · ') + '은 표시되지 않습니다.</p>' : '') +
@@ -7364,6 +7395,9 @@ function doAction(el) {
     case 'gfY': ui.gfY = id || ''; break;
     case 'gfO': ui.gfO = id || ''; break;
     case 'anM': ui.anM = Number(id); break;
+    case 'celebDone': (function () { var m = store.settings.celebDone = store.settings.celebDone || {}, lim = isoDate(new Date(Date.now() - 400 * 864e5));
+      Object.keys(m).forEach(function (k) { if (k.slice(-10) < lim) delete m[k]; }); // 1년 넘은 표시 정리
+      if (m[id]) delete m[id]; else m[id] = today(); save(); })(); break;
     case 'ntF': ui.ntF = id || ''; break;
     case 'ntToggle': ui.ntOpen = ui.ntOpen === id ? '' : id; { var nr = noticeList().filter(function (x) { return x.id === id; })[0]; if (nr && !nr.read) { nr.read = true; save(); } } break;
     case 'ntRead': { var nr2 = noticeList().filter(function (x) { return x.id === id; })[0]; if (nr2) { nr2.read = !nr2.read; save(); } break; }
@@ -8157,7 +8191,7 @@ function howtoModalHtml() {
     S('업무 메뉴', false, UL([
       '<b>오늘</b>: 오늘 일정·할 일·생일·갱신·제안 숫자와 다가오는 7일 일정.',
       '<b>일정 · 할 일</b>: 달력과 할 일 목록. 반복 일정과 마감일을 정할 수 있습니다.',
-      '<b>생일 · 기념일 · 선물</b>: 고객·직원·지인의 생일(양력·음력)과 기념일, 보낸 선물 기록.',
+      '<b>생일 · 기념일 · 선물</b>: 고객·직원·지인의 생일(양력·음력)과 기념일, 보낸 선물 기록. 다가오는 목록은 오늘·내일·이번 주로 묶여 보이고, 축하를 마치면 "축하 완료"를 눌러 표시합니다(해마다 새로 시작).',
       '<b>실적 · 수수료</b>: 내가 입력한 계약 실적과 수수료를 모아 봅니다.']), G('work:home', '오늘') + G('work:calendar', '일정')) +
     S('고객 메뉴', false, UL([
       '<b>고객목록</b>: 전체 · 가망 · 계약 · 휴면 탭으로 고객을 나눠 봅니다. 가망고객은 첫 상담 → 보장분석 → 제안 진행이 보이고, 제안이 성사되면 계약고객이 됩니다. 위 숫자 칸을 누르면 그 고객만 걸러집니다.',
