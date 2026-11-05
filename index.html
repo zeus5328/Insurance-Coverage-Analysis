@@ -454,6 +454,7 @@ table.t tr.unmapped td { background: var(--accent-soft); }
 .doc h1 { font-size: 24px; margin: 0; letter-spacing: -0.02em; }
 .doc h2 { font-size: 15px; margin: 0 0 8px; padding-bottom: 6px; border-bottom: 2px solid #172238; }
 .doc .meta { color: #4A5468; font-size: 13px; display: flex; flex-wrap: wrap; gap: 4px 18px; }
+.doc .meta-fc { flex-direction: column; gap: 2px; margin-top: -4px; }
 .doc table { border-collapse: collapse; width: 100%; font-size: 12.5px; }
 .doc th, .doc td { border-bottom: 1px solid #D8DCE5; padding: 6px 8px; text-align: left; }
 .doc th { background: #F1F3F7; font-weight: 600; }
@@ -3520,8 +3521,9 @@ function renderProposal(c, an) {
     (!fc.name ? '<div class="notice no-print">설정에서 FC 이름·연락처·소속·지점을 입력하면 제안서에 표시됩니다.</div>' : '') +
     '<article class="doc">' +
     '<header style="display:flex;flex-direction:column;gap:8px"><h1>' + esc(c.name) + ' 님 보장분석 및 설계 제안서</h1>' +
-    '<div class="meta num"><span>작성일 ' + today() + '</span><span>' + (an.age != null ? '만 ' + an.age + '세' : '') + (c.gender ? ' ' + esc(c.gender) : '') + '</span>' +
-    (fc.name ? '<span>' + esc(fcLineText(fc)) + '</span>' : '') + (fc.name && licDocText() ? '<span class="doc-lic">' + esc(licDocText()) + '</span>' : '') + (fc.name && fcOffice(fc) ? '<span class="doc-office">' + esc(fcOffice(fc)) + '</span>' : '') + '</div></header>' +
+    '<div class="meta num"><span>작성일 ' + today() + '</span><span>' + (an.age != null ? '만 ' + an.age + '세' : '') + (c.gender ? ' ' + esc(c.gender) : '') + '</span></div>' + // 1줄: 작성일 · 나이 성별
+    (fc.name ? '<div class="meta meta-fc num"><span>' + esc(fcLineText(fc)) + (licDocText() ? ' <span class="doc-lic">' + esc(licDocText()) + '</span>' : '') + '</span>' + // 2줄: 담당 FC + 보유 자격 (2026-11-05)
+      (fcOffice(fc) ? '<span class="doc-office">' + esc(fcOffice(fc)) + '</span>' : '') + '</div>' : '') + '</header>' +
     '<section><div class="twocol num"><div class="box"><div class="muted" style="color:#4A5468">정리 전</div><div class="big">월 ' + fmtWon(an.premium) + '</div><div>부족 ' + an.counts.short + ' · 중복 ' + an.counts.dup + ' · 과잉 ' + an.counts.over + '</div></div>' +
     '<div class="box" style="border-color:#D9671E"><div class="muted" style="color:#4A5468">정리 후 (제안)</div><div class="big">월 ' + fmtWon(anAfter.premium) + '</div><div>부족 ' + anAfter.counts.short + ' · 중복 ' + anAfter.counts.dup + ' · 과잉 ' + anAfter.counts.over + '</div></div></div></section>' +
     '<section><h2>1. 보장 현황과 제안 후 변화</h2><table class="num"><thead><tr><th>담보</th><th class="r">현재</th><th class="r">권장</th><th>현재 판정</th><th class="r">제안 후</th><th>제안 후 판정</th></tr></thead><tbody>' + covRows + '</tbody></table></section>' +
