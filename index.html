@@ -5416,13 +5416,32 @@ function lunarFmt(cal) {
 }
 var DANGI = lunarFmt('dangi') || lunarFmt('chinese'); // 한국 음력이 없으면 중국 음력(대부분 날짜가 같음)
 var lunarCache = {};
-function lunarYearMap(y) { // 양력 y년의 날짜 → '음력년-월(윤이면 L)-일'
-  if (lunarCache[y]) return lunarCache[y];
+function lunarYearMapSlow(y) { // 하루씩 변환 (빠른 계산이 안 맞을 때만)
   var map = {};
   if (DANGI) for (var d = new Date(Date.UTC(y, 0, 1)); d.getUTCFullYear() === y; d.setUTCDate(d.getUTCDate() + 1)) {
     var lp = lunarParts(DANGI, d); if (!lp) continue;
     map[lp.y + '-' + lp.m + (lp.leap ? 'L' : '') + '-' + lp.d] = d.toISOString().slice(0, 10);
   }
+  return map;
+}
+function lunarYearMapFast(y) { // 음력 한 달은 29일 또는 30일 → 달마다 한두 번만 변환 (2026-11-05 첫 화면 속도)
+  var map = {}, DAY = 864e5, t = Date.UTC(y, 0, 1), end = Date.UTC(y + 1, 0, 1), p = lunarParts(DANGI, new Date(t)), guard = 0;
+  while (t < end) {
+    if (!p || ++guard > 40) return null;
+    var k = 30 - p.d, q = k > 0 ? lunarParts(DANGI, new Date(t + k * DAY)) : null, same = q && q.y === p.y && q.m === p.m && q.leap === p.leap;
+    if (k > 0 && !q) return null;
+    var last = same ? 30 : (p.d === 30 ? 30 : 29); // 이 달 마지막 날(음력)
+    if (same && q.d !== 30) return null;
+    for (var dd = p.d; dd <= last; dd++) { var tt = t + (dd - p.d) * DAY; if (tt >= end) break; map[p.y + '-' + p.m + (p.leap ? 'L' : '') + '-' + dd] = new Date(tt).toISOString().slice(0, 10); }
+    t += (last - p.d + 1) * DAY; if (t >= end) break;
+    p = (!same && q && k === last - p.d + 1 && q.d === 1) ? q : lunarParts(DANGI, new Date(t));
+    if (!p || p.d !== 1) return null;
+  }
+  return map;
+}
+function lunarYearMap(y) { // 양력 y년의 날짜 → '음력년-월(윤이면 L)-일'
+  if (lunarCache[y]) return lunarCache[y];
+  var map = DANGI ? (lunarYearMapFast(y) || lunarYearMapSlow(y)) : {};
   return (lunarCache[y] = map);
 }
 function lunarToSolar(ly, m, d, leap) { // 음력 ly년 m월 d일 → 양력 'YYYY-MM-DD' (없는 윤달·30일은 평달·29일로)
