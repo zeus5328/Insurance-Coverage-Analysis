@@ -853,6 +853,50 @@ input[type=time] { background: var(--surface); border: 1px solid var(--line); bo
 .celeb-list li.celeb-gh { gap: 8px; padding: 10px 0 4px; border-bottom: 0; font-size: 12.5px; color: var(--ink-2); }
 .celeb-list li.celeb-gh:first-child { padding-top: 0; }
 #licSec { scroll-margin-top: 120px; }
+.cfbar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 6px; margin: 0 0 12px; }
+.cfbar .ck-tabs { margin: 0; }
+.cf-sep { width: 1px; height: 22px; background: var(--line); margin: 0 4px; }
+.cf-chip b { font-weight: 600; margin-left: 2px; }
+.cf-chip.warn:not(.on) b { color: var(--accent-ink); }
+.cf-lab { font-size: 12px; margin-right: 2px; }
+.pill.v-must { background: var(--accent-soft); color: var(--accent-ink); font-weight: 600; }
+.pill.v-rec { background: var(--surface-2); color: var(--ink-2); border: 1px solid var(--line); }
+.cgap { white-space: nowrap; } .cgap .pill + .pill { margin-left: 4px; }
+.cdt { white-space: nowrap; font-size: 12.5px; }
+.page-more { display: flex; gap: 8px; justify-content: center; margin: 10px 0 2px; }
+.cust-glance { display: flex; flex-wrap: wrap; align-items: stretch; gap: 8px; margin: 0 0 12px; }
+.cust-glance .gl-it { display: flex; flex-direction: column; gap: 2px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); min-width: 104px; }
+.cust-glance .gl-it .k { font-size: 11.5px; color: var(--ink-3); }
+.cust-glance .gl-it .v { font-size: 14px; font-weight: 600; color: var(--ink); white-space: nowrap; }
+.cust-glance .gl-it .v small { font-size: 11.5px; font-weight: 500; color: var(--ink-2); margin-left: 2px; }
+.cust-glance .gl-it.warn { border-color: var(--accent); }
+.cust-glance .gl-it.late { border-color: var(--danger, #c0392b); }
+.cust-glance .gl-it.on .v { color: var(--accent-ink); }
+.cust-glance .gl-act { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+.bulk-bar .bk-tag { height: 30px; padding: 0 8px; font-size: 13px; width: auto; }
+@media (max-width: 600px) { .cust-glance .gl-it { min-width: calc(50% - 4px); flex: 1 1 calc(50% - 4px); } .cust-glance .gl-act { margin-left: 0; width: 100%; } .cf-sep { display: none; } .cfbar .ck-tabs { width: 100%; } }
+.ctable th.csel, .ctable td.csel { width: 34px; padding-right: 0; text-align: center; }
+.ctable td.csel input, .ctable th.csel input { width: 17px; height: 17px; cursor: pointer; }
+.ctable tr.sel td { background: var(--accent-soft); }
+.bulk-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px 12px; margin-bottom: 10px; border: 1px solid var(--accent); border-radius: 10px; background: var(--surface); position: sticky; top: 104px; z-index: 5; }
+.bulk-bar .bk-grp { display: inline-flex; align-items: center; gap: 4px; }
+.cnext { white-space: nowrap; font-size: 12.5px; }
+.nx-when { display: inline-block; min-width: 46px; text-align: center; padding: 1px 7px; border-radius: 999px; background: var(--surface-2); color: var(--ink-2); font-weight: 600; font-size: 11.5px; }
+.nx-when.soon { background: var(--accent-soft); color: var(--accent-ink); }
+.nx-when.late { background: var(--danger, #c0392b); color: #fff; }
+.nx-what { color: var(--ink-2); }
+.chip.ctag { background: var(--surface-2); color: var(--ink-2); border: 1px solid var(--line); font-weight: 500; }
+.ctag-row { margin: 0 0 10px; align-items: center; }
+.ctag-pick { align-items: center; }
+.ctag-add { display: inline-flex; gap: 6px; align-items: center; }
+.ctag-add input { width: 170px; }
+.dorm-box summary { cursor: pointer; list-style: none; }
+.dorm-box summary::-webkit-details-marker { display: none; }
+.dorm-box[open] summary { margin-bottom: 8px; }
+.chead-act { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.dup-box .dup-row { gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 6px; }
+.del-list { margin: 0 0 14px; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+@media (max-width: 600px) { .bulk-bar { top: 96px; } .ctable td.csel { position: absolute; right: 12px; top: 10px; width: auto; background: none !important; } .ctable tr.crow { position: relative; } .ctable tr.crow td.cname { padding-right: 34px !important; } .ctable tr.sel td { background: none; } .ctable tr.sel { background: var(--accent-soft); } .ctable th.csel { display: none; } .ctag-add input { width: 140px; } }
 #fcCardSec .fc-card { border: 0; padding: 0; margin: 0; background: none; }
 .celeb-btn.on { color: var(--ok); border-color: var(--ok); background: var(--surface); }
 li.celeb-done > :not(.celeb-btn), tr.celeb-done > td:not(:last-child) { opacity: .5; }
@@ -1964,8 +2008,8 @@ function analyzeRaw(c, settings, policiesOpt) {
   });
   var premium = 0, renewPrem = 0;
   policies.forEach(function (p) { premium += num(p.premium); if (p.renewable) renewPrem += num(p.premium); });
-  var counts = { short: 0, over: 0, dup: 0, ok: 0 };
-  rows.forEach(function (r) { if (counts[r.verdict] != null) counts[r.verdict]++; });
+  var counts = { short: 0, over: 0, dup: 0, ok: 0, must: 0, rec: 0 };
+  rows.forEach(function (r) { if (counts[r.verdict] != null) counts[r.verdict]++; if (r.verdict === 'short') { r.sev = r.cur === 0 || r.cur < r.min ? 'must' : 'rec'; counts[r.sev]++; } }); // 부족 = 필수(미가입·최소 미달) + 권장 미달 (2026-11-05)
   return {
     age: age, band: bk, rows: rows, premium: premium, renewPrem: renewPrem,
     renewShare: premium > 0 ? Math.round(renewPrem / premium * 100) : 0,
@@ -2510,10 +2554,10 @@ function licList() { return store.settings.licenses = store.settings.licenses ||
 // 처음 한 번만 기본 3장(생명·손해·제3보험)을 만들어 둔다. 지운 뒤에는 다시 만들지 않음 (licSeeded)
 function licSeed() { var s = store.settings; if (s.licSeeded) return; s.licSeeded = true; if (!licList().length) s.licenses = LIC_BASE.map(licNew); }
 function licDocText() { var L = licList().filter(function (x) { return x.doc && x.kind; }); return L.length ? '보유 자격: ' + L.map(function (x) { return x.kind; }).join('·') : ''; }
-function licHas(x) { return !!(x.img || x.pdf); }
+function licHas(x) { return !!(x.img || x.pdf || x.imgPath || x.pdfPath); }
 function licImgBlock(x) {
   var fid = 'licImg-' + x.id, armI = ui.armed === 'licImgDel:' + x.id, has = licHas(x), busy = ui.licBusy === x.id;
-  var thumb = x.img ? '<img src="' + attr(x.img) + '" alt="' + attr((x.kind || '라이선스') + (x.pdf ? ' PDF 1쪽' : ' 이미지')) + '">' : '<span class="lic-pdf-ico">PDF</span>';
+  var thumb = x.img ? '<img src="' + attr(x.img) + '" alt="' + attr((x.kind || '라이선스') + (x.pdf ? ' PDF 1쪽' : ' 이미지')) + '">' : x.imgPath ? '<span class="lic-pdf-ico">…</span>' : '<span class="lic-pdf-ico">PDF</span>';
   return '<div class="lic-img">' + (has ? '<button type="button" class="lic-thumb" data-act="licImgView" data-id="' + x.id + '" title="크게 보기">' + thumb + (x.pdf ? '<span class="lic-badge">PDF</span>' : '') + '</button>' :
     '<label class="lic-thumb lic-empty" for="' + fid + '"><b>자격증 이미지·PDF</b><span>' + (busy ? '파일 읽는 중…' : '눌러서 사진·스캔 파일이나 PDF 고르기') + '</span></label>') +
     '<div class="lic-img-side"><span class="muted">' + (busy ? '파일을 읽는 중입니다…' : has ? (x.pdf ? 'PDF 파일' + (x.pdfName ? ' ' + esc(x.pdfName) : '') : '등록증·자격증 이미지') + (x.imgAt ? ' (' + esc(x.imgAt) + ' 등록)' : '') + '. 누르면 크게 보고 PDF로 내려받을 수 있습니다.' : '자격증·등록증을 사진으로 찍거나 스캔한 이미지·PDF를 올려 두세요. 큰 사진은 자동으로 줄여 저장합니다.') + '</span>' +
@@ -2576,6 +2620,7 @@ function licPdfDown(lid) {
   var x = licList().filter(function (y) { return y.id === lid; })[0]; if (!x || !licHas(x)) { toast('먼저 이미지나 PDF를 올리세요'); return; }
   var name = ((x.kind || '라이선스') + (x.no ? '_' + x.no : '')).replace(/[\\/:*?"<>|\s]+/g, '_') + '.pdf';
   if (x.pdf) { offerFile(name, new Blob([dataUrlBytes(x.pdf)], { type: 'application/pdf' })); return; }
+  if (!x.img) { toast(x.imgPath || x.pdfPath ? '파일을 아직 불러오는 중입니다. 잠시 뒤 다시 눌러 주세요' : '올린 파일이 없습니다'); return; }
   jpegToPdf(x.img).then(function (blob) { offerFile(name, blob); }).catch(function (e) { toast('PDF를 만들지 못했습니다: ' + e.message); });
 }
 function licDue(x) { return x.renew ? daysUntil(x.renew) : null; }
@@ -2590,7 +2635,7 @@ function licensePanel() {
     (next ? '<span class="muted lic-next">다음: ' + esc(next.kind || '자격') + ' · ' + esc(next.renew.replace(/-/g, '.')) + ' (' + esc(licState(next).t.replace('다음 교육·갱신 ', '')) + ')</span>' : '') + '</div>';
   var cards = L.map(function (x) {
     var st = licState(x), has = licHas(x), fid = 'licImgW-' + x.id;
-    var thumb = has ? '<button type="button" class="lw-thumb" data-act="licImgView" data-id="' + x.id + '" title="크게 보기">' + (x.img ? '<img src="' + attr(x.img) + '" alt="' + attr((x.kind || '라이선스') + ' 사본') + '">' : '<span class="lic-pdf-ico">PDF</span>') + (x.pdf ? '<span class="lic-badge">PDF</span>' : '') + '</button>'
+    var thumb = has ? '<button type="button" class="lw-thumb" data-act="licImgView" data-id="' + x.id + '" title="크게 보기">' + (x.img ? '<img src="' + attr(x.img) + '" alt="' + attr((x.kind || '라이선스') + ' 사본') + '">' : x.imgPath ? '<span class="lic-pdf-ico">…</span>' : '<span class="lic-pdf-ico">PDF</span>') + (x.pdf ? '<span class="lic-badge">PDF</span>' : '') + '</button>'
       : '<label class="lw-thumb lw-empty" for="' + fid + '" title="자격증 사진·PDF 올리기">' + (ui.licBusy === x.id ? '읽는 중…' : '＋ 사진·PDF') + '</label><input type="file" id="' + fid + '" accept="image/*,application/pdf,.pdf" data-kind="licimg" data-id="' + x.id + '" hidden>';
     return '<article class="lic-wallet lw-' + st.k + '" data-dbl="lic:' + x.id + '" tabindex="0">' + thumb +
       '<div class="lw-body"><b class="lw-kind">' + esc(x.kind || '자격 종류 미입력') + '</b>' +
@@ -2656,6 +2701,7 @@ function render() {
   var notice = site.notice ? '<div class="notice" role="alert">' + esc(site.notice) + '</div>' : '';
   if (isOffNow()) notice = '<div class="info offline-bar" role="status"><b>오프라인</b> · 인터넷에 연결되어 있지 않습니다. 바꾼 내용은 이 기기에 저장되고, 연결되면 서버에 자동으로 올라갑니다.</div>' + notice;
   if (ui.view === 'list' && site.localExtra && site.localExtra.length) notice += '<div class="notice" role="alert"><b>이 브라우저에만 저장된 고객 ' + site.localExtra.length + '명</b>이 있습니다 (' + esc(site.localExtra.map(function (c) { return c.name; }).slice(0, 5).join(', ')) + (site.localExtra.length > 5 ? ' 외' : '') + ').' + (cloud.on ? ' 내 계정으로 옮기면 다른 기기에서도 보입니다. 다른 FC의 고객이면 옮기지 마세요.' : ' 사이트로 옮겨야 다른 기기에서도 보입니다.') + '<div class="row" style="margin-top:8px"><button class="btn primary sm" data-act="moveLocal">' + (cloud.on ? '내 계정으로 옮기기' : '사이트로 옮기기') + '</button>' + (cloud.on ? '<button class="btn sm" data-act="skipLocal">옮기지 않기</button>' : '') + '</div></div>';
+  purgeNewBlank();
   if (ui.hhNew && !(ui.view === 'list' && ui.lsub === 'family')) ui.hhNew = ''; // 가족 화면을 벗어나면 새 가족도 가나다 자리로
   var page = ui.view === 'work' ? renderWork() : ui.view === 'office' ? renderOffice() : ui.view === 'settings' ? renderSettings() : ui.view === 'customer' ? renderCustomer() : ui.view === 'insurance' ? renderInsurance() : (ui.lsub && ui.lsub !== 'list' ? renderListSub() : renderList());
   app.innerHTML = renderTop() + '<main class="main page-' + ui.view + '">' + notice + page + '</main>' + renderFoot() + printModalHtml() + detailModalHtml();
@@ -2678,9 +2724,9 @@ var OFFICE_TITLES = { sbd: '직원 생일' }; // 메뉴 이름은 짧게, 화면
 function officeSubs() { return team.info ? OFFICE_SUBS.concat([['team', '지점현황']]) : OFFICE_SUBS; }
 var LIST_SUBS = [['list', '고객목록'], ['family', '가족·가구'], ['contacts', '고객관계'], ['notes', '고객상담'], ['props', '제안기록'], ['claims', '보험금청구']]; // 관리 필요는 고객목록 숫자 칸으로 합침(2026-11-03)
 var LIST_TITLES = { list: '고객목록', contacts: '고객관계', family: '가족·가구', notes: '고객상담', props: '제안기록', claims: '보험금청구' }; // 메뉴 이름은 짧게, 화면 제목은 그대로(2026-11-03)
-var INS_SUBS = [['all', '보장보험'], ['fire', '화재보험'], ['drv', '운전자보험'], ['auto', '자동차보험'], ['insurer', '보험사'], ['guide', '가이드']]; // 2026-11-05 이름 변경
+var INS_SUBS = [['all', '보장보험'], ['fire', '화재보험'], ['drv', '운전자보험'], ['auto', '자동차보험'], ['insurer', '보험사 연락처'], ['guide', '보험 가이드']]; // 2026-11-05 이름 변경
 // 서브메뉴는 짧은 이름, 페이지 제목은 원래 이름 (2026-11-03)
-var INS_TITLES = { all: '보장보험', auto: '자동차보험', fire: '화재보험', drv: '운전자보험', insurer: '보험사 연락처', guide: '보험가이드' };
+var INS_TITLES = { all: '보장보험', auto: '자동차보험', fire: '화재보험', drv: '운전자보험', insurer: '보험사 연락처', guide: '보험 가이드' };
 function routeHash() {
   if (ui.view === 'work') return '#work-' + (ui.wsub || 'home');
   if (ui.view === 'office') return '#office-' + (ui.osub || 'notice');
@@ -2691,6 +2737,7 @@ function routeHash() {
 }
 function go(view, opts) {
   opts = opts || {};
+  if (view === 'customer' && ui.view !== 'customer') ui.backTo = { h: routeHash(), y: window.scrollY }; // 고객 상세에서 '‹ 돌아가기'로 원래 화면에
   ui.view = view;
   if (opts.cid !== undefined) ui.cid = opts.cid;
   if (opts.tab) ui.tab = opts.tab;
@@ -2819,7 +2866,7 @@ function srItems(q) {
     ['지점 · 보험뉴스', function () { go('office', { osub: 'news' }); }], ['지점 · 공지사항', function () { go('office', { osub: 'notice' }); }], ['지점 · 지점일정', function () { go('office', { osub: 'schedule' }); }], ['지점 · 직원정보', function () { go('office', { osub: 'staff' }); }], ['지점 · 지사·사업단', function () { go('office', { osub: 'branch' }); }]]
     .concat(SETTING_SUBS.map(function (x) { return ['설정 · ' + x[1], function () { go('settings', { sub: x[0] }); }]; }))
     .concat([['설정 · 내정보 · 라이선스', function () { go('settings', { sub: 'me' }); setTimeout(function () { var el = document.getElementById('licSec'); if (el) el.scrollIntoView({ block: 'start' }); }, 60); }]]);
-  WORK_SUBS.forEach(function (x) { MENUS.push(['업무 · ' + x[1], function () { go('work', { wsub: x[0] }); }]); }); INS_SUBS.forEach(function (x) { MENUS.push(['보험 · ' + x[1] + (x[0] === 'insurer' ? ' 연락처' : x[0] === 'guide' ? ' (보험가이드)' : ''), function () { go('insurance', { isub: x[0] }); }]); });
+  WORK_SUBS.forEach(function (x) { MENUS.push(['업무 · ' + x[1], function () { go('work', { wsub: x[0] }); }]); }); INS_SUBS.forEach(function (x) { MENUS.push(['보험 · ' + x[1] + (''), function () { go('insurance', { isub: x[0] }); }]); });
   var seenM = {}; MENUS = MENUS.filter(function (m) { var k = m[0].replace(/\s/g, ''); if (seenM[k]) return false; seenM[k] = 1; return true; });
   MENUS.forEach(function (m) { if (hit(m[0])) add('메뉴', m[0], '', m[1]); });
   var C = store.customers, n = 0;
@@ -2882,7 +2929,7 @@ function renderFoot() {
   var L = function (act, id, label, title) { return '<button class="foot-link" data-act="' + act + '"' + (id != null ? ' data-id="' + id + '"' : '') + (title ? ' title="' + attr(title) + '"' : '') + '>' + label + '</button>'; };
   return '<footer class="app-foot no-print"><div class="foot-in">' +
     '<div class="foot-brand"><b>보장설계 매니저</b><span>FC 보장분석 · 고객 관리 · <span class="num">' + esc(saveLabel()) + '</span></span></div>' +
-    '<nav class="foot-links" aria-label="하단 메뉴">' + L('howto', null, '이용방법') + L('goIns', 'guide', '보험가이드') +
+    '<nav class="foot-links" aria-label="하단 메뉴">' + L('howto', null, '이용방법') + L('goIns', 'guide', '보험 가이드') +
     '</nav></div>' +
     '<p class="foot-note">' + (cloud.on ? '고객 자료는 이 기기와 내 계정(서버)에만 저장되고 다른 사람은 볼 수 없습니다.' : '고객 자료는 이 브라우저에만 저장됩니다. 백업 파일을 자주 받아 두세요.') + ' 보장분석 결과는 상담 참고용입니다.</p></footer>';
 }
@@ -2909,11 +2956,16 @@ function listRows() {
   var tab = ui.cTab || '';
   rows = rows.filter(function (r) {
     if (tab && custKind(r.c) !== tab) return false;
-    if (q && norm(r.c.name).indexOf(q) < 0 && !(qd.length >= 3 && phoneDigits(r.c.phone).indexOf(qd) >= 0)) return false;
+    if (q && norm(r.c.name).indexOf(q) < 0 && !(qd.length >= 3 && phoneDigits(r.c.phone).indexOf(qd) >= 0) && !custTags(r.c).some(function (t) { return norm(t).indexOf(q) >= 0; })) return false;
+    if (ui.cTag && custTags(r.c).indexOf(ui.cTag) < 0) return false;
+    if (f === 'dup') return custDupOf(r.c).length > 0;
     if (f === 'map') return r.an.unmapped > 0;
     if (f === 'empty') return !r.c.policies.length;
     if (f === 'consent') return !r.c.consent;
     if (f === 'short') return r.c.policies.length > 0 && r.an.counts.short > 0;
+    if (f === 'must') return r.c.policies.length > 0 && r.an.counts.must > 0;
+    if (f === 'rec') return r.c.policies.length > 0 && !r.an.counts.must && r.an.counts.rec > 0;
+    if (f === 'consent') return !r.c.consent;
     if (f === 'stale') return custStale(r.c);
     if (f === 'p0') return prospectStep(r.c) === 0;
     if (f === 'p1') return prospectStep(r.c) === 1;
@@ -2924,7 +2976,11 @@ function listRows() {
   rows.sort(function (a, b) {
     if (!!a.c.sample !== !!b.c.sample) return a.c.sample ? 1 : -1; // 예시 고객은 맨 아래
     if (s === 'recent') return String(b.c.updatedAt || '').localeCompare(String(a.c.updatedAt || '')) || byName(a.c, b.c);
-    if (s === 'short') return (b.c.policies.length ? b.an.counts.short : -1) - (a.c.policies.length ? a.an.counts.short : -1) || byName(a.c, b.c);
+    if (s === 'next') { var na = custNext(a.c, true), nb2 = custNext(b.c, true); return (na ? 0 : 1) - (nb2 ? 0 : 1) || (na && nb2 ? (na.d < nb2.d ? -1 : na.d > nb2.d ? 1 : 0) : 0) || byName(a.c, b.c); }
+    if (s === 'short') return (b.c.policies.length ? b.an.counts.must * 100 + b.an.counts.rec : -1) - (a.c.policies.length ? a.an.counts.must * 100 + a.an.counts.rec : -1) || byName(a.c, b.c);
+    if (s === 'last') { var la = relInfo(a.c).last, lb = relInfo(b.c).last; return (la ? 0 : 1) - (lb ? 0 : 1) || String(lb).localeCompare(String(la)) || byName(a.c, b.c); }
+    if (s === 'nextc') { var xa = relInfo(a.c).next, xb = relInfo(b.c).next; return (xa ? 0 : 1) - (xb ? 0 : 1) || String(xa).localeCompare(String(xb)) || byName(a.c, b.c); }
+    if (s === 'bd') { var ba = nextBirthday(a.c), bb = nextBirthday(b.c); return (ba ? 0 : 1) - (bb ? 0 : 1) || (ba && bb ? ba.days - bb.days : 0) || byName(a.c, b.c); }
     if (s === 'premium') return b.an.premium - a.an.premium || byName(a.c, b.c);
     return byName(a.c, b.c);
   });
@@ -2934,29 +2990,145 @@ function renderListTable() {
   var rows = listRows();
   if (!store.customers.length) return '<div class="empty"><strong>아직 등록한 고객이 없습니다</strong><span>신규 고객을 등록하면 계약 입력부터 제안서까지 이어서 작업할 수 있습니다.</span><button class="btn primary" data-act="addCustomer">+ 신규 고객 등록</button></div>';
   if (!rows.length) return '<div class="empty"><strong>조건에 맞는 고객이 없습니다</strong><span>검색어나 필터를 바꿔 보세요.</span>' + (ui.filter ? '<button class="btn" data-act="filter" data-id="">필터 해제</button>' : '') + '</div>';
-  var sortTh = function (key, label, cls) {
+  var sortTh = function (key, label, cls, tip) {
     var on = (ui.sort || 'name') === key;
-    return '<th class="' + (cls || '') + '"><button class="th-sort' + (on ? ' on' : '') + '" data-act="sort" data-id="' + key + '">' + label + (on ? ' ▾' : '') + '</button></th>';
+    return '<th class="' + (cls || '') + '"' + (tip ? ' title="' + attr(tip) + '"' : '') + '><button class="th-sort' + (on ? ' on' : '') + '" data-act="sort" data-id="' + key + '">' + label + (on ? ' ▾' : '') + '</button></th>';
   };
-  return '<div class="clist-table" role="table"><table class="t ctable"><thead><tr>' + sortTh('name', '이름') + '<th>나이 · 성별</th><th>휴대폰</th><th class="r">계약</th>' + sortTh('premium', '월보험료', 'r') +
-    sortTh('short', '부족', 'r') + '<th class="r">중복·과잉</th>' + sortTh('recent', '최근 수정') + '<th>상태</th><th aria-hidden="true"></th></tr></thead><tbody>' +
+  ui.csel = ui.csel || {}; Object.keys(ui.csel).forEach(function (k) { if (!custById(k)) delete ui.csel[k]; });
+  var selN = Object.keys(ui.csel).length, allSel = rows.length && rows.every(function (r) { return ui.csel[r.c.id]; });
+  var bulk = selN ? '<div class="bulk-bar" role="region" aria-label="고른 고객 한 번에 처리"><b>' + selN + '명 선택</b><span class="bk-grp"><span class="muted">구분</span>' + ['가망', '계약', '휴면'].map(function (k) { return '<button class="btn sm" data-act="cBulkKind" data-id="' + k + '">' + k + '</button>'; }).join('') + '<button class="btn sm" data-act="cBulkKind" data-id="auto" title="계약 여부로 자동">자동</button></span>' +
+    '<button class="btn sm" data-act="cBulkMsg">안내 문자</button><button class="btn sm" data-act="cBulkCopy">번호 복사</button>' +
+    '<button class="btn sm' + (ui.armed === 'cBulkDone' ? ' danger armed' : '') + '" data-act="cBulkDone" title="고른 고객 모두 오늘 연락했다고 상담 기록에 남깁니다">' + (ui.armed === 'cBulkDone' ? '한 번 더 누르면 기록' : '연락함') + '</button>' +
+    '<select class="bk-tag" data-scope="ui" data-k="bkTag" id="ui-bkTag-x" aria-label="표시 붙이기"><option value="">표시 붙이기…</option>' + Object.keys(allTags()).map(function (t) { return '<option value="' + attr(t) + '">' + esc(t) + '</option>'; }).join('') + '</select>' +
+    '<button class="btn sm danger" data-act="cBulkDel">삭제</button><button class="btn ghost sm" data-act="cSelClear">선택 해제</button></div>' : '';
+  var pg = pageCut(rows, 'clLim', 50); rows = pg.shown;
+  return bulk + '<div class="clist-table" role="table"><table class="t ctable"><thead><tr><th class="csel"><input type="checkbox" data-act="cSelAll" aria-label="보이는 고객 모두 고르기"' + (allSel ? ' checked' : '') + '></th>' + sortTh('name', '이름') + '<th>나이 · 성별</th><th>휴대폰</th><th class="r">계약</th>' + sortTh('premium', '월보험료', 'r') +
+    sortTh('short', '보장 부족', '', '필수 = 미가입·최소 기준 미달 / 권장 = 최소는 넘지만 권장 미달') + sortTh('last', '마지막 상담') + sortTh('nextc', '다음 연락') + sortTh('bd', '생일') + sortTh('next', '그 밖의 할 일') + '<th>상태</th><th aria-hidden="true"></th></tr></thead><tbody>' +
     rows.map(function (r) {
       var c = r.c, an = r.an;
-      return '<tr class="crow" data-act="pick" data-id="' + c.id + '" tabindex="0">' +
-        '<td class="cname"><b>' + esc(c.name || '이름 없음') + '</b>' + (custKind(c) !== '계약' ? ' <span class="chip ck-' + custKind(c) + '">' + custKind(c) + '</span>' : '') + (c.sample && !/\(예시\)/.test(c.name || '') ? ' <span class="chip">예시</span>' : '') + (!c.consent ? ' <span class="chip warn">동의 확인</span>' : '') + '</td>' +
+      return '<tr class="crow' + (ui.csel[c.id] ? ' sel' : '') + '" data-act="pick" data-id="' + c.id + '" tabindex="0">' + '<td class="csel"><input type="checkbox" data-act="cSel" data-id="' + c.id + '" aria-label="' + attr(c.name || '고객') + ' 고르기"' + (ui.csel[c.id] ? ' checked' : '') + '></td>' +
+        '<td class="cname"><b>' + esc(c.name || '이름 없음') + '</b>' + tagChips(c) + (custDupOf(c).length ? ' <span class="chip warn" title="같은 이름·생년월일(또는 휴대폰) 고객이 또 있습니다">중복?</span>' : '') + (custKind(c) !== '계약' ? ' <span class="chip ck-' + custKind(c) + '">' + custKind(c) + '</span>' : '') + (c.sample && !/\(예시\)/.test(c.name || '') ? ' <span class="chip">예시</span>' : '') + (!c.consent ? ' <span class="chip warn">동의 확인</span>' : '') + '</td>' +
         '<td class="num" data-l="나이">' + (an.age != null ? an.age + '세' : '–') + (c.gender ? ' · ' + esc(c.gender) : '') + '</td>' +
         '<td class="num ltel" data-l="휴대폰">' + (c.phone ? '<span class="tel-txt">' + esc(c.phone) + '</span>' + telLink(c.phone) + smsLink(c.phone) : '<span class="muted">–</span>') + '</td>' +
         '<td class="r num" data-l="계약">' + polCountTxt(c) + '</td>' +
         '<td class="r num" data-l="월보험료">' + (an.premium ? fmtWon(an.premium) : '–') + '</td>' +
-        '<td class="r num" data-l="부족">' + (!c.policies.length ? '–' : an.counts.short ? '<span class="pill v-short">' + an.counts.short + '</span>' : '0') + '</td>' +
-        '<td class="r num" data-l="중복·과잉">' + (c.policies.length && an.counts.dup + an.counts.over ? '<span class="pill v-dup">' + an.counts.dup + '·' + an.counts.over + '</span>' : '–') + '</td>' +
-        '<td class="num when" data-l="최근 수정">' + shortDate(c.updatedAt) + '</td>' +
+        '<td class="num cgap" data-l="보장 부족">' + (!c.policies.length ? '<span class="muted">–</span>' : (an.counts.must ? '<span class="pill v-must" title="미가입·최소 기준 미달">필수 ' + an.counts.must + '</span>' : '') + (an.counts.rec ? '<span class="pill v-rec" title="최소는 넘지만 권장 미달">권장 ' + an.counts.rec + '</span>' : '') + (an.counts.dup + an.counts.over ? '<span class="pill v-dup" title="중복·과잉">중복 ' + (an.counts.dup + an.counts.over) + '</span>' : '') + (!an.counts.short && !(an.counts.dup + an.counts.over) ? '<span class="muted">없음</span>' : '')) + '</td>' +
+        (function () { var ri = relInfo(c), nb = nextBirthday(c), dd = function (n) { return n === 0 ? '오늘' : n > 0 ? 'D-' + n : (-n) + '일 지남'; };
+          return '<td class="num cdt" data-l="마지막 상담">' + (ri.last ? esc(ri.last.slice(5).replace('-', '.')) + ' <small class="muted">' + (ri.since === 0 ? '오늘' : ri.since + '일 전') + '</small>' : '<span class="muted">–</span>') + '</td>' +
+            '<td class="num cdt" data-l="다음 연락">' + (ri.next ? '<span class="nx-when' + (ri.nd < 0 ? ' late' : ri.nd <= 7 ? ' soon' : '') + '">' + dd(ri.nd) + '</span>' : '<span class="muted">–</span>') + '</td>' +
+            '<td class="num cdt" data-l="생일">' + (nb ? esc(nb.date.slice(5).replace('-', '.')) + (nb.days <= 30 ? ' <span class="nx-when' + (nb.days <= 7 ? ' soon' : '') + '">' + dd(nb.days) + '</span>' : '') : '<span class="muted">–</span>') + '</td>'; })() +
+        '<td class="cnext" data-l="그 밖의 할 일">' + custNextHtml(c, true) + '</td>' +
         '<td data-l="상태">' + (custKind(c) === '가망' ? prospectHtml(c) : '<span class="st st-' + r.st.key + '">' + r.st.label + '</span>') + '</td><td class="go" aria-hidden="true">›</td></tr>';
-    }).join('') + '</tbody></table></div>';
+    }).join('') + '</tbody></table></div>' + pg.more;
 }
 // 마지막 연락이 없거나 staleDays(기본 90일) 이상 지난 고객 — 예전 '관리 필요' 화면 기준 그대로
 // 고객 구분 (2026-11-05): c.cstat '가망'|'계약'|'휴면', 비우면 자동(유지 중 계약이 있으면 계약, 없으면 가망)
 var CUST_KINDS = ['가망', '계약', '휴면'];
+// ===== 고객 정리·중복·다음 할 일·표시 (2026-11-05 '모두 개선') =====
+var TAG_PRESETS = ['VIP', '소개 많음', '법인', '관리 주의'];
+function custTags(c) { return (c.tags || []).filter(Boolean); }
+function allTags() { var m = {}; TAG_PRESETS.forEach(function (t) { m[t] = 0; }); store.customers.forEach(function (c) { custTags(c).forEach(function (t) { m[t] = (m[t] || 0) + 1; }); }); return m; }
+function tagChips(c) { return custTags(c).map(function (t) { return ' <span class="chip ctag">' + esc(t) + '</span>'; }).join(''); }
+function custBlank(c) { return !norm(c.name) && !c.birth && !phoneDigits(c.phone) && !(c.policies || []).length && !(c.notes || []).length && !(c.claims || []).length && !(c.autos || []).length && !(c.fires || []).length && !c.memo && !c.address && !c.job && !custTags(c).length; }
+function purgeNewBlank() { // "+ 추가"로 만들고 아무것도 안 넣은 채 떠난 고객은 지운다
+  var keep = ui.view === 'customer' ? ui.cid : null, n0 = store.customers.length;
+  store.customers = store.customers.filter(function (c) { return !(c._new && c.id !== keep && custBlank(c)); });
+  store.customers.forEach(function (c) { if (c._new && c.id !== keep) delete c._new; });
+  if (store.customers.length !== n0) save();
+}
+function custDupOf(c) { // 같은 이름 + (같은 생년월일 또는 같은 휴대폰)
+  var nm = norm(c.name), pd = phoneDigits(c.phone); if (!nm) return [];
+  return store.customers.filter(function (x) { return x.id !== c.id && norm(x.name) === nm && ((c.birth && x.birth === c.birth) || (pd.length >= 10 && phoneDigits(x.phone) === pd)); });
+}
+function custRefCount(c) { var S = store.settings, id = c.id;
+  return { an: (S.annivs || []).filter(function (a) { return a.who === 'c' && a.cid === id; }).length,
+    ev: (S.events || []).filter(function (e) { return e.cid === id; }).length + (S.tasks || []).filter(function (t) { return t.cid === id; }).length,
+    gift: (S.gifts || []).filter(function (g) { return g.cid === id; }).length,
+    ref: store.customers.filter(function (x) { return x.refBy === id; }).length,
+    pol: (c.policies || []).length, note: (c.notes || []).length, clm: (c.claims || []).length }; }
+function custPurgeRefs(c) { // 지우기 전에 연결된 기록 정리
+  var S = store.settings, id = c.id, nm = c.name || '';
+  var delAn = {}; (S.annivs || []).forEach(function (a) { if (a.who === 'c' && a.cid === id) delAn[a.id] = 1; });
+  S.annivs = (S.annivs || []).filter(function (a) { return !delAn[a.id]; });
+  S.events = (S.events || []).filter(function (e) { return !(e.bd && String(e.bd).indexOf('c:' + id + ':') === 0); });
+  (S.events || []).concat(S.tasks || []).forEach(function (e) { if (e.cid === id) { e.cid = ''; if (nm && String(e.title || '').indexOf(nm) < 0) e.title = (e.title || '') + ' (' + nm + ')'; } });
+  (S.gifts || []).forEach(function (g) { if (g.cid === id) { g.cid = ''; g.cname = nm; } });
+  store.customers.forEach(function (x) { if (x.refBy === id) { x.refBy = ''; if (!x.refName) x.refName = nm; stampCustomer(x); } });
+  var cd = S.celebDone || {}; Object.keys(cd).forEach(function (k) { var pa = k.split(':'); if (pa[1] === id || (pa[0] === 'an' && delAn[pa[1]])) delete cd[k]; });
+  if (ui.csel) delete ui.csel[id];
+}
+function deleteCustomers(ids) {
+  ids.forEach(function (id) { var c = custById(id); if (c) custPurgeRefs(c); });
+  store.customers = store.customers.filter(function (x) { return ids.indexOf(x.id) < 0; });
+  if (ids.indexOf(ui.cid) >= 0) ui.cid = null;
+  save();
+}
+function custMerge(keep, drop) { // drop을 keep으로 합친다
+  ['policies', 'notes', 'snapshots', 'claims', 'autos', 'fires'].forEach(function (k) { if ((drop[k] || []).length) keep[k] = (keep[k] || []).concat(drop[k]); });
+  if (drop.plan) { keep.plan = keep.plan || { actions: {}, additions: [] }; Object.keys(drop.plan.actions || {}).forEach(function (k) { if (!keep.plan.actions[k]) keep.plan.actions[k] = drop.plan.actions[k]; }); keep.plan.additions = (keep.plan.additions || []).concat(drop.plan.additions || []); }
+  Object.keys(drop).forEach(function (k) {
+    if (['id', '_new', 'sample', 'updatedAt', 'policies', 'notes', 'snapshots', 'claims', 'autos', 'fires', 'plan', 'tags'].indexOf(k) >= 0) return;
+    var v = drop[k], kv = keep[k];
+    if (typeof v === 'boolean') { keep[k] = !!kv || v; return; }
+    if (k === 'children') { keep[k] = Math.max(num(kv), num(v)); return; }
+    if ((kv === '' || kv == null) && v !== '' && v != null) keep[k] = v;
+    if (k === 'memo' && kv && v && kv !== v) keep.memo = kv + '\n' + v;
+  });
+  custTags(drop).forEach(function (t) { if (custTags(keep).indexOf(t) < 0) keep.tags = custTags(keep).concat([t]); });
+  var S = store.settings, re = function (o, k) { if (o[k] === drop.id) o[k] = keep.id; };
+  (S.gifts || []).forEach(function (g) { re(g, 'cid'); }); (S.annivs || []).forEach(function (a) { re(a, 'cid'); }); (S.events || []).concat(S.tasks || []).forEach(function (e) { re(e, 'cid'); if (e.bd) e.bd = String(e.bd).replace('c:' + drop.id + ':', 'c:' + keep.id + ':'); });
+  store.customers.forEach(function (x) { re(x, 'refBy'); });
+  var cd = S.celebDone || {}; Object.keys(cd).forEach(function (k) { if (k.indexOf(':' + drop.id + ':') >= 0) { cd[k.replace(':' + drop.id + ':', ':' + keep.id + ':')] = cd[k]; delete cd[k]; } });
+  if (keep.refBy === keep.id) keep.refBy = '';
+  store.customers = store.customers.filter(function (x) { return x.id !== drop.id; });
+  stampCustomer(keep); save();
+}
+function custNext(c, skipCB) { // 이 고객에게 가장 가까운 할 일 (skipCB: 연락 예정·생일 빼고 — 고객목록은 따로 칸이 있음)
+  var t = today(), back = isoDate(new Date(Date.now() - 60 * 864e5)), L = [], add = function (d, l, kind) { if (d) L.push({ d: d, l: l, k: kind }); };
+  var nx = skipCB ? null : nextContact(c); if (nx && nx.next >= back) add(nx.next, '연락 예정', 'follow');
+  (c.policies || []).forEach(function (p) { if (!polLive(p)) return; if (p.renewable && p.renewDate >= t) add(p.renewDate, '갱신 · ' + (p.insurer || p.product || '계약'), 'renew'); var pe = payEnd(p); if (!p.paidUp && pe && pe >= t) add(pe, '납입 완료 · ' + (p.insurer || p.product || '계약'), 'payend'); });
+  (c.autos || []).forEach(function (a) { if (a.end && a.end >= t) add(a.end, '자동차 만기', 'renew'); });
+  (c.fires || []).forEach(function (a) { if (a.end && a.end >= t) add(a.end, '화재 만기', 'renew'); });
+  (c.claims || []).forEach(function (x) { claimTodo(c, x).forEach(function (it) { if (it.date >= back) add(it.date, '보험금 청구', 'claim'); }); });
+  var nb = skipCB ? null : nextBirthday(c); if (nb) add(nb.date, '생일', 'bd');
+  var ce = consentExpiry(c); if (ce && ce >= back) add(ce, '동의 만료', 'consent');
+  L.sort(function (a, b) { return a.d < b.d ? -1 : a.d > b.d ? 1 : 0; });
+  return L[0] || null;
+}
+function custNextHtml(c, skipCB) { var n = custNext(c, skipCB); if (!n) return '<span class="muted">–</span>'; var dd = daysUntil(n.d); return '<span class="nx-when' + (dd < 0 ? ' late' : dd <= 7 ? ' soon' : '') + '">' + (dd === 0 ? '오늘' : dd < 0 ? (-dd) + '일 지남' : dd <= 60 ? 'D-' + dd : esc(n.d.slice(5).replace('-', '.'))) + '</span> <span class="nx-what">' + esc(n.l) + '</span>'; }
+function dormCands() { // 계약 없음 + 1년 넘게 연락 없음 → 휴면 추천
+  var skip = store.settings.dormSkip || {}, lim = isoDate(new Date(Date.now() - 365 * 864e5));
+  return store.customers.filter(function (c) { if (c.sample || c.cstat === '휴면' || skip[c.id] || custKind(c) === '계약' || !norm(c.name)) return false; var l = lastContactDate(c); return !l || l < lim; });
+}
+function pageCut(list, key, size) { // 컴퓨터에서도 긴 목록은 나눠 보기 (2026-11-05)
+  var lim = ui[key] === 'all' ? Infinity : (num(ui[key]) || size), shown = list.length > lim ? list.slice(0, lim) : list, rest = list.length - shown.length;
+  var more = rest > 0 ? '<div class="page-more"><button class="btn sm more-btn" data-act="pageMore" data-id="' + key + '" data-k="' + (shown.length + size) + '">더보기 (' + Math.min(size, rest) + '건 더)</button><button class="btn ghost sm" data-act="pageMore" data-id="' + key + '" data-k="all">모두 보기 (' + list.length + '건)</button></div>'
+    : (ui[key] && list.length > size ? '<div class="page-more"><button class="btn ghost sm more-btn" data-act="pageMore" data-id="' + key + '" data-k="">접기 ▲</button></div>' : '');
+  return { shown: shown, more: more };
+}
+function hashTitle(h) { // 뒤로 가기 버튼 이름
+  var m;
+  if (!h || h === '#list') return '고객목록';
+  if ((m = h.match(/^#cust-(\w+)/))) return LIST_TITLES[m[1]] || '고객';
+  if ((m = h.match(/^#work-(\w+)/))) { var w = WORK_SUBS.filter(function (x) { return x[0] === m[1]; })[0]; return w ? w[1] : '업무'; }
+  if ((m = h.match(/^#ins-(\w+)/))) return INS_TITLES[m[1]] || '보험';
+  if ((m = h.match(/^#office-(\w+)/))) { var o = OFFICE_SUBS.filter(function (x) { return x[0] === m[1]; })[0]; return o ? o[1] : '지점'; }
+  if (/^#settings/.test(h)) return '설정';
+  return '이전 화면';
+}
+function custGlance(c) { // 고객 상세 맨 위 '관계 한눈에' (2026-11-05)
+  var ri = relInfo(c), nb = nextBirthday(c), an = annivList().filter(function (a) { return a.who === 'c' && a.cid === c.id; }).map(function (a) { return { a: a, nx: annivNext(a) }; }).filter(function (o) { return o.nx; }).sort(function (x, y) { return x.nx.days - y.nx.days; })[0];
+  var props = (c.snapshots || []).filter(function (s) { return STAGE_OPEN[snapStage(s)]; }).length, clm = (c.claims || []).filter(function (x) { return CLAIM_OPEN[x.stage]; }).length;
+  var dd = function (n) { return n === 0 ? '오늘' : n > 0 ? 'D-' + n : (-n) + '일 지남'; };
+  var it = function (k, v, cls, act) { return '<div class="gl-it' + (cls ? ' ' + cls : '') + '"' + (act || '') + '><span class="k">' + k + '</span><span class="v num">' + v + '</span></div>'; };
+  return '<div class="cust-glance no-print" role="group" aria-label="관계 한눈에">' +
+    it('마지막 연락', ri.last ? esc(ri.last.slice(5).replace('-', '.')) + ' <small>' + (ri.since === 0 ? '오늘' : ri.since + '일 전') + (ri.lastM ? ' · ' + esc(ri.lastM) : '') + '</small>' : '<span class="muted">기록 없음</span>', ri.st === 'due' || ri.st === 'none' ? 'warn' : '') +
+    it('다음 연락', ri.next ? esc(ri.next.slice(5).replace('-', '.')) + ' <small>' + dd(ri.nd) + '</small>' : '<span class="muted">없음</span>', ri.nd != null && ri.nd < 0 ? 'late' : ri.nd != null && ri.nd <= 7 ? 'warn' : '') +
+    it('생일', nb ? esc(nb.date.slice(5).replace('-', '.')) + ' <small>' + dd(nb.days) + '</small>' : '<span class="muted">미입력</span>', nb && nb.days <= 7 ? 'warn' : '') +
+    (an ? it(esc(an.a.type || '기념일'), esc(an.nx.date.slice(5).replace('-', '.')) + ' <small>' + dd(an.nx.days) + '</small>', an.nx.days <= 7 ? 'warn' : '') : '') +
+    it('진행 중 제안', props + '<small>건</small>', props ? 'on' : '') + it('진행 중 청구', clm + '<small>건</small>', clm ? 'on' : '') +
+    '<div class="gl-act">' + (c.phone ? telLink(c.phone) + relSms(c.phone) : '') + '<button class="btn sm primary" data-act="custNoteQuick" data-id="' + c.id + '">상담 남기기</button></div></div>';
+}
 function custKind(c) { return CUST_KINDS.indexOf(c.cstat) >= 0 ? c.cstat : ((c.policies || []).some(polLive) || (c.autos || []).length || (c.fires || []).length ? '계약' : '가망'); }
 // 가망고객 진행: 첫 상담 → 보장분석(계약 입력) → 제안
 function prospectStep(c) { return (c.snapshots || []).length ? 3 : (c.policies || []).length ? 2 : (c.notes || []).length ? 1 : 0; }
@@ -2975,24 +3147,36 @@ function renderList() {
     empty: all.filter(function (x) { return !x.c.policies.length; }).length,
     consent: all.filter(function (x) { return !x.c.consent; }).length,
     short: all.filter(function (x) { return x.c.policies.length && x.an.counts.short > 0; }).length,
-    stale: all.filter(function (x) { return custStale(x.c); }).length
+    stale: all.filter(function (x) { return custStale(x.c); }).length,
+    dup: all.filter(function (x) { return custDupOf(x.c).length > 0; }).length
   };
-  var kpi = function (key, label, n, tone) {
-    var on = (ui.filter || '') === key;
-    return '<button class="kpi' + (on ? ' on' : '') + (key && n ? ' ' + tone : '') + (key && !n ? ' zero' : '') + '" data-act="filter" data-id="' + (on && key ? '' : key) + '" aria-pressed="' + on + '">' +
-      '<span class="k">' + label + '</span><span class="v num">' + n + '<small>명</small></span></button>';
+  var TG = allTags(), tagUsed = Object.keys(TG).filter(function (t) { return TG[t] > 0; });
+  var tagRow = tagUsed.length ? '<div class="todos ctag-row" role="group" aria-label="표시로 거르기"><span class="muted">표시</span>' + tagUsed.map(function (t) { var on = ui.cTag === t; return '<button class="todo' + (on ? ' on' : '') + '" data-act="uiPick" data-k="cTag" data-id="' + attr(t) + '" aria-pressed="' + on + '">' + esc(t) + ' <b>' + TG[t] + '</b></button>'; }).join('') + '</div>' : '';
+  var DM = (tab === '' || tab === '가망') ? dormCands() : [];
+  var dormBox = DM.length ? '<details class="panel dorm-box"' + (ui.dormOpen ? ' open' : '') + '><summary data-act="toggleBox" data-id="dormOpen"><b>휴면으로 돌릴 만한 고객 ' + DM.length + '명</b> <span class="muted">계약 없음 · 1년 넘게 연락 없음</span></summary>' +
+    '<ul class="wlist">' + DM.slice(0, 30).map(function (c) { var l = lastContactDate(c); return '<li>' + custLink(c, 'info') + '<span class="what">마지막 연락 ' + (l ? esc(l.replace(/-/g, '.')) : '기록 없음') + ' · ' + custKind(c) + '</span><button class="btn sm" data-act="dormSet" data-id="' + c.id + '">휴면으로</button><button class="btn ghost sm" data-act="dormSkip" data-id="' + c.id + '">아님</button></li>'; }).join('') + '</ul>' +
+    (DM.length > 30 ? '<p class="muted" style="margin:0">외 ' + (DM.length - 30) + '명</p>' : '') +
+    '<div class="row" style="gap:8px;justify-content:space-between"><span class="muted">휴면고객은 고객관계의 연락할 차례·대상 뽑기에서 기본으로 빠집니다. 언제든 고객 정보에서 되돌릴 수 있습니다.</span><button class="btn sm' + (ui.armed === 'dormAll' ? ' danger armed' : '') + '" data-act="dormAll">' + (ui.armed === 'dormAll' ? '한 번 더 누르면 ' + DM.length + '명 휴면으로' : '모두 휴면으로') + '</button></div></details>' : '';
+  var chip = function (key, label, n, tone, tip) {
+    var on = (ui.filter || '') === key; if (!n && !on) return '';
+    return '<button class="todo cf-chip' + (on ? ' on' : '') + (tone ? ' ' + tone : '') + '" data-act="filter" data-id="' + (on ? '' : key) + '" aria-pressed="' + on + '"' + (tip ? ' title="' + attr(tip) + '"' : '') + '>' + label + ' <b>' + n + '</b></button>';
   };
   var pc = [0, 0, 0]; if (tab === '가망') all.forEach(function (x) { var st = prospectStep(x.c); if (st < 3) pc[st]++; });
-  var todos = !store.customers.length ? '' : tab === '가망' ? kpi('', '가망고객', all.length, '') + kpi('p0', '첫 상담 전', pc[0], 'warn') + kpi('p1', '보장분석 전 (계약 입력 전)', pc[1], '') + kpi('p2', '제안 전', pc[2], '') + '<button class="kpi' + (relTodo ? ' warn' : ' zero') + '" data-act="goList" data-id="care"><span class="k">연락할 차례 (전체) → 고객관계</span><span class="v num">' + relTodo + '<small>명</small></span></button>' :
-    kpi('', tab ? tab + '고객' : '전체 고객', all.length, '') + kpi('map', '매핑 필요', cnt.map, 'warn') + kpi('empty', '계약 미입력', cnt.empty, '') +
-    kpi('short', '부족 담보 있음', cnt.short, 'warn') + '<button class="kpi' + (relTodo ? ' warn' : ' zero') + '" data-act="goList" data-id="care" title="고객관계 → 연락할 차례에서 연락 주기에 맞춰 봅니다"><span class="k">연락할 차례 (전체) → 고객관계</span><span class="v num">' + relTodo + '<small>명</small></span></button>' + (ui.filter === 'stale' ? kpi('stale', '오래 연락 안 함', cnt.stale, 'warn') : '') + (cnt.consent || ui.filter === 'consent' ? kpi('consent', '동의 확인 필요', cnt.consent, 'warn') : '');
+  cnt.must = all.filter(function (x) { return x.c.policies.length && x.an.counts.must > 0; }).length;
+  cnt.rec = all.filter(function (x) { return x.c.policies.length && !x.an.counts.must && x.an.counts.rec > 0; }).length;
+  var chips = tab === '가망' ? chip('p0', '첫 상담 전', pc[0], 'warn') + chip('p1', '보장분석 전', pc[1]) + chip('p2', '제안 전', pc[2])
+    : chip('must', '필수 보장 부족', cnt.must, 'warn', '미가입이거나 최소 기준에 못 미치는 담보가 있는 고객') + chip('rec', '권장만 미달', cnt.rec, '', '최소 기준은 넘지만 권장 금액에 못 미치는 담보만 있는 고객') + chip('map', '매핑 필요', cnt.map, 'warn') + chip('empty', '계약 미입력', cnt.empty) + chip('consent', '동의 확인', cnt.consent, 'warn') + chip('dup', '중복 의심', cnt.dup, 'warn') + (ui.filter === 'stale' ? chip('stale', '오래 연락 안 함', cnt.stale, 'warn') : '');
+  chips += '<button class="todo cf-chip cf-link' + (relTodo ? ' warn' : '') + '" data-act="goList" data-id="care" title="고객관계 → 연락할 차례에서 연락 주기에 맞춰 봅니다">연락할 차례 <b>' + relTodo + '</b> →</button>';
+  var tagChipsBar = tagUsed.length ? '<span class="cf-sep" aria-hidden="true"></span><span class="muted cf-lab">표시</span>' + tagUsed.map(function (t) { var on = ui.cTag === t; return '<button class="todo cf-chip' + (on ? ' on' : '') + '" data-act="uiPick" data-k="cTag" data-id="' + attr(t) + '" aria-pressed="' + on + '">' + esc(t) + ' <b>' + TG[t] + '</b></button>'; }).join('') : '';
+  var fbar = !store.customers.length ? '' : '<div class="cfbar" role="group" aria-label="고객 걸러 보기"><div class="seg ck-tabs" role="tablist" aria-label="고객 구분">' + [['', '전체'], ['가망', '가망'], ['계약', '계약'], ['휴면', '휴면']].map(function (t) { var on = tab === t[0]; return '<button class="seg-btn' + (on ? ' on' : '') + '" role="tab" aria-selected="' + on + '" data-act="cTab" data-id="' + t[0] + '">' + t[1] + ' <span class="num">' + tabN[t[0]] + '</span></button>'; }).join('') + '</div>' +
+    '<span class="cf-sep" aria-hidden="true"></span>' + chips + tagChipsBar + '</div>';
   return '<section class="list-page">' +
     '<div class="list-head"><h1>고객목록 <span class="muted num">' + store.customers.length + '명</span></h1>' +
     '<div class="list-tools"><input type="search" id="q" placeholder="이름·전화번호 검색" value="' + attr(ui.q) + '" aria-label="고객 이름·전화번호 검색">' +
       '<button class="btn primary" data-act="addCustomer" title="신규 고객 등록">+ 추가</button></div></div>' +
-    (store.customers.length ? '<div class="seg ck-tabs" role="tablist" aria-label="고객 구분">' + [['', '전체'], ['가망', '가망'], ['계약', '계약'], ['휴면', '휴면']].map(function (t) { var on = tab === t[0]; return '<button class="seg-btn' + (on ? ' on' : '') + '" role="tab" aria-selected="' + on + '" data-act="cTab" data-id="' + t[0] + '">' + t[1] + ' <span class="num">' + tabN[t[0]] + '</span></button>'; }).join('') + '</div>' : '') +
+    fbar +
     (tab === '가망' ? '<p class="muted ck-help">아직 유지 중 계약이 없는 고객입니다. 진행 칸은 첫 상담 → 보장분석(계약 입력) → 제안 순서입니다. 제안이 성사되면 계약고객으로 바뀝니다.</p>' : tab === '휴면' ? '<p class="muted ck-help">고객 정보에서 "고객 구분"을 휴면으로 고른 고객입니다. 다시 연락이 닿으면 자동으로 돌리세요.</p>' : '') +
-    (todos ? '<div class="kpis" role="group" aria-label="처리할 일로 걸러 보기">' + todos + '</div>' : '') +
+    dormBox +
     '<div id="clistWrap">' + renderListTable() + '</div>' + custImportPanel() +
     '<div class="row list-xls"><button class="btn sm" data-act="custXlsOut" title="고객 기본 정보를 엑셀 파일로 받습니다 (파일은 이 기기에서만 만듭니다)">엑셀 받기</button>' +
       '<label class="btn sm file-btn" title="엑셀에 적은 고객 명단을 불러옵니다">엑셀 입력<input type="file" accept=".xlsx,.xls,.csv" data-kind="custxlsx" hidden></label>' +
@@ -3014,7 +3198,7 @@ function stepNote(c, an, key, st) {
   var t = '', warn = false;
   if (key === 'info') t = st === 'done' ? '완료' : '입력 필요';
   else if (key === 'policies') { if (!c.policies.length) t = '계약 없음'; else if (an.unmapped) { t = '매핑 ' + an.unmapped + '건 남음'; warn = true; } else t = '계약 ' + c.policies.length + '건'; }
-  else if (key === 'analysis' && c.policies.length) { if (an.counts.short) { t = '부족 ' + an.counts.short; warn = true; } else t = '부족 없음'; }
+  else if (key === 'analysis' && c.policies.length) { if (an.counts.must) { t = '필수 부족 ' + an.counts.must; warn = true; } else if (an.counts.rec) t = '권장 미달 ' + an.counts.rec; else t = '부족 없음'; }
   else if (key === 'plan' && st === 'done') t = '설계함';
   else if (key === 'proposal' && (c.snapshots || []).length) t = '기록 ' + c.snapshots.length + '건';
   return t ? '<small' + (warn ? ' class="warn"' : '') + '>' + t + '</small>' : '';
@@ -3025,13 +3209,14 @@ function renderCustomer() {
   if (!c) { ui.view = 'list'; return renderList(); }
   var an = analyze(c, store.settings);
   var idx = 0; STEPS.forEach(function (s, i) { if (s[0] === ui.tab) idx = i; });
-  var head = '<div class="chead no-print"><button class="back" data-act="home">‹ 고객 목록</button>' +
+  var head = '<div class="chead no-print"><button class="back" data-act="home">‹ ' + esc(hashTitle(ui.backTo && ui.backTo.h)) + '</button>' +
     '<div class="chead-main"><h1>' + esc(c.name || '이름 없음') + '</h1><div class="facts num">' +
     '<span class="fact">' + (an.age != null ? '만 ' + an.age + '세' : '생년월일 미입력') + (c.gender ? ' · ' + esc(c.gender) : '') + '</span>' +
     (c.job ? '<span class="fact">' + esc(c.job) + '</span>' : '') +
     '<span class="fact">계약 ' + polCountTxt(c) + '</span><span class="fact">월 ' + fmtWon(an.premium) + '</span>' +
-    (c.consent ? '' : '<span class="chip warn">동의 확인 필요</span>') + '</div>' +
-    (ui.tab !== 'proposal' && c.policies.length ? '<button class="btn" data-act="tab" data-id="proposal">제안서 보기</button>' : '') + '</div></div>';
+    (c.consent ? '' : '<span class="chip warn">동의 확인 필요</span>') + (custKind(c) !== '계약' ? '<span class="chip ck-' + custKind(c) + '">' + custKind(c) + '</span>' : '') + tagChips(c) + '</div>' +
+    '<div class="chead-act"><button class="btn sm" data-act="claimAddFor" data-id="' + c.id + '">청구 추가</button>' + // 전화·문자·상담 남기기는 아래 '관계 한눈에' 줄에
+    (ui.tab !== 'proposal' && c.policies.length ? '<button class="btn sm" data-act="tab" data-id="proposal">제안서 보기</button>' : '') + '</div></div></div>';
   var stepper = '<nav class="stepper no-print" aria-label="작업 단계">' + STEPS.map(function (s, i) {
     var st = stepState(c, an, s[0]), on = s[0] === ui.tab;
     var mark = st === 'done' ? '✓' : (i + 1);
@@ -3047,7 +3232,7 @@ function renderCustomer() {
   var prev = STEPS[idx - 1], next = STEPS[idx + 1];
   var nav = '<div class="step-nav no-print">' + (prev ? '<button class="btn" data-act="tab" data-id="' + prev[0] + '">← ' + prev[1] + '</button>' : '<span></span>') +
     (ui.tab === 'analysis' ? '<span></span>' : next ? '<button class="btn primary" data-act="tab" data-id="' + next[0] + '">다음: ' + next[1] + ' →</button>' : '<button class="btn" data-act="home">고객 목록으로</button>') + '</div>';
-  return '<section class="cust-page">' + head + stepper + body + nav + '</section>';
+  return '<section class="cust-page">' + head + custGlance(c) + stepper + body + nav + '</section>';
 }
 
 function f(scope, k, value, opts) {
@@ -3119,7 +3304,7 @@ function parseDateInput(v) {
   var s0 = String(v == null ? '' : v).trim();
   if (!s0) return { ok: true, iso: '' };
   var t = new Date(); t = new Date(t.getFullYear(), t.getMonth(), t.getDate());
-  var add = function (days, months) { var d = new Date(t); if (months) d.setMonth(d.getMonth() + months); d.setDate(d.getDate() + (days || 0)); return { ok: true, iso: isoDate(d) }; };
+  var add = function (days, months) { var d = new Date(t); if (months) { var dd0 = d.getDate(); d.setDate(1); d.setMonth(d.getMonth() + months); d.setDate(Math.min(dd0, new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate())); } d.setDate(d.getDate() + (days || 0)); return { ok: true, iso: isoDate(d) }; };
   var kw = { '오늘': 0, '내일': 1, '모레': 2, '글피': 3, '어제': -1, '그제': -2 };
   if (kw[s0] != null) return add(kw[s0]);
   var rel = s0.replace(/\s/g, '').match(/^([+-]?)(\d+)(일|주|개월|달|월|년)?(후|뒤|전)?$/);
@@ -3260,7 +3445,13 @@ function lbl(text, inner, cls) { return '<label class="field' + (cls ? ' ' + cls
 
 function renderInfo(c) {
   var del = ui.armed === 'delC:' + c.id;
-  return '<section class="panel cust-form"><h2>고객 정보</h2>' +
+  var dups = custDupOf(c);
+  var dupBox = dups.length ? '<div class="notice dup-box"><b>같은 고객이 이미 있는 것 같습니다.</b> 같은 이름에 생년월일이나 휴대폰이 같습니다.' + dups.map(function (x) { var ak = 'mrg:' + x.id + ':' + c.id;
+      return '<div class="row dup-row"><span>' + esc(x.name || '') + ' · ' + (x.birth ? esc(x.birth.replace(/-/g, '.')) : '생년월일 없음') + ' · 계약 ' + (x.policies || []).length + '건 · 상담 ' + (x.notes || []).length + '건</span><button class="btn sm" data-act="pick" data-id="' + x.id + '">그 고객 열기</button><button class="btn sm' + (ui.armed === ak ? ' danger armed' : '') + '" data-act="custMerge" data-id="' + x.id + '" data-pid="' + c.id + '" title="이 화면 고객의 계약·상담·청구 기록을 그 고객으로 옮기고 이 고객은 지웁니다">' + (ui.armed === ak ? '한 번 더 누르면 합칩니다' : '그 고객으로 합치기') + '</button></div>'; }).join('') + '</div>' : '';
+  var TGc = custTags(c), tagPick = TAG_PRESETS.concat(Object.keys(allTags()).filter(function (t) { return TAG_PRESETS.indexOf(t) < 0; }));
+  var tagField = '<div class="field span2"><span>표시 <small class="muted">고객목록에서 거르고, 고객관계 대상 뽑기에 씁니다</small></span><div class="todos ctag-pick">' + tagPick.map(function (t) { var on = TGc.indexOf(t) >= 0; return '<button class="todo' + (on ? ' on' : '') + '" data-act="custTag" data-id="' + c.id + '" data-k="' + attr(t) + '" aria-pressed="' + on + '">' + (on ? '✓ ' : '') + esc(t) + '</button>'; }).join('') +
+    '<span class="ctag-add">' + f('ui', 'cTagNew', ui.cTagNew || '', { ph: '새 표시 (예: 개인사업자)', aria: '새 표시 이름' }) + '<button class="btn sm" data-act="custTagAdd" data-id="' + c.id + '">붙이기</button></span></div></div>';
+  return dupBox + '<section class="panel cust-form"><h2>고객 정보</h2>' +
     '<div class="grid-form">' +
     lbl('이름', f('cust', 'name', c.name, { ph: '예: 홍길동' })) +
     '<div class="field"><span>생년월일' + birthMeta(c) + '</span><div class="date-row">' + f('cust', 'birth', birthDisplay(c.birth), { kind: 'birth', inputmode: 'numeric', ph: '예: 840512 또는 1984.05.12', aria: '생년월일' }) +
@@ -3279,7 +3470,7 @@ function renderInfo(c) {
     lbl('소개해 준 사람', f('cust', 'refBy', c.refBy || (c.refNone ? '__none' : ''), { type: 'select', options: [['', '선택 안 함'], ['__none', '소개 아님']].concat(store.customers.filter(function (x) { return x.id !== c.id; }).sort(function (a, b) { return String(a.name || '').localeCompare(String(b.name || ''), 'ko'); }).map(function (x) { return [x.id, x.name || '이름 없음']; })) })) +
     (!c.refBy && !c.refNone ? lbl('소개자 (고객이 아닐 때)', f('cust', 'refName', c.refName || '', { ph: '예: 동창 김OO' })) : '') +
     lbl('연락 주기', f('cust', 'cycle', c.cycle ? String(c.cycle) : '', { type: 'select', options: [['', '기본 (' + relCycleDef() + '일)']].concat(CYCLE_OPTS) })) +
-    lbl('고객 구분', f('cust', 'cstat', c.cstat || '', { type: 'select', options: [['', '자동 (지금: ' + custKind(Object.assign({}, c, { cstat: '' })) + ')'], ['가망', '가망고객'], ['계약', '계약고객'], ['휴면', '휴면고객']] })) +
+    tagField + lbl('고객 구분', f('cust', 'cstat', c.cstat || '', { type: 'select', options: [['', '자동 (지금: ' + custKind(Object.assign({}, c, { cstat: '' })) + ')'], ['가망', '가망고객'], ['계약', '계약고객'], ['휴면', '휴면고객']] })) +
     '</div><div class="row checks">' +
     '<label class="check">' + f('cust', 'spouse', c.spouse, { type: 'check' }) + ' 배우자 있음</label>' +
     '<label class="check">' + f('cust', 'drives', c.drives, { type: 'check' }) + ' 운전함 (운전자 담보 분석)</label>' +
@@ -3287,7 +3478,7 @@ function renderInfo(c) {
     (c.consent ? lbl('동의일', f('cust', 'consentDate', c.consentDate || '', { type: 'date' })) : '') +
     '</div>' + lbl('상담 메모', f('cust', 'memo', c.memo, { type: 'textarea' }), 'full') +
     '<div class="row between form-foot"><span class="muted">월소득은 사망보장 과잉 판단(연소득 × 기준 배수)에 쓰입니다.</span>' +
-    '<button class="btn danger' + (del ? ' armed' : '') + '" data-act="delCustomer" data-id="' + c.id + '">' + (del ? '한 번 더 누르면 삭제됩니다' : '고객 삭제') + '</button></div></section>' + renderNotesPanel(c) + custClaimsPanel(c);
+    '<button class="btn danger" data-act="delCustomer" data-id="' + c.id + '">고객 삭제</button></div></section>' + renderNotesPanel(c) + custClaimsPanel(c);
 }
 
 function polOpen(p) {
@@ -3434,7 +3625,7 @@ function renderAnalysis(c, an) {
     '</aside>';
   return '<div class="an-layout"><div class="an-main">' +
     '<div class="summary num">' +
-    '<div class="stat' + (an.counts.short ? ' hot' : '') + '"><div class="k">부족 담보</div><div class="v">' + an.counts.short + '개</div></div>' +
+    '<div class="stat' + (an.counts.must ? ' hot' : '') + '"><div class="k">부족 담보</div><div class="v">' + an.counts.short + '개</div><div class="sub">필수 ' + an.counts.must + ' · 권장 미달 ' + an.counts.rec + '</div></div>' +
     '<div class="stat"><div class="k">중복 · 과잉</div><div class="v">' + an.counts.dup + ' · ' + an.counts.over + '</div></div>' +
     '<div class="stat' + (an.incomeShare != null && num(store.settings.params.premiumShare) > 0 && an.incomeShare > num(store.settings.params.premiumShare) ? ' hot' : '') + '"><div class="k">월 보험료</div><div class="v">' + fmtWon(an.premium) + '</div>' +
       '<div class="sub">' + (an.incomeShare != null ? '월소득의 ' + an.incomeShare + '%' : '월소득 입력 시 부담률 표시') + '</div></div>' +
@@ -3558,7 +3749,7 @@ function renderSettings() {
       '<div id="licSec">' + licensePanel() + '</div>' +
       '<section class="panel" id="fcCardSec"><h2>명함 <span class="muted">제안서 마지막에 넣을 수 있습니다</span></h2>' +
       (function () { var card = s.fc.card, armed = ui.armed === 'fcCardDel';
-        return '<div class="fc-card"><div class="fc-card-body">' + (card ? '<img class="fc-card-img" src="' + attr(card) + '" alt="내 명함">' : '<label class="fc-card-empty" for="fcCardFile"><b>명함 이미지</b><span>눌러서 사진이나 스캔 파일을 고르세요</span></label>') + '</div>' +
+        return '<div class="fc-card"><div class="fc-card-body">' + (card ? '<img class="fc-card-img" src="' + attr(card) + '" alt="내 명함">' : fileWaiting(s.fc, 'cardPath') ? '<div class="fc-card-empty"><b>명함 불러오는 중…</b></div>' : '<label class="fc-card-empty" for="fcCardFile"><b>명함 이미지</b><span>눌러서 사진이나 스캔 파일을 고르세요</span></label>') + '</div>' +
           '<div class="fc-card-side"><b>명함 이미지</b><span class="muted">JPG·PNG 사진이나 스캔 파일. 휴대폰에서는 바로 촬영할 수도 있습니다. 큰 사진은 자동으로 줄여 저장합니다.' + (s.fc.cardAt ? ' (' + esc(s.fc.cardAt) + ' 등록)' : '') + '</span>' +
           (card ? '<label class="chk-line"><input type="checkbox" data-act="fcCardDoc"' + (s.fc.cardOnDoc !== false ? ' checked' : '') + '> 제안서 마지막에 명함 넣기</label>' : '') +
           '<div class="row" style="gap:6px"><label class="btn' + (card ? '' : ' primary') + '" for="fcCardFile">' + (card ? '명함 바꾸기' : '명함 올리기') + '</label><input type="file" id="fcCardFile" accept="image/*" data-kind="fccard" hidden>' +
@@ -4567,7 +4758,7 @@ function giftPanel() {
     '<span class="org-sep"></span>' + [''].concat(GIFT_OCC).map(function (o) { return '<button class="todo' + (occ === o ? ' on' : '') + '" data-act="gfO" data-id="' + o + '">' + (o || '모든 계기') + '</button>'; }).join('') + '</div>';
   var rows = list.map(function (g) {
     var c = custById(g.cid), over = g.occ === '계약 감사' && num(g.amount) > 30000;
-    return '<tr class="row-dbl" data-dbl="gift:' + g.id + '" tabindex="0" title="두 번 누르면 수정"><td class="num" data-l="날짜">' + esc(String(g.date || '').replace(/-/g, '.')) + '</td><td data-l="고객">' + (c ? custLink(c, 'info') : '<span class="muted">고객 없음</span>') + '</td>' +
+    return '<tr class="row-dbl" data-dbl="gift:' + g.id + '" tabindex="0" title="두 번 누르면 수정"><td class="num" data-l="날짜">' + esc(String(g.date || '').replace(/-/g, '.')) + '</td><td data-l="고객">' + (c ? custLink(c, 'info') : g.cname ? esc(g.cname) + ' <span class="muted">(삭제된 고객)</span>' : '<span class="muted">고객 없음</span>') + '</td>' +
       '<td data-l="계기"><span class="kchip k-gift">' + esc(g.occ || '기타') + '</span></td><td data-l="선물"><b>' + esc(g.item || '–') + '</b></td><td class="r num" data-l="금액">' + (num(g.amount) ? fmtWon(g.amount) : '–') + (over ? ' <span class="chip warn" title="보험계약 관련 금품은 최초 1년 보험료의 10%와 3만원 중 적은 금액까지만 허용">한도 확인</span>' : '') + '</td>' +
       '<td data-l="방법">' + esc(g.how || '') + '</td><td class="muted" data-l="메모">' + esc(g.memo || '') + '</td></tr>';
   }).join('');
@@ -5254,7 +5445,7 @@ function insGuidePanel() {
       ['납입 정보 · 동의서', '자동이체 계좌·카드, 개인(신용)정보 동의', '장기보험과 같습니다'],
       ['담보 선택', '교통사고처리지원금, 변호사선임비용, 벌금, 부상 치료비 등', '운전자보험 메뉴의 상담 안내 참고']]
   };
-  var tabs = '<div class="seg" role="tablist" aria-label="보험 종류">' + [['long', '장기'], ['fire', '화재'], ['drv', '운전자'], ['auto', '자동차']].map(function (o) { return '<button class="seg-btn' + (T === o[0] ? ' on' : '') + '" role="tab" aria-selected="' + (T === o[0]) + '" data-act="gdT" data-id="' + o[0] + '">' + o[1] + '</button>'; }).join('') + '</div>';
+  var tabs = '<div class="seg" role="tablist" aria-label="보험 종류">' + [['long', '보장보험'], ['fire', '화재보험'], ['drv', '운전자보험'], ['auto', '자동차보험']].map(function (o) { return '<button class="seg-btn' + (T === o[0] ? ' on' : '') + '" role="tab" aria-selected="' + (T === o[0]) + '" data-act="gdT" data-id="' + o[0] + '">' + o[1] + '</button>'; }).join('') + '</div>';
   var infoTable = '<div class="tablewrap"><table class="t gd-table"><thead><tr><th>항목</th><th>무엇을 받나</th><th>메모</th></tr></thead><tbody>' + info[T].map(function (r) { return tr(r[0], r[1], r[2]); }).join('') + '</tbody></table></div>';
   var disc = '<div class="tablewrap"><table class="t gd-table"><thead><tr><th>질문 기간</th><th>흔히 묻는 내용</th><th>예시</th></tr></thead><tbody>' +
     tr('최근 3개월', '진찰·검사·치료·투약(건강검진 포함)', '감기약 처방, 검진에서 위염 소견') +
@@ -5375,7 +5566,7 @@ function prodPicker() {
 // ===== 2차 기능: 일정 · 상담 · 가족 · 동의 기한 · 승환 비교 · 증권 PDF =====
 function custById(id) { return store.customers.filter(function (x) { return x.id === id; })[0]; }
 function isoDate(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
-function addMonths(iso, m) { var p = String(iso || '').split('-'); if (p.length < 3) return ''; var d = new Date(Number(p[0]), Number(p[1]) - 1 + m, Number(p[2])); return isNaN(d) ? '' : isoDate(d); }
+function addMonths(iso, m) { var p = String(iso || '').split('-'); if (p.length < 3) return ''; var y = Number(p[0]), mo = Number(p[1]) - 1 + m, dd = Number(p[2]); if (isNaN(y + mo + dd)) return ''; var last = new Date(y, mo + 1, 0).getDate(); return isoDate(new Date(y, mo, Math.min(dd, last))); } // 월말은 그달 마지막 날로 (1/31 + 1개월 = 2/28, 2026-11-05 수정)
 function daysUntil(iso) { if (!iso) return null; var p = String(iso).split('-'); var d = new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2])); if (isNaN(d)) return null; var t = new Date(); t = new Date(t.getFullYear(), t.getMonth(), t.getDate()); return Math.round((d - t) / 86400000); }
 function dLabel(n) { return n == null ? '' : n === 0 ? '오늘' : n > 0 ? n + '일 남음' : (-n) + '일 지남'; }
 function payEnd(p) { if (p.payEndDate) return p.payEndDate; if (!p.start || !num(p.payYears)) return ''; return addMonths(p.start, num(p.payYears) * 12); }
@@ -5612,7 +5803,7 @@ function renderClaims() {
     : '<div class="empty"><strong>' + (A.length ? '조건에 맞는 청구가 없습니다' : '아직 기록한 보험금 청구가 없습니다') + '</strong><span>' + (A.length ? '위 숫자 칸이나 단계를 다시 누르면 전체가 보입니다.' : '"+ 추가"로 고객을 고르고 청구 건을 남기세요. 서류 체크와 진행 단계를 함께 관리할 수 있습니다.') + '</span></div>';
   return kp + '<section class="panel"><div class="row between"><h2>보험금 청구 <span class="muted num">' + rows.length + '건</span></h2><div class="ins-tools"><input type="search" id="clmq" class="mini-search" placeholder="고객·보험사·종류 검색" value="' + attr(ui.clmq || '') + '" aria-label="청구 검색"><button class="btn primary sm" data-act="claimAdd">+ 추가</button></div></div>' +
     chips + table +
-    '<p class="muted" style="margin:0">줄을 두 번 누르면 서류 체크·금액·메모를 고칠 수 있습니다. "접수 →"·"심사 →"로 단계를 넘기면 접수일이 자동으로 들어갑니다. 보험금 청구권은 사고·진료일부터 3년 안에 청구해야 합니다(상법 제662조). 필요한 서류는 보험사·상품마다 다르니 보험 → 가이드의 청구 안내도 함께 보세요. 서류 사진은 이 프로그램에 올리지 마세요.</p></section>';
+    '<p class="muted" style="margin:0">줄을 두 번 누르면 서류 체크·금액·메모를 고칠 수 있습니다. "접수 →"·"심사 →"로 단계를 넘기면 접수일이 자동으로 들어갑니다. 보험금 청구권은 사고·진료일부터 3년 안에 청구해야 합니다(상법 제662조). 필요한 서류는 보험사·상품마다 다르니 보험 → 보험 가이드의 청구 안내도 함께 보세요. 서류 사진은 이 프로그램에 올리지 마세요.</p></section>';
 }
 function claimModalBody(r) {
   var c = r.c, x = r.x, A = function (k, v, o) { o = o || {}; o.id = x.id; o.pid = c.id; return f('claim', k, v, o); };
@@ -5730,13 +5921,14 @@ function tgTest(c, key) {
 }
 function tgList() {
   var C = ui.tgC || {}, keys = TG_CONDS.map(function (x) { return x[0]; }).filter(function (k) { return C[k]; });
-  var age = ui.tgAge || '', g = ui.tgG || '', ad = norm(ui.tgAddr), pr = norm(ui.tgProd);
-  if (!keys.length && !age && !g && !ad && !pr) return null;
+  var age = ui.tgAge || '', g = ui.tgG || '', ad = norm(ui.tgAddr), pr = norm(ui.tgProd), tg = ui.tgTag || '';
+  if (!keys.length && !age && !g && !ad && !pr && !tg) return null;
   return relPool().map(function (c) {
     var why = [];
     for (var i = 0; i < keys.length; i++) { var w = tgTest(c, keys[i]); if (!w) return null; why.push(w); }
     if (age) { var a = c.birth ? ageOf(c.birth) : null; if (a == null || (age === '60' ? a < 60 : Math.floor(a / 10) * 10 !== Number(age))) return null; }
     if (g && c.gender !== g) return null;
+    if (tg) { if (custTags(c).indexOf(tg) < 0) return null; why.push(tg); }
     if (ad && norm(c.address).indexOf(ad) < 0) return null;
     if (pr) { var hp = (c.policies || []).filter(function (p) { return norm(p.product).indexOf(pr) >= 0 || norm(p.insurer).indexOf(pr) >= 0; })[0]; if (!hp) return null; why.push(hp.product || hp.insurer); }
     return { c: c, why: why };
@@ -5747,7 +5939,8 @@ function relTarget() {
   var chips = '<div class="chk-chips tg-chips">' + TG_CONDS.map(function (x) { return '<button class="chk-chip' + (C[x[0]] ? ' on' : '') + '" aria-pressed="' + !!C[x[0]] + '" data-act="tgTog" data-id="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div>';
   var more = '<div class="grid-form tg-more">' + lbl('나이대', f('ui', 'tgAge', ui.tgAge || '', { type: 'select', options: [['', '전체'], ['20', '20대'], ['30', '30대'], ['40', '40대'], ['50', '50대'], ['60', '60대 이상']] })) +
     lbl('성별', f('ui', 'tgG', ui.tgG || '', { type: 'select', options: [['', '전체'], ['남', '남'], ['여', '여']] })) +
-    lbl('주소에 들어간 말', f('ui', 'tgAddr', ui.tgAddr || '', { ph: '예: 일산동구' })) + lbl('보유 상품·보험사', f('ui', 'tgProd', ui.tgProd || '', { ph: '예: 암, 종신, 삼성' })) + '</div>';
+    lbl('주소에 들어간 말', f('ui', 'tgAddr', ui.tgAddr || '', { ph: '예: 일산동구' })) + lbl('보유 상품·보험사', f('ui', 'tgProd', ui.tgProd || '', { ph: '예: 암, 종신, 삼성' })) +
+    lbl('표시', f('ui', 'tgTag', ui.tgTag || '', { type: 'select', options: [['', '전체']].concat(Object.keys(allTags()).filter(function (t) { return allTags()[t] > 0; }).map(function (t) { return [t, t]; })) })) + '</div>';
   var head = '<section class="panel"><div class="row between"><h2>조건 고르기</h2>' + (L ? '<button class="btn ghost sm" data-act="tgClear">조건 지우기</button>' : '') + '</div>' + chips + more +
     '<p class="muted" style="margin:0">고른 조건을 모두 만족하는 고객만 뽑습니다. 여러 개를 고르면 더 좁혀집니다.</p></section>';
   if (!L) return head + '<section class="panel"><div class="empty"><strong>위에서 조건을 하나 이상 고르세요</strong><span>예: "이번 달 생일" + 40대, "자동차 만기 60일 안", "운전하는데 운전자보험 없음"</span></div></section>';
@@ -5924,11 +6117,12 @@ function renderAllNotes() {
   if (!any) return '<div class="empty"><strong>상담 기록이 없습니다</strong><span>위 "+ 추가"나 고객 상세 → 고객 정보 아래 "상담 기록"에서 남길 수 있습니다.</span></div>';
   var list = notesFiltered().sort(function (a, b) { if (ui.nF) return String(a.n.next).localeCompare(String(b.n.next)); return String(b.n.date).localeCompare(String(a.n.date)); });
   if (!list.length) return '<div class="empty"><strong>조건에 맞는 기록이 없습니다</strong></div>';
+  var npg = pageCut(list, 'ntLim', 50); list = npg.shown;
   return '<div class="tablewrap"><table class="t ctab note-table"><thead><tr><th>상담일</th><th>고객</th><th>방법</th><th>주제</th><th>내용</th><th>다음 연락일</th><th></th></tr></thead><tbody>' + list.map(function (x) {
     var dn = x.n.next && !x.n.done ? daysUntil(x.n.next) : null;
     return '<tr><td class="num" data-l="상담일">' + esc(x.n.date) + '</td><td data-l="고객">' + custLink(x.c, 'info') + '</td><td data-l="방법">' + esc(x.n.method) + '</td><td data-l="주제"><span class="chip">' + esc(noteTopic(x.n)) + '</span></td><td class="wrap" data-l="내용">' + esc(x.n.text) + '</td><td class="num" data-l="다음 연락일">' + (x.n.next ? esc(x.n.next) + (x.n.done ? ' <span class="chip">완료</span>' : ' <span class="chip' + (dn < 0 ? ' warn' : '') + '">' + dLabel(dn) + '</span>') : '–') + '</td>' +
       '<td class="note-go">' + (x.n.next ? '<button class="btn sm' + (x.n.done ? ' ghost' : ' tel') + '" data-act="noteDone" data-pid="' + x.c.id + '" data-id="' + x.n.id + '">' + (x.n.done ? '완료 취소' : '연락 완료') + '</button>' : '') + '</td></tr>';
-  }).join('') + '</tbody></table></div>';
+  }).join('') + '</tbody></table></div>' + npg.more;
 }
 // 제안 진행 단계 (2026-11-04): 예전 '진행 중'은 '제안함'으로 읽는다
 var STAGES = ['제안함', '검토 중', '청약', '성사', '보류', '거절'], STAGE_OPEN = { '제안함': 1, '검토 중': 1, '청약': 1 };
@@ -6059,10 +6253,19 @@ function hhDocSection(c) { // 제안서: 가족 보장 요약 (가족 화면에�
   return '<section class="doc-hh"><h2>가족 보장 요약 — ' + esc(h.name || '') + '</h2><p class="num" style="margin:0 0 6px">가족 월 보험료 ' + fmtWon(o.prem) + (o.share != null ? ' (가족 월소득의 ' + o.share + '%)' : '') + ' · 부족 담보 ' + o.short + '개 · 중복 담보 ' + o.dup + '개</p>' + hhMatrixHtml(o.mem, o.ans, ' ') + '</section>';
 }
 function hhAddrKey(a) { var s = String(a || '').replace(/\(예시\)/g, '').replace(/[\s,.\-]/g, ''); return s.length >= 10 && /\d/.test(s) ? s : ''; }
-function hhSuggest() { // 같은 상세 주소(번지·동호수 포함)인데 같은 가족이 아닌 고객들
-  var g = {}, skip = store.settings.hhSkip || [];
+function hhMergeOne(key) { var gm = hhSuggest().filter(function (g) { return g.k === key; })[0]; if (!gm) return 0;
+  var hs0 = gm.L.map(function (c) { return c.householdId; }).filter(function (x) { return x && hhSorted().some(function (h) { return h.id === x; }); })[0], hn;
+  if (!hs0) { var old = gm.L.slice().sort(function (a, b) { return String(a.birth || '9999').localeCompare(String(b.birth || '9999')); })[0]; hn = { id: uid(), name: (old.name || '새').replace(' (예시)', '') + ' 가족' }; store.settings.households.push(hn); hs0 = hn.id; old.relation = old.relation || '본인'; }
+  gm.L.forEach(function (c) { if (c.householdId !== hs0) { c.householdId = hs0; if (!hn) c.relation = c.relation || ''; } stampCustomer(c); });
+  ui.hhOpen = ui.hhOpen || {}; ui.hhOpen[hs0] = true; return gm.L.length; }
+function hhSuggest() { // 같은 상세 주소(번지·동호수 포함)인데 같은 가족이 아닌 고객들 + 가족 미지정 중 같은 성·같은 동네(2026-11-05)
+  var g = {}, skip = store.settings.hhSkip || [], used = {};
   store.customers.forEach(function (c) { var k = hhAddrKey(c.address); if (k) (g[k] = g[k] || []).push(c); });
-  return Object.keys(g).filter(function (k) { var L = g[k]; if (L.length < 2 || skip.indexOf(k) >= 0) return false; var h0 = L[0].householdId; return !h0 || L.some(function (c) { return c.householdId !== h0; }); }).map(function (k) { return { k: k, L: g[k].sort(byName) }; });
+  var out = Object.keys(g).filter(function (k) { var L = g[k]; if (L.length < 2 || skip.indexOf(k) >= 0) return false; var h0 = L[0].householdId; return !h0 || L.some(function (c) { return c.householdId !== h0; }); }).map(function (k) { g[k].forEach(function (c) { used[c.id] = 1; }); return { k: k, L: g[k].sort(byName), why: '주소(동·호수까지)가 같습니다' }; });
+  var H = hhSorted(), g2 = {};
+  store.customers.forEach(function (c) { if (used[c.id] || (c.householdId && H.some(function (h) { return h.id === c.householdId; }))) return; var nm = String(c.name || '').replace(/\(예시\)/g, '').trim(), sn = nm.length >= 2 ? nm.charAt(0) : '', ar = String(c.address || '').replace(/\(예시\)/g, '').trim().split(/\s+/).slice(0, 3).join(' '); if (!sn || ar.split(' ').length < 3) return; var k2 = 'sn:' + sn + '|' + ar; (g2[k2] = g2[k2] || []).push(c); });
+  Object.keys(g2).forEach(function (k) { var L = g2[k]; if (L.length >= 2 && L.length <= 6 && skip.indexOf(k) < 0) out.push({ k: k, L: L.sort(byName), why: '같은 성(' + k.slice(3, 4) + ') · 같은 동네(' + k.split('|')[1] + ')' }); });
+  return out;
 }
 // ===== 가족 → 대가족: 여러 가족을 묶는다 (2026-11-04) =====
 // settings.clans = [{ id, name, onDoc(동의 받은 경우 제안서에 대가족 요약) }], 가족 h.clanId · h.clanRole('부모'|'자녀'|'형제'|'기타')
@@ -6223,13 +6426,14 @@ function renderFamilyHh() {
   var head = '<div class="kpis">' + hk('gap', '보장 빈 곳 있는 가족', cntF(function (o) { return o.short > 0; }), 'warn') + hk('burden', '보험료 부담 큰 가족', cntF(function (o) { return o.burden; }), 'warn') +
     hk('dup', '중복 담보 있는 가족', cntF(function (o) { return o.dupFlag; }), 'warn') + hk('miss', '구성원이 빠진 가족', cntF(function (o) { return o.missing.length > 0; }), 'warn') + '</div>' +
     '<p class="muted hh-line num">가족 ' + H.length + '곳 · 가족에 속한 고객 ' + allMem + '명 · 가족 미지정 ' + unassigned.length + '명 · 전체 가족 월 보험료 ' + fmtWon(allPrem) + (num(store.settings.params.premiumShare) > 0 ? ' · 부담 기준: 가족 월소득의 ' + store.settings.params.premiumShare + '% 초과 (설정 → 분석기준)' : '') + '</p>' +
-    (sug.length ? '<section class="panel hh-sug"><div class="row between"><h2>같은 가족 같아요 <span class="muted num">' + sug.length + '</span></h2><span class="muted">주소(동·호수까지)가 같은 고객입니다</span></div><ul class="hh-sug-list">' + sug.map(function (g, i) {
-      return '<li><span>' + g.L.map(function (c) { return custLink(c, 'info') + (c.householdId ? ' <small class="muted">(' + esc(((hhSorted().filter(function (x) { return x.id === c.householdId; })[0]) || {}).name || '가족') + ')</small>' : ''); }).join('<span class="muted"> · </span>') + '<br><small class="muted">' + esc(g.L[0].address) + '</small></span>' +
+    (sug.length ? '<section class="panel hh-sug"><div class="row between"><h2>같은 가족 같아요 <span class="muted num">' + sug.length + '</span></h2><span class="row" style="gap:6px"><span class="muted">주소가 같거나, 가족 미지정 고객 중 성과 동네가 같은 사람입니다</span>' + (sug.length > 1 ? '<button class="btn sm' + (ui.armed === 'hhMergeAll' ? ' danger armed' : '') + '" data-act="hhMergeAll">' + (ui.armed === 'hhMergeAll' ? '한 번 더 누르면 ' + sug.length + '묶음 모두 묶기' : '추천 모두 한 번에 묶기') + '</button>' : '') + '</span></div><ul class="hh-sug-list">' + sug.map(function (g, i) {
+      return '<li><span>' + g.L.map(function (c) { return custLink(c, 'info') + (c.householdId ? ' <small class="muted">(' + esc(((hhSorted().filter(function (x) { return x.id === c.householdId; })[0]) || {}).name || '가족') + ')</small>' : ''); }).join('<span class="muted"> · </span>') + '<br><small class="muted">' + esc(g.why || '') + (g.why && g.L[0].address ? ' · ' : '') + esc(g.L[0].address || '') + '</small></span>' +
         '<span class="row" style="gap:6px"><button class="btn sm primary" data-act="hhMerge" data-id="' + attr(g.k) + '">가족으로 묶기</button><button class="btn sm ghost" data-act="hhSkip" data-id="' + attr(g.k) + '">아님</button></span></li>'; }).join('') + '</ul></section>' : '') +
     '<section class="panel fam-bar"><div class="row between fam-headrow"><h2>가족 ' + shown.length + '곳</h2><div class="row" style="gap:6px"><input type="search" id="hq" class="mini-search" placeholder="가족·구성원 이름 검색" value="' + attr(ui.hq) + '" aria-label="가족 검색">' +
     (H.length > 1 ? '<button class="btn ghost sm" data-act="hhAll" data-id="' + (H.every(function (h) { return ui.hhOpen[h.id] === true; }) ? '0' : '1') + '">' + (H.every(function (h) { return ui.hhOpen[h.id] === true; }) ? '모두 접기' : '모두 펼치기') + '</button>' : '') +
     '<button class="btn primary sm" data-act="addHousehold" title="새 가족 만들기">+ 추가</button></div></div></section>';
-  var cards = shown.map(function (h) {
+  var hpg = pageCut(shown, 'hhLim', 30);
+  var cards = hpg.shown.map(function (h) {
     var mem = memOf(h), open = ui.hhOpen[h.id] === true;
     var tot = { prem: 0, short: 0, dup: 0, inc: 0, silson: 0, liab: 0, withPol: 0 }, ans = {};
     mem.forEach(function (c) {
@@ -6286,6 +6490,7 @@ function renderFamilyHh() {
   var out = '', buf = '';
   cards.forEach(function (h) { if (h.indexOf('<!--closed-->') === 0) buf += h.slice(13); else { if (buf) { out += '<section class="panel fam-list">' + buf + '</section>'; buf = ''; } out += h; } });
   if (buf) out += '<section class="panel fam-list">' + buf + '</section>';
+  out += hpg.more;
   // 제목줄(검색·추가)을 첫 가족 목록 패널 안으로 합친다 (2026-11-03)
   var hr0 = head.indexOf('<section class="panel fam-bar">');
   if (out.indexOf('<section class="panel fam-list">') === 0 && hr0 >= 0) {
@@ -6293,14 +6498,15 @@ function renderFamilyHh() {
     head = head.slice(0, hr0); out = '<section class="panel fam-list">' + bar + out.slice('<section class="panel fam-list">'.length);
   }
   cards = out;
-  var un = unassigned.length ? '<section class="panel"><div class="row between"><h2>가족 미지정 고객 ' + unassigned.length + '명</h2><span class="muted">가족을 고르면 바로 묶입니다</span></div><div class="tablewrap"><table class="t ctab fam-un"><thead><tr><th>이름</th><th>나이</th><th>배우자·자녀</th><th>가족</th><th>관계</th></tr></thead><tbody>' +
-    unassigned.map(function (c) {
+  var upg = pageCut(unassigned, 'unLim', 10);
+  var un = unassigned.length ? '<section class="panel"><div class="row between"><h2>가족 미지정 고객 ' + unassigned.length + '명</h2><span class="muted">가족을 고르면 바로 묶입니다. 관계는 가족 카드에서 고릅니다</span></div><div class="tablewrap"><table class="t ctab fam-un"><thead><tr><th>이름</th><th>나이</th><th>배우자·자녀</th><th>가족</th></tr></thead><tbody>' +
+    upg.shown.map(function (c) {
       var a = c.birth ? ageOf(c.birth) : null;
       var fam2 = [c.spouse ? '배우자 있음' : '', num(c.children) ? '자녀 ' + num(c.children) + '명' : ''].filter(Boolean).join(' · ');
       return '<tr><td data-l="이름">' + custLink(c, 'info') + ' <small class="muted fu-age">' + (a != null ? a + '세' : '') + (fam2 ? ' · ' + fam2 : '') + '</small></td><td class="num fu-d" data-l="나이">' + (a != null ? a + '세' : '–') + '</td><td class="fu-d" data-l="배우자·자녀">' + fam2 + '</td>' +
         '<td style="min-width:150px" data-l="가족">' + f('custc', 'householdId', '', { id: c.id, type: 'select', options: [['', '가족 선택']].concat(H.map(function (h) { return [h.id, h.name || '이름 없는 가족']; })).concat([['__new', '+ 이 고객으로 새 가족']]), aria: '가족' }) + '</td>' +
-        '<td style="min-width:104px" data-l="관계">' + f('custc', 'relation', c.relation || '', { id: c.id, type: 'select', options: REL_OPTS, aria: '관계' }) + '</td></tr>';
-    }).join('') + '</tbody></table></div></section>' : '';
+        '</tr>';
+    }).join('') + '</tbody></table></div>' + upg.more + '</section>' : '';
   var empty = !H.length ? '<section class="panel"><div class="empty"><strong>등록한 가족이 없습니다</strong><span>"+ 새 가족 만들기"를 누르거나, 아래 미지정 고객 표에서 "+ 이 고객으로 새 가족"를 고르세요.</span></div></section>' : (!shown.length ? '<section class="panel"><div class="empty"><strong>검색 결과가 없습니다</strong></div></section>' : '');
   return head + cards + empty + un;
 }
@@ -6585,6 +6791,15 @@ function celebGroupH(shown, all, daysFn, keyFn, rowFn, unit) { // 다가오는 �
 function anCelebKey(o) { return celebKey('an', o.a.id, o.nx.date); }
 function bdCelebKey(x) { return celebKey(x.c ? 'bc' : x.s ? 'bs' : 'bf', (x.c || x.s || x.f).id, x.nb.date); }
 function annivList() { return store.settings.annivs = store.settings.annivs || []; }
+function staffPurgeRefs(sid, st) { // 직원을 지울 때 그 직원 기념일·생일 일정·참석 표시·축하 표시 정리 (2026-11-05)
+  var S = store.settings, delAn = {};
+  (S.annivs || []).forEach(function (a) { if (a.who === 's' && a.sid === sid) delAn[a.id] = 1; });
+  S.annivs = (S.annivs || []).filter(function (a) { return !delAn[a.id]; });
+  S.events = (S.events || []).filter(function (e) { return !(e.bd && String(e.bd).indexOf('s:' + sid + ':') === 0); });
+  (S.events || []).forEach(function (e) { if (e.att && e.att[sid] != null) delete e.att[sid]; });
+  var cd = S.celebDone || {}; Object.keys(cd).forEach(function (k) { var pa = k.split(':'); if ((pa[0] === 'bs' && pa[1] === sid) || (pa[0] === 'an' && delAn[pa[1]])) delete cd[k]; });
+  (S.gifts || []).forEach(function (g) { if (g.sid === sid && st) { g.sid = ''; g.cname = st.name || ''; } });
+}
 function annivWho(a) { if (a.who === 's') { var st = store.settings.contacts.staff.filter(function (x) { return x.id === a.sid; })[0]; return st ? (st.name || '직원') : '직원'; } if (a.who === 'e') return a.name || '이름 없음'; var c = custById(a.cid); return c ? (c.name || '고객') : (a.name || '고객 미선택'); }
 function annivDateIn(a, y) { if (!/^\d{4}-\d{2}-\d{2}$/.test(String(a.date || ''))) return '';
   if (a.cal === 'lunar') { var lm = Number(a.date.slice(5, 7)), ld = Number(a.date.slice(8, 10)), hit = ''; [y - 1, y].forEach(function (ly) { var sd = lunarToSolar(ly, lm, ld, !!a.leap); if (sd && Number(sd.slice(0, 4)) === y && !hit) hit = sd; }); return hit; }
@@ -7266,7 +7481,8 @@ function setField(el) {
     var ad = c.plan.additions.filter(function (x) { return x.id === id; })[0]; if (!ad) return;
     ad[k] = v;
   } else if (scope === 'fc') { s.fc[k] = v; }
-  else if (scope === 'ui') { if (k === 'brDrop' && ui.brImport) { ui.brImport.drop = !!v; render(); return; } ui[k] = v; if (/^(nd|ev|tk|hhN|qa|qf|org|edu|dn|tm|tn|te|demo)/.test(k) && el.dataset.kind !== 'date' && el.dataset.kind !== 'datecal') return; render(); return; }
+  else if (scope === 'ui') { if (k === 'bkTag') { var bt2 = Object.keys(ui.csel || {}).map(custById).filter(Boolean); if (v) { bt2.forEach(function (x) { if (custTags(x).indexOf(v) < 0) { x.tags = custTags(x).concat([v]); stampCustomer(x); } }); save(); toast(bt2.length + '명에게 "' + v + '" 표시를 붙였습니다'); } render(); return; }
+    if (k === 'brDrop' && ui.brImport) { ui.brImport.drop = !!v; render(); return; } ui[k] = v; if (/^(nd|ev|tk|hhN|qa|qf|org|edu|dn|tm|tn|te|demo|cTagNew)/.test(k) && el.dataset.kind !== 'date' && el.dataset.kind !== 'datecal') return; render(); return; }
   else if (scope === 'ev' || scope === 'task') {
     var lst5 = scope === 'ev' ? s.events : s.tasks; var it5 = lst5.filter(function (x) { return x.id === id; })[0]; if (!it5) return;
     if (k === 'title' && !String(v).trim()) { toast('내용을 비울 수 없습니다'); render(); return; }
@@ -7359,7 +7575,8 @@ function doAction(el) {
   if (ui.setMenu && ['setTheme', 'setZoom', 'setMotion', 'setMenu'].indexOf(act) < 0) ui.setMenu = false;
   if (c && ui.view === 'customer' && (CHANGING_ACTS.indexOf(act) >= 0 || (act === 'delPolicy' && ui.armed === 'delP:' + id))) stampCustomer(c);
   switch (act) {
-    case 'home': go('list', { lsub: 'list' }); break;
+    case 'home': { var bt = ui.backTo; ui.backTo = null; if (bt && bt.h && bt.h !== '#list') { try { history.pushState(null, '', bt.h); } catch (e) {} applyHash(); render(); setTimeout(function () { window.scrollTo(0, bt.y || 0); }, 0); return; } go('list', { lsub: 'list' }); if (bt) { render(); setTimeout(function () { window.scrollTo(0, bt.y || 0); }, 0); return; } break; }
+    case 'pageMore': ui[id] = el.dataset.k === 'all' ? 'all' : (el.dataset.k ? Number(el.dataset.k) : 0); break;
     case 'goList': if (id === 'todo') { go('work', { wsub: 'home' }); break; } if (id === 'care') { ui.relTab = 'care'; ui.rcF = 'todo'; go('list', { lsub: 'contacts' }); break; } go('list', { lsub: id || 'list' }); break;
     case 'goWork': if (id === 'staff' || id === 'branch') { go('office', { osub: id }); break; } go('work', { wsub: id || 'home' }); break;
     case 'orgF': ui.orgF = id || ''; break;
@@ -7618,7 +7835,7 @@ function doAction(el) {
     case 'dmDel': {
       if (ui.armed !== 'dmDel') { ui.armed = 'dmDel'; keepArm = true; break; }
       var mm = ui.modal; ui.modal = null;
-      if (mm && mm.kind === 'staff') { var gx = store.settings.contacts.staff.filter(function (y) { return y.id === mm.id; })[0]; store.settings.contacts.staff = store.settings.contacts.staff.filter(function (y) { return y.id !== mm.id; }); toast((gx && gx.name ? gx.name : '직원') + '을(를) 지웠습니다'); }
+      if (mm && mm.kind === 'staff') { var gx = store.settings.contacts.staff.filter(function (y) { return y.id === mm.id; })[0]; store.settings.contacts.staff = store.settings.contacts.staff.filter(function (y) { return y.id !== mm.id; }); staffPurgeRefs(mm.id, gx); toast((gx && gx.name ? gx.name : '직원') + '을(를) 지웠습니다'); }
       else if (mm && mm.kind === 'friend') { store.settings.contacts.friends = friendList().filter(function (y) { return y.id !== mm.id; }); toast('지인을 지웠습니다'); }
       else if (mm && mm.kind === 'notice') { store.settings.notices = noticeList().filter(function (y) { return y.id !== mm.id; }); toast('공지를 지웠습니다'); }
       else if (mm && mm.kind === 'anniv') { store.settings.annivs = annivList().filter(function (y) { return y.id !== mm.id; }); toast('기념일을 지웠습니다'); }
@@ -7687,11 +7904,7 @@ function doAction(el) {
         if (/세$/.test(cm.why)) { older.clanRole = older.clanRole || '부모'; younger.clanRole = younger.clanRole || '자녀'; } }
       [cm.a, cm.b].forEach(function (h) { h.clanId = cid0; }); ui.clOpen = ui.clOpen || {}; ui.clOpen[cid0] = true; save(); toast('두 가족을 대가족으로 묶었습니다. 관계를 확인하세요'); break; }
     case 'hhSkip': store.settings.hhSkip = (store.settings.hhSkip || []).concat([id]); save(); break;
-    case 'hhMerge': { var gm = hhSuggest().filter(function (g) { return g.k === id; })[0]; if (!gm) break;
-      var hs0 = gm.L.map(function (c) { return c.householdId; }).filter(function (x) { return x && hhSorted().some(function (h) { return h.id === x; }); })[0], hn;
-      if (!hs0) { var old = gm.L.slice().sort(function (a, b) { return String(a.birth || '9999').localeCompare(String(b.birth || '9999')); })[0]; hn = { id: uid(), name: (old.name || '새').replace(' (예시)', '') + ' 가족' }; store.settings.households.push(hn); hs0 = hn.id; old.relation = old.relation || '본인'; }
-      gm.L.forEach(function (c) { if (c.householdId !== hs0) { c.householdId = hs0; if (!hn) c.relation = c.relation || ''; } stampCustomer(c); });
-      ui.hhOpen = ui.hhOpen || {}; ui.hhOpen[hs0] = true; save(); toast(gm.L.length + '명을 한 가족으로 묶었습니다. 관계를 골라 주세요'); break; }
+    case 'hhMerge': { var gmn = hhMergeOne(id); if (!gmn) break; save(); toast(gmn + '명을 한 가족으로 묶었습니다. 관계를 골라 주세요'); break; }
     case 'propFollow': { var pc = custById(id), ps = pc && pc.snapshots && pc.snapshots[Number(el.dataset.pid)]; if (!ps) break;
       var nx7 = isoDate(new Date(Date.now() + 7 * 864e5)); pc.notes = pc.notes || [];
       pc.notes.push({ id: uid(), date: today(), method: '전화', topic: '보장분석', text: '제안 후속 연락 (' + String(ps.at).slice(0, 10) + ' 제안)', next: nx7, done: false });
@@ -7701,7 +7914,7 @@ function doAction(el) {
       rc.notes.forEach(function (n) { if (n.next && !n.done && n.next <= td0) n.done = true; });
       rc.notes.push({ id: uid(), date: td0, method: '전화', text: '안부 연락 (관계 화면에서 기록)', next: '', done: true }); stampCustomer(rc); save(); toast((rc.name || '고객') + '님 연락을 상담 기록에 남겼습니다'); break; }
     case 'tgTog': ui.tgC = ui.tgC || {}; ui.tgC[id] = !ui.tgC[id]; ui.tgAll = false; break;
-    case 'tgClear': ui.tgC = {}; ui.tgAge = ''; ui.tgG = ''; ui.tgAddr = ''; ui.tgProd = ''; break;
+    case 'tgClear': ui.tgC = {}; ui.tgAge = ''; ui.tgG = ''; ui.tgAddr = ''; ui.tgProd = ''; ui.tgTag = ''; break;
     case 'tgCopy': { var tl = tgList() || []; var nums = tl.map(function (o) { return String(o.c.phone || '').trim(); }).filter(function (x) { return x.replace(/\D/g, ''); }); copyText(nums.join(', '), '번호 ' + nums.length + '개를 복사했습니다'); return; }
     case 'tgLog': { if (ui.armed !== 'tgLog') { ui.armed = 'tgLog'; keepArm = true; break; } var tl2 = tgList() || [], tx = String(ui.tgMsg || '').trim(); tl2.forEach(function (o) { o.c.notes = o.c.notes || []; o.c.notes.push({ id: uid(), date: today(), method: '문자', text: '안내 문자' + (tx ? ': ' + relTpl(tx, o.c).slice(0, 60) : ''), next: '', done: true }); stampCustomer(o.c); }); save(); toast(tl2.length + '명에게 연락 기록을 남겼습니다'); break; }
     case 'licPdfOpen': { var lo = licList().filter(function (y) { return y.id === id; })[0]; if (!lo || !lo.pdf) return; var bu = URL.createObjectURL(new Blob([dataUrlBytes(lo.pdf)], { type: 'application/pdf' })); var w = window.open(bu, '_blank'); if (!w) { licPdfDown(id); } setTimeout(function () { URL.revokeObjectURL(bu); }, 60000); return; }
@@ -7779,14 +7992,30 @@ function doAction(el) {
     case 'togglePol': { var tp = polById(c, id); if (tp) ui.openPol[id] = !polOpen(tp); break; }
     case 'allPol': c.policies.forEach(function (x) { ui.openPol[x.id] = id === '1'; }); break;
     case 'addCustomer': {
-      var nc = blankCustomer(); stampCustomer(nc); store.customers.unshift(nc); ui.q = ''; ui.filter = ''; ui.focusName = true; go('customer', { cid: nc.id, tab: 'info' }); save(); break;
+      var nc = blankCustomer(); nc._new = true; stampCustomer(nc); store.customers.unshift(nc); ui.q = ''; ui.filter = ''; ui.focusName = true; go('customer', { cid: nc.id, tab: 'info' }); save(); break;
     }
-    case 'delCustomer':
-      if (ui.armed === 'delC:' + id) {
-        store.customers = store.customers.filter(function (x) { return x.id !== id; });
-        ui.cid = null; go('list'); save(); toast('고객을 삭제했습니다');
-      } else { ui.armed = 'delC:' + id; keepArm = true; }
-      break;
+    case 'delCustomer': ui.modal = { kind: 'custdel', ids: [id] }; ui.armed = null; break; // 확인 창에서 연결 기록과 함께 정리 (2026-11-05)
+    case 'custDelGo': { var dIds = (ui.modal && ui.modal.ids) || []; var wasCur = dIds.indexOf(ui.cid) >= 0 && ui.view === 'customer'; deleteCustomers(dIds); ui.modal = null; ui.csel = {}; if (wasCur) go('list'); toast(dIds.length > 1 ? '고객 ' + dIds.length + '명을 삭제했습니다' : '고객을 삭제했습니다'); break; }
+    case 'custMerge': { var mk = custById(id), md = custById(el.dataset.pid), ak = 'mrg:' + id + ':' + el.dataset.pid; if (!mk || !md) break; if (ui.armed !== ak) { ui.armed = ak; keepArm = true; break; } custMerge(mk, md); go('customer', { cid: mk.id, tab: 'info' }); toast((mk.name || '고객') + '님 자료를 하나로 합쳤습니다'); break; }
+    case 'cSel': { ui.csel = ui.csel || {}; if (ui.csel[id]) delete ui.csel[id]; else ui.csel[id] = true; break; }
+    case 'cSelAll': { ui.csel = ui.csel || {}; var vis = listRows().map(function (r) { return r.c.id; }), allOn = vis.length && vis.every(function (x) { return ui.csel[x]; }); vis.forEach(function (x) { if (allOn) delete ui.csel[x]; else ui.csel[x] = true; }); break; }
+    case 'cSelClear': ui.csel = {}; break;
+    case 'copyMsg': copyText(String(ui.tgMsg != null ? ui.tgMsg : ''), '문구를 복사했습니다'); return;
+    case 'cBulkMsg': if (Object.keys(ui.csel || {}).length) ui.modal = { kind: 'bulkmsg' }; break;
+    case 'cBulkDone': { if (ui.armed !== 'cBulkDone') { ui.armed = 'cBulkDone'; keepArm = true; break; } var bdn = Object.keys(ui.csel || {}).map(custById).filter(Boolean), td9 = today();
+      bdn.forEach(function (x) { x.notes = x.notes || []; x.notes.forEach(function (n) { if (n.next && !n.done && n.next <= td9) n.done = true; }); x.notes.push({ id: uid(), date: td9, method: '문자', text: '연락함 (여러 명 한 번에 기록)', next: '', done: true }); stampCustomer(x); }); save(); toast(bdn.length + '명 연락을 상담 기록에 남겼습니다'); break; }
+    case 'bkMsgLog': { if (ui.armed !== 'bkMsgLog') { ui.armed = 'bkMsgLog'; keepArm = true; break; } var bml = Object.keys(ui.csel || {}).map(custById).filter(function (x) { return x && phoneDigits(x.phone); }), td8 = today();
+      bml.forEach(function (x) { x.notes = x.notes || []; x.notes.push({ id: uid(), date: td8, method: '문자', text: '안내 문자: ' + String(relTpl(ui.tgMsg || '', x)).slice(0, 60), next: '', done: true }); stampCustomer(x); }); save(); ui.modal = null; toast(bml.length + '명에게 보낸 문자를 상담 기록에 남겼습니다'); break; }
+    case 'hhMergeAll': { if (ui.armed !== 'hhMergeAll') { ui.armed = 'hhMergeAll'; keepArm = true; break; } var ks = hhSuggest().map(function (g) { return g.k; }), nmg = 0; ks.forEach(function (k) { if (hhMergeOne(k)) nmg++; }); save(); toast(nmg + '묶음을 가족으로 묶었습니다. 펼쳐서 관계를 골라 주세요'); break; }
+    case 'cBulkKind': { var bk = Object.keys(ui.csel || {}).map(custById).filter(Boolean); bk.forEach(function (x) { x.cstat = id === 'auto' ? '' : id; stampCustomer(x); }); save(); toast(bk.length + '명을 ' + (id === 'auto' ? '자동 구분' : id + '고객') + '으로 바꿨습니다'); break; }
+    case 'cBulkCopy': { var bp = Object.keys(ui.csel || {}).map(custById).filter(function (x) { return x && phoneDigits(x.phone); }); if (!bp.length) { toast('휴대폰 번호가 있는 고객이 없습니다'); break; } copyText(bp.map(function (x) { return x.phone; }).join(', '), '휴대폰 번호 ' + bp.length + '개를 복사했습니다'); break; }
+    case 'cBulkDel': { var bd2 = Object.keys(ui.csel || {}).filter(custById); if (bd2.length) ui.modal = { kind: 'custdel', ids: bd2 }; break; }
+    case 'custNoteQuick': ui.ndaCid = id; ui.ndaText = ''; ui.ndaNext = ''; ui.ndaDate = today(); ui.modal = { kind: 'noteadd' }; break;
+    case 'custTag': { var tc = custById(id), tg = el.dataset.k; if (!tc || !tg) break; var tl = custTags(tc); tc.tags = tl.indexOf(tg) >= 0 ? tl.filter(function (x) { return x !== tg; }) : tl.concat([tg]); stampCustomer(tc); save(); break; }
+    case 'custTagAdd': { var ta = custById(id), nt = String(ui.cTagNew || '').trim().slice(0, 12); if (!ta || !nt) { toast('붙일 표시를 적어 주세요 (12자까지)'); break; } if (custTags(ta).indexOf(nt) < 0) ta.tags = custTags(ta).concat([nt]); ui.cTagNew = ''; stampCustomer(ta); save(); break; }
+    case 'dormSet': { var dc = custById(id); if (dc) { dc.cstat = '휴면'; stampCustomer(dc); save(); toast((dc.name || '고객') + '님을 휴면고객으로 바꿨습니다'); } break; }
+    case 'dormSkip': { var ds = store.settings.dormSkip = store.settings.dormSkip || {}; ds[id] = today(); save(); break; }
+    case 'dormAll': { if (ui.armed !== 'dormAll') { ui.armed = 'dormAll'; keepArm = true; break; } var dl = dormCands(); dl.forEach(function (x) { x.cstat = '휴면'; stampCustomer(x); }); save(); toast(dl.length + '명을 휴면고객으로 바꿨습니다'); break; }
     case 'addPolicy': { var np = blankPolicy(); np.coverages.push({ id: uid(), raw: '', amount: 0, code: null }); c.policies.push(np); ui.openPol[np.id] = true; save(); break; }
     case 'delPolicy':
       if (ui.armed === 'delP:' + id) { c.policies = c.policies.filter(function (x) { return x.id !== id; }); delete c.plan.actions[id]; save(); }
@@ -7925,7 +8154,6 @@ function doAction(el) {
     case 'setGlance': try { if (glanceOn()) localStorage.setItem('fcp-glance', '0'); else localStorage.removeItem('fcp-glance'); } catch (e) {} toast('이 기기에 저장했습니다'); break;
     case 'setBdDays': store.settings.params.birthdayDays = Number(id) || 7; save(); toast('다가오는 생일·기념일·선물을 ' + (Number(id) || 7) + '일간 보여 줍니다'); break;
     case 'setUpDays': store.settings.params.upDays = Number(id) || 7; save(); toast('다가오는 일정을 ' + (Number(id) || 7) + '일간 보여 줍니다'); break;
-      ui.view = 'list'; doAction({ dataset: { act: 'addCustomer' } }); return; // 새 고객 만들고 고객 정보 입력으로
     case 'openSearch': openSearch(); return;
     case 'setStart': store.settings.params.startView = id; save(); toast('다음부터 ' + ({ list: '고객 목록', ins: '보험 장기', office: '지점 공지' }[id] || '오늘 업무') + '으로 시작합니다'); break;
     case 'setCalDef': store.settings.params.calView = id === 'week' ? 'week' : 'month'; ui.calView = ''; save(); break;
@@ -8015,6 +8243,99 @@ function loadFromSite() {
     store.customers.forEach(function (c) { site.cache.customers[c.id] = JSON.stringify(c); });
   });
 }
+// ===== 파일 보관함 (2026-11-05): 로그인 모드에서는 라이선스 사진·PDF와 명함 사진을 Supabase Storage('fc-files', 본인 폴더)에 따로 올리고
+// 설정(user_settings)에는 경로(imgPath·pdfPath·cardPath)와 지문(…Sig)만 남긴다. 화면·제안서·PDF용 data URL은 메모리와 이 기기(IndexedDB)에만 둔다.
+var FILE_BUCKET = 'fc-files';
+var fileMem = {}; // 경로 → { sig, data } (이 기기 메모리)
+function fileSig(d) { d = String(d || ''); var h = 2166136261; for (var i = 0; i < d.length; i++) { h ^= d.charCodeAt(i); h = Math.imul(h, 16777619); } return d.length.toString(36) + '-' + (h >>> 0).toString(36); }
+function fileSlots(S) {
+  var out = [], u = cloud.user && cloud.user.id; if (!u || !S) return out;
+  (S.licenses || []).forEach(function (x) { if (!x || !x.id) return; out.push({ o: x, k: 'img', pk: 'imgPath', sk: 'imgSig', path: u + '/lic/' + x.id + '-img' }); out.push({ o: x, k: 'pdf', pk: 'pdfPath', sk: 'pdfSig', path: u + '/lic/' + x.id + '-pdf' }); });
+  if (S.fc) out.push({ o: S.fc, k: 'card', pk: 'cardPath', sk: 'cardSig', path: u + '/card' });
+  return out;
+}
+function fileState() { site.fileUp = site.fileUp || {}; site.fileMiss = site.fileMiss || {}; site.fileBad = site.fileBad || {}; }
+// 저장 직전: data URL이 있으면 경로·지문을 붙이고, 없으면(지웠으면) 경로를 뗀다. 아직 못 받은 파일은 경로를 그대로 둔다
+function filePrep(S) {
+  fileState();
+  fileSlots(S).forEach(function (f) {
+    var d = f.o[f.k];
+    if (d) {
+      var m = fileMem[f.path], sig = m && m.data === d ? m.sig : fileSig(d);
+      fileMem[f.path] = { sig: sig, data: d };
+      if (f.o[f.pk] !== f.path) f.o[f.pk] = f.path; if (f.o[f.sk] !== sig) f.o[f.sk] = sig;
+    } else if (f.o[f.pk] && site.fileMiss[f.o[f.pk]]) { /* 아직 받는 중 — 그대로 */ }
+    else if (f.o[f.pk] || f.o[f.sk]) { delete f.o[f.pk]; delete f.o[f.sk]; }
+  });
+}
+// 서버에 보낼 설정: 올린 파일의 data URL은 빼고 경로만 (올리지 못한 파일은 예전처럼 그대로 넣는다)
+function fileServerCopy(sj) {
+  var c = JSON.parse(sj); fileState();
+  fileSlots(c).forEach(function (f) { if (f.o[f.k] && f.o[f.pk] && !site.fileBad[f.o[f.pk] + '|' + f.o[f.sk]]) f.o[f.k] = ''; });
+  return c;
+}
+function fileCachePut(p, sig, d) { if (offEnabled()) offPut('file:' + p, { sig: sig, data: d }); }
+function fileMime(d) { var m = /^data:([^;,]+)/.exec(String(d || '')); return m ? m[1] : 'application/octet-stream'; }
+function fileUpload() {
+  fileState();
+  var sb = cloud.client, jobs = [];
+  fileSlots(store.settings).forEach(function (f) {
+    var d = f.o[f.k], p = f.o[f.pk], sig = f.o[f.sk];
+    if (!d || !p || site.fileUp[p] === sig || site.fileBad[p + '|' + sig]) return;
+    jobs.push(sb.storage.from(FILE_BUCKET).upload(p, dataUrlBytes(d), { upsert: true, contentType: fileMime(d), cacheControl: '3600' }).then(function (r) {
+      if (r && r.error) {
+        if (isNetErr(r.error)) throw { code: 'unavailable', message: r.error.message };
+        site.fileBad[p + '|' + sig] = 1; return; // 형식·용량 등으로 거절되면 이 파일만 설정 안에 그대로 저장
+      }
+      site.fileUp[p] = sig; fileCachePut(p, sig, d);
+    }));
+  });
+  return Promise.all(jobs);
+}
+// 설정에서 더는 쓰지 않는 파일은 보관함에서 지운다 (설정을 저장한 뒤에)
+function fileCleanup(S) {
+  fileState();
+  var refs = {}; fileSlots(S).forEach(function (f) { if (f.o[f.pk]) refs[f.o[f.pk]] = 1; });
+  var gone = Object.keys(site.fileUp).filter(function (p) { return !refs[p]; });
+  if (!gone.length) return Promise.resolve();
+  return cloud.client.storage.from(FILE_BUCKET).remove(gone).then(function (r) { if (!r || !r.error) gone.forEach(function (p) { delete site.fileUp[p]; delete fileMem[p]; offDel('file:' + p); }); }).catch(function () {});
+}
+// 불러온 설정에 경로만 있는 파일을 채운다: 메모리 → 이 기기 사본 → 서버 순
+function fileHydrate(S, server) {
+  fileState();
+  fileSlots(S).forEach(function (f) {
+    var p = f.o[f.pk], sig = f.o[f.sk]; if (!p) return;
+    if (server) site.fileUp[p] = sig;
+    if (f.o[f.k]) return;
+    var m = fileMem[p]; if (m && m.sig === sig) { f.o[f.k] = m.data; return; }
+    site.fileMiss[p] = 1;
+    offGet('file:' + p).then(function (rec) {
+      if (rec && rec.sig === sig && rec.data) return rec.data;
+      if (!cloud.on || !cloud.client || cloud.offline) return null;
+      return cloud.client.storage.from(FILE_BUCKET).download(p).then(function (r) {
+        if (!r || r.error || !r.data) return null;
+        return new Promise(function (ok) { var rd = new FileReader(); rd.onload = function () { ok(String(rd.result || '')); }; rd.onerror = function () { ok(null); }; var bt = r.data.type && !/octet|multipart/.test(r.data.type) ? r.data.type : f.k === 'pdf' ? 'application/pdf' : 'image/jpeg'; rd.readAsDataURL(new Blob([r.data], { type: bt })); });
+      }).then(function (d) {
+        if (!d) return null;
+        if (f.k === 'pdf') d = d.replace(/^data:[^;,]*/, 'data:application/pdf');
+        fileCachePut(p, fileSig(d), d); return d;
+      });
+    }).then(function (d) {
+      if (!d) return;
+      var sg = fileSig(d); fileMem[p] = { sig: sg, data: d }; if (site.fileUp[p]) site.fileUp[p] = sg;
+      delete site.fileMiss[p];
+      // 지금 설정(그사이 바뀌었을 수도 있음)에서 같은 경로의 빈 칸만 채운다. 저장 대기 중인 수정이 없으면 "저장됨" 상태 유지
+      var clean = site.cache && site.cache.settings === JSON.stringify(store.settings), hit = false;
+      fileSlots(store.settings).forEach(function (g) { if (g.o[g.pk] === p && !g.o[g.k]) { g.o[g.k] = d; g.o[g.sk] = sg; hit = true; } });
+      if (!hit) return;
+      if (clean) site.cache.settings = JSON.stringify(store.settings);
+      offSaveSoon(); remoteRender(true);
+    }).catch(function () {});
+  });
+}
+// 서버 모양으로 비교 (이미지 data URL 빼고)
+function fileServerForm(S) { var c = JSON.parse(JSON.stringify(S)); fileSlots(c).forEach(function (f) { if (f.o[f.pk]) f.o[f.k] = ''; }); return c; }
+function fileWaiting(o, pk) { return !!(o && o[pk] && site.fileMiss && site.fileMiss[o[pk]]); }
 function scheduleSite() {
   clearTimeout(site.timer);
   site.timer = setTimeout(flushSite, 700);
@@ -8025,16 +8346,29 @@ function flushSite() {
   if (site.busy) { site.again = true; return Promise.resolve(); }
   site.busy = true; updateSaveState(cloud.on ? '서버에 저장 중…' : '사이트에 저장 중…');
   var now = new Date().toISOString(), ops = [], seen = {};
+  if (cloud.on) filePrep(store.settings);
   var sj = JSON.stringify(store.settings);
-  if (sj !== site.cache.settings) ops.push(site.db.doc('planner/settings').set({ settings: JSON.parse(sj), updatedAt: now }).then(function () { site.cache.settings = sj; }));
+  if (sj !== site.cache.settings) {
+    if (cloud.on) ops.push(fileUpload().then(function () { return site.db.doc('planner/settings').set({ settings: fileServerCopy(sj), updatedAt: now }); }).then(function () { site.cache.settings = sj; return fileCleanup(JSON.parse(sj)); }));
+    else ops.push(site.db.doc('planner/settings').set({ settings: JSON.parse(sj), updatedAt: now }).then(function () { site.cache.settings = sj; }));
+  }
+  var ups = [], dels = [];
   store.customers.forEach(function (c) {
     seen[c.id] = 1;
     var j = JSON.stringify(c);
-    if (site.cache.customers[c.id] !== j) ops.push(site.db.doc('customers/' + c.id).set({ c: JSON.parse(j), name: c.name || '', updatedAt: now }).then(function () { site.cache.customers[c.id] = j; }));
+    if (site.cache.customers[c.id] !== j) ups.push({ id: c.id, j: j, name: c.name || '' });
   });
-  Object.keys(site.cache.customers).forEach(function (id) {
-    if (!seen[id]) ops.push(site.db.doc('customers/' + id).delete().then(function () { delete site.cache.customers[id]; }));
-  });
+  Object.keys(site.cache.customers).forEach(function (id) { if (!seen[id]) dels.push(id); });
+  if (cloud.on && site.db.bulk) {
+    // 로그인 모드: 바뀐 고객을 한 요청에 묶어 올린다 (100명 또는 약 900KB마다 한 묶음), 지운 고객도 한 번에
+    var chunk = [], size = 0, flushChunk = function () { if (!chunk.length) return; var part = chunk; chunk = []; size = 0; ops.push(site.db.bulk.upsert(part.map(function (x) { return { id: x.id, name: x.name, data: JSON.parse(x.j) }; }), now).then(function () { part.forEach(function (x) { site.cache.customers[x.id] = x.j; }); })); };
+    ups.forEach(function (x) { if (chunk.length >= 100 || (size && size + x.j.length > 900000)) flushChunk(); chunk.push(x); size += x.j.length; });
+    flushChunk();
+    for (var di = 0; di < dels.length; di += 200) (function (part) { ops.push(site.db.bulk.remove(part).then(function () { part.forEach(function (id) { delete site.cache.customers[id]; }); })); })(dels.slice(di, di + 200));
+  } else {
+    ups.forEach(function (x) { ops.push(site.db.doc('customers/' + x.id).set({ c: JSON.parse(x.j), name: x.name, updatedAt: now }).then(function () { site.cache.customers[x.id] = x.j; })); });
+    dels.forEach(function (id) { ops.push(site.db.doc('customers/' + id).delete().then(function () { delete site.cache.customers[id]; })); });
+  }
   return Promise.all(ops).then(function () {
     storageOk = true; site.err = ''; if (ops.length) { lastSaved = new Date(); if (cloud.on) offSaveSoon(); }
   }).catch(function (e) {
@@ -8221,7 +8555,7 @@ function howtoModalHtml() {
       '<b>생일 · 기념일 · 선물</b>: 고객·직원·지인의 생일(양력·음력)과 기념일, 보낸 선물 기록. 다가오는 목록은 오늘·내일·이번 주로 묶여 보이고, 축하를 마치면 "축하 완료"를 눌러 표시합니다(해마다 새로 시작).',
       '<b>실적 · 수수료</b>: 내가 입력한 계약 실적과 수수료를 모아 봅니다.']), G('work:home', '오늘') + G('work:calendar', '일정')) +
     S('고객 메뉴', false, UL([
-      '<b>고객목록</b>: 전체 · 가망 · 계약 · 휴면 탭으로 고객을 나눠 봅니다. 가망고객은 첫 상담 → 보장분석 → 제안 진행이 보이고, 제안이 성사되면 계약고객이 됩니다. 위 숫자 칸을 누르면 그 고객만 걸러집니다.',
+      '<b>고객목록</b>: 전체 · 가망 · 계약 · 휴면 탭으로 고객을 나눠 봅니다. 가망고객은 첫 상담 → 보장분석 → 제안 진행이 보이고, 제안이 성사되면 계약고객이 됩니다. 위 숫자 칸을 누르면 그 고객만 걸러집니다. 위 한 줄에서 구분 탭과 걸러 보기(필수 보장 부족 = 미가입·최소 기준 미달, 권장만 미달 등)를 함께 고릅니다. 마지막 상담·다음 연락·생일·그 밖의 할 일 칸 제목을 누르면 그 순서로 정렬됩니다. 고객이 많으면 50명씩 보이고 "더보기"로 이어 봅니다. 왼쪽 체크로 여러 명을 골라 구분 바꾸기·번호 복사·삭제를 한 번에 하고, VIP 같은 "표시"를 붙여 거를 수 있습니다. 같은 이름·생년월일 고객은 "중복?"으로 알려 주고 고객 정보에서 하나로 합칠 수 있습니다.',
       '<b>고객관계</b>: 연락할 차례인 고객, 대상 뽑기·단체 안내(조건으로 고른 고객에게 문자), 소개해 준 관계를 봅니다.',
       '<b>가족·가구</b>: 한 집에 사는 가족을 묶고, 본가·처가처럼 큰 가족(대가족)으로도 연결합니다.',
       '<b>고객상담</b>: 상담 기록을 주제별로 남기고 고객별 상담 흐름을 봅니다.',
@@ -8229,8 +8563,8 @@ function howtoModalHtml() {
       '<b>보험금청구</b>: 고객의 청구 건마다 서류 체크, 진행 단계(서류 준비 → 접수 → 심사 → 지급·부지급), 지급액을 관리합니다. 사고·진료일부터 3년인 청구 기한도 알려 줍니다.']), G('list:list', '고객목록') + G('list:claims', '보험금청구')) +
     S('보험 메뉴', false, UL([
       '<b>보장보험 · 화재보험 · 운전자보험 · 자동차보험</b>: 고객들의 계약을 종류별로 모아 봅니다. 만기·갱신이 다가오는 계약을 찾기 좋습니다.',
-      '<b>보험사</b>: 보험사 연락처를 직접 정리해 둡니다.',
-      '<b>가이드</b>: 상담에 참고할 보험 기본 안내입니다.']), G('insurance:all', '보장보험') + G('insurance:guide', '가이드')) +
+      '<b>보험사 연락처</b>: 보험사 고객센터·보상 접수 번호를 직접 정리해 둡니다.',
+      '<b>보험 가이드</b>: 상담에 참고할 보험 기본 안내입니다.']), G('insurance:all', '보장보험') + G('insurance:guide', '보험 가이드')) +
     S('지점 메뉴', false, UL([
       '<b>공지사항 · 지점일정</b>: 지점 공지와 지점 일정을 적어 둡니다.',
       '<b>보험뉴스</b>: 실손·자동차·생명·손해보험 등 주제별 보험 뉴스를 모아 봅니다(로그인해야 볼 수 있습니다).',
@@ -8303,6 +8637,24 @@ function detailModalHtml() {
     title = (hcm.c.name || '고객') + '님 · ' + claimLabel(hcm.x); head = '보험금 청구 · ' + hcm.x.stage + (hcm.x.date ? ' · 사고·진료일 ' + hcm.x.date.replace(/-/g, '.') : '');
     body = claimModalBody(hcm);
     del = '<button class="btn danger' + (ui.armed === 'dmDel' ? ' armed' : '') + '" data-act="dmDel">' + (ui.armed === 'dmDel' ? '한 번 더 누르면 삭제' : '삭제') + '</button>';
+  } else if (m.kind === 'bulkmsg') {
+    var BM = Object.keys(ui.csel || {}).map(custById).filter(Boolean), msg0 = ui.tgMsg != null ? ui.tgMsg : '{이름}님, 안녕하세요. {FC}입니다. ', withPh = BM.filter(function (x) { return phoneDigits(x.phone); });
+    title = '안내 문자 · ' + BM.length + '명'; head = '문구를 쓰고 사람마다 "문자 쓰기"를 누르면 휴대폰 문자 앱이 열립니다. 보내기는 직접 누릅니다.';
+    body = lbl('문구 ({이름}, {FC}는 사람마다 바뀝니다)', f('ui', 'tgMsg', msg0, { type: 'textarea' }), 'full') +
+      '<div class="row" style="gap:8px;margin:8px 0;flex-wrap:wrap"><button class="btn sm" data-act="cBulkCopy">번호 ' + withPh.length + '개 복사</button><button class="btn sm" data-act="copyMsg">문구 복사</button><button class="btn sm' + (ui.armed === 'bkMsgLog' ? ' danger armed' : '') + '" data-act="bkMsgLog">' + (ui.armed === 'bkMsgLog' ? '한 번 더 누르면 기록' : '보낸 것으로 상담 기록 남기기') + '</button></div>' +
+      '<ul class="wlist">' + BM.map(function (x) { return '<li><b>' + esc(x.name || '이름 없음') + '</b><span class="what muted">' + (x.phone ? esc(x.phone) : '휴대폰 없음') + '</span>' + relSms(x.phone, relTpl(msg0, x), '문자 쓰기') + '</li>'; }).join('') + '</ul>' +
+      (BM.length > withPh.length ? '<p class="muted" style="margin:6px 0 0">휴대폰이 없는 ' + (BM.length - withPh.length) + '명은 문자를 쓸 수 없습니다.</p>' : '');
+    del = '';
+  } else if (m.kind === 'custdel') {
+    var DC = (m.ids || []).map(custById).filter(Boolean); if (!DC.length) { ui.modal = null; return ''; }
+    var tot = { an: 0, ev: 0, gift: 0, ref: 0, pol: 0, note: 0, clm: 0 }; DC.forEach(function (x) { var r = custRefCount(x); Object.keys(tot).forEach(function (k) { tot[k] += r[k]; }); });
+    title = DC.length > 1 ? '고객 ' + DC.length + '명 삭제' : (DC[0].name || '이름 없음') + '님 삭제'; head = '지우면 되돌릴 수 없습니다' + (cloud.on ? ' (설정 → 자료관리의 변경 기록에서 90일 안에 되살릴 수 있습니다)' : '');
+    var li = function (n, t) { return n ? '<li>' + t.replace('{n}', '<b>' + n + '</b>') + '</li>' : ''; };
+    body = (DC.length > 1 ? '<p style="margin:0 0 8px">' + DC.slice(0, 12).map(function (x) { return esc(x.name || '이름 없음'); }).join(', ') + (DC.length > 12 ? ' 외 ' + (DC.length - 12) + '명' : '') + '</p>' : '') +
+      '<ul class="del-list">' + li(tot.pol + tot.note + tot.clm, '계약·상담·보험금 청구 기록 {n}건도 함께 지워집니다') + li(tot.an, '기념일 {n}건을 함께 지웁니다') +
+      li(tot.ev, '일정·할 일 {n}건은 지우지 않고 고객 연결만 풉니다 (내용 끝에 이름을 남김)') + li(tot.gift, '선물 기록 {n}건은 금액 합계를 위해 이름만 남깁니다') + li(tot.ref, '이 고객이 소개한 {n}명은 소개자를 이름으로 남깁니다') + '</ul>' +
+      '<div class="row" style="gap:8px;justify-content:flex-end"><button class="btn" data-act="dmClose">취소</button><button class="btn danger" data-act="custDelGo">' + (DC.length > 1 ? DC.length + '명 삭제' : '삭제') + '</button></div>';
+    del = '';
   } else if (m.kind === 'noteadd') {
     var NL = store.customers.slice().sort(function (a, b) { return (a.sample ? 1 : 0) - (b.sample ? 1 : 0) || byName(a, b); });
     if (!custById(ui.ndaCid || '') && NL[0]) ui.ndaCid = NL[0].id;
@@ -8420,7 +8772,7 @@ function detailModalHtml() {
   return '<div class="dmodal" role="dialog" aria-modal="true" aria-labelledby="dmTitle"><div class="dm-box' + (m.kind === 'auto' || m.kind === 'fire' || m.kind === 'claim' ? ' dm-wide' : '') + '">' +
     '<div class="dm-head"><div><h2 id="dmTitle">' + esc(title) + '</h2>' + (head ? '<div class="muted">' + esc(head) + '</div>' : '') + '</div><button class="btn ghost sm" data-act="dmClose" aria-label="닫기">✕</button></div>' +
     '<div class="dm-body">' + body + '</div>' +
-    '<div class="dm-foot">' + del + '<span class="muted dm-hint">입력하면 바로 저장됩니다</span><button class="btn primary" data-act="dmClose">닫기</button></div></div></div>';
+    (m.kind === 'custdel' ? '' : '<div class="dm-foot">' + del + '<span class="muted dm-hint">입력하면 바로 저장됩니다</span><button class="btn primary" data-act="dmClose">닫기</button></div>') + '</div></div>';
 }
 function openDetail(spec) {
   var p = String(spec).split(':');
@@ -8760,17 +9112,19 @@ function onRemoteCustomer(p) {
 function onRemoteSettings(p) {
   if (!site.on || !p || !p.new || !p.new.data) return;
   var data = p.new.data;
-  if (stableStr(store.settings) === stableStr(data)) { site.cache.settings = JSON.stringify(store.settings); return; }
+  if (stableStr(fileServerForm(store.settings)) === stableStr(fileServerForm(data))) { site.cache.settings = JSON.stringify(store.settings); return; }
   if (site.cache.settings !== JSON.stringify(store.settings)) return; // 이 기기 설정 수정이 저장 대기 중
   store.settings = fixup({ customers: [], settings: data }).settings;
-  site.cache.settings = JSON.stringify(data);
+  fileHydrate(store.settings, true); // 파일은 경로만 왔으므로 메모리·이 기기 사본·서버에서 채운다
+  site.cache.settings = JSON.stringify(store.settings);
   remoteRender();
 }
 var remoteToastAt = 0;
-function remoteRender() {
+function remoteRender(quiet) {
   offSaveSoon();
   var a = document.activeElement, typing = a && a !== document.body && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) && document.getElementById('app').contains(a);
   if (typing) { ui.remotePending = true; } else render();
+  if (quiet) return;
   if (Date.now() - remoteToastAt > 8000) { remoteToastAt = Date.now(); toast('다른 기기에서 바뀐 내용을 반영했습니다'); }
 }
 document.addEventListener('focusout', function () { if (ui.remotePending) setTimeout(function () { var a = document.activeElement; if (a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)) return; ui.remotePending = false; render(); }, 200); });
@@ -8817,9 +9171,11 @@ function restoreCustomerVersion(hid) {
 function restoreSettingsVersion(hid) {
   cloud.client.from('settings_history').select('data,changed_at').eq('hid', hid).maybeSingle().then(function (r) {
     if (r.error || !r.data) { toast('기록을 찾지 못했습니다'); return; }
-    var keep = {}; licList().forEach(function (x) { if (licHas(x)) keep[x.id] = x; }); // 기록에는 라이선스 이미지가 없으므로 지금 이미지를 그대로 둔다
+    var keep = {}, FK = ['img', 'pdf', 'pdfName', 'imgAt', 'imgPath', 'imgSig', 'pdfPath', 'pdfSig'], CK = ['card', 'cardAt', 'cardPath', 'cardSig', 'cardOnDoc'], fc0 = store.settings.fc || {};
+    licList().forEach(function (x) { if (licHas(x)) keep[x.id] = x; }); // 기록에는 라이선스 파일·명함이 없으므로 지금 파일을 그대로 둔다
     store.settings = fixup({ customers: [], settings: r.data.data }).settings;
-    licList().forEach(function (x) { var k = keep[x.id]; if (k && !licHas(x)) { x.img = k.img; x.pdf = k.pdf; x.pdfName = k.pdfName; x.imgAt = k.imgAt; } });
+    licList().forEach(function (x) { var k = keep[x.id]; FK.forEach(function (f) { delete x[f]; }); if (k) FK.forEach(function (f) { if (k[f] != null) x[f] = k[f]; }); });
+    CK.forEach(function (f) { delete store.settings.fc[f]; if (fc0[f] != null) store.settings.fc[f] = fc0[f]; });
     save(); render();
     toast('설정·연락처·일정을 ' + fmtHistTime(r.data.changed_at) + ' 버전으로 되돌렸습니다');
   });
@@ -8828,7 +9184,7 @@ function fmtHistTime(iso) { var d = new Date(iso); return isNaN(d) ? '' : (d.get
 function historyPanel() {
   if (!cloud.on) return '';
   var h = ui.hist, head = '<section class="panel"><div class="row between"><h2>변경 기록 (자동 백업)</h2><button class="btn sm" data-act="histLoad">' + (h ? '새로고침' : '기록 보기') + '</button></div>' +
-    '<div class="info">서버가 고객 자료를 고치기 직전 내용(같은 고객은 10분에 한 번)과 지우기 직전 내용을 자동으로 남깁니다. 설정·연락처·일정·할 일은 30분에 한 번 남깁니다(라이선스 이미지·PDF는 용량 때문에 빼고 남기며, 되돌려도 지금 이미지는 그대로입니다). 기록은 90일 동안 보관되고 내 계정에서만 보입니다. 실수로 지우거나 잘못 고쳤으면 "되돌리기"를 누르세요.</div>';
+    '<div class="info">서버가 고객 자료를 고치기 직전 내용(같은 고객은 10분에 한 번)과 지우기 직전 내용을 자동으로 남깁니다. 설정·연락처·일정·할 일은 30분에 한 번 남깁니다(라이선스 이미지·PDF와 명함 사진은 따로 보관하므로 기록에서 빼며, 되돌려도 지금 파일은 그대로입니다). 기록은 90일 동안 보관되고 내 계정에서만 보입니다. 실수로 지우거나 잘못 고쳤으면 "되돌리기"를 누르세요.</div>';
   if (!h) return head + '</section>';
   if (h.loading) return head + '<p class="muted" style="margin:0">불러오는 중…</p></section>';
   if (h.err) return head + '<div class="notice">' + esc(h.err) + '</div></section>';
@@ -8868,6 +9224,10 @@ function cloudDb() {
         get: function () { return Promise.resolve({ exists: false, data: function () { return undefined; } }); }
       };
     },
+    bulk: {
+      upsert: function (rows, now) { var uid = cloud.user.id; return sb.from('customers').upsert(rows.map(function (x) { return { owner: uid, id: x.id, name: x.name, data: x.data, updated_at: now }; }), { onConflict: 'owner,id' }).then(fail); },
+      remove: function (ids) { return sb.from('customers').delete().eq('owner', cloud.user.id).in('id', ids).then(fail); }
+    },
     collection: function () {
       var q = { orderBy: function () { return q; }, limit: function () { return q; }, get: function () { return Promise.resolve({ docs: [], empty: true, size: 0 }); } };
       return q;
@@ -8887,6 +9247,8 @@ function loadCloud(seq) {
     var meta = cloud.user.user_metadata || {};
     if (!r[0].data && meta.name) settings.fc = Object.assign({}, settings.fc, { name: meta.name });
     store = fixup({ customers: (r[1].data || []).map(function (row) { return row.data; }).filter(Boolean), settings: settings });
+    site.fileUp = {}; site.fileMiss = {}; fileHydrate(store.settings, true);
+    site.fileMove = fileSlots(store.settings).some(function (f) { return f.o[f.k] && !f.o[f.pk]; }); // 예전처럼 설정 안에 든 파일 → 보관함으로 옮김
     site.cache = { settings: r[0].data ? JSON.stringify(store.settings) : null, customers: {} };
     store.customers.forEach(function (c) { site.cache.customers[c.id] = JSON.stringify(c); });
   });
@@ -8906,7 +9268,7 @@ function enterCloud(user) {
     offPut('last', user.id);
     checkLocalExtra();
     afterLoad();
-    if (site.cache.settings === null || n) flushSite();
+    if (site.cache.settings === null || n || site.fileMove) { site.fileMove = false; flushSite(); }
     if (n) toast('오프라인 동안 바꾼 ' + n + '건을 서버에 올립니다');
     offSaveSoon();
     teamLoad();
