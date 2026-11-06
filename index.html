@@ -1839,6 +1839,17 @@ html.reduce-motion *, html.reduce-motion *::before, html.reduce-motion *::after 
   .clist-table .ctable .cphone { margin-top: 4px; font-size: 13px; }
   .list-tools .btn:not(.primary) { padding-left: 10px; padding-right: 10px; }
 }
+
+/* 고객 메뉴 연결 (2026-11-06) */
+.clm-ins .ci-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-2); }
+.clm-ins .ci-it { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+.clm-ins > span:first-child .link-btn { margin-left: 6px; font-size: 12px; }
+.prop-table .prop-title { font-size: 12px; margin-top: 2px; max-width: 16em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rel-table .rel-mem { font-size: 12px; margin-top: 3px; }
+.rel-table .rel-mem .link-btn { font-size: 12px; }
+.ro-val { display: inline-block; padding: 7px 0; font-weight: 600; }
+
+@media (max-width: 760px) { .panel > .row.between:has(#prq) > .row { flex-wrap: nowrap !important; width: 100%; } .panel > .row.between:has(#prq) #prq { flex: 1 1 auto; min-width: 0; width: auto; } }
 </style>
 </head>
 <body>
@@ -2987,6 +2998,8 @@ function listRows() {
     if (f === 'rec') return r.c.policies.length > 0 && !r.an.counts.must && r.an.counts.rec > 0;
     if (f === 'consent') return !r.c.consent;
     if (f === 'stale') return custStale(r.c);
+    if (f === 'prop') return propOpenN(r.c) > 0;
+    if (f === 'clm') return claimOpenN(r.c) > 0;
     if (f === 'p0') return prospectStep(r.c) === 0;
     if (f === 'p1') return prospectStep(r.c) === 1;
     if (f === 'p2') return prospectStep(r.c) === 2;
@@ -3110,6 +3123,7 @@ function custNext(c, skipCB) { // 이 고객에게 가장 가까운 할 일 (ski
   (c.autos || []).forEach(function (a) { if (a.end && a.end >= t) add(a.end, '자동차 만기', 'renew'); });
   (c.fires || []).forEach(function (a) { if (a.end && a.end >= t) add(a.end, '화재 만기', 'renew'); });
   (c.claims || []).forEach(function (x) { claimTodo(c, x).forEach(function (it) { if (it.date >= back) add(it.date, '보험금 청구', 'claim'); }); });
+  propTodo(c).forEach(function (it) { if (it.date >= back) add(it.date, '제안 후속', 'prop'); });
   var nb = skipCB ? null : nextBirthday(c); if (nb) add(nb.date, '생일', 'bd');
   var ce = consentExpiry(c); if (ce && ce >= back) add(ce, '동의 만료', 'consent');
   L.sort(function (a, b) { return a.d < b.d ? -1 : a.d > b.d ? 1 : 0; });
@@ -3183,9 +3197,10 @@ function renderList() {
   };
   var pc = [0, 0, 0]; if (tab === '가망') all.forEach(function (x) { var st = prospectStep(x.c); if (st < 3) pc[st]++; });
   cnt.must = all.filter(function (x) { return x.c.policies.length && x.an.counts.must > 0; }).length;
+  cnt.prop = all.filter(function (x) { return propOpenN(x.c) > 0; }).length; cnt.clm = all.filter(function (x) { return claimOpenN(x.c) > 0; }).length;
   cnt.rec = all.filter(function (x) { return x.c.policies.length && !x.an.counts.must && x.an.counts.rec > 0; }).length;
-  var chips = tab === '가망' ? chip('p0', '첫 상담 전', pc[0], 'warn') + chip('p1', '보장분석 전', pc[1]) + chip('p2', '제안 전', pc[2])
-    : chip('must', '필수 보장 부족', cnt.must, 'warn', '미가입이거나 최소 기준에 못 미치는 담보가 있는 고객') + chip('rec', '권장만 미달', cnt.rec, '', '최소 기준은 넘지만 권장 금액에 못 미치는 담보만 있는 고객') + chip('map', '매핑 필요', cnt.map, 'warn') + chip('empty', '계약 미입력', cnt.empty) + chip('consent', '동의 확인', cnt.consent, 'warn') + chip('dup', '중복 의심', cnt.dup, 'warn') + (ui.filter === 'stale' ? chip('stale', '오래 연락 안 함', cnt.stale, 'warn') : '');
+  var chips = tab === '가망' ? chip('p0', '첫 상담 전', pc[0], 'warn') + chip('p1', '보장분석 전', pc[1]) + chip('p2', '제안 전', pc[2]) + chip('prop', '진행 중 제안', cnt.prop, '', '제안함·검토 중·청약 단계 제안이 있는 고객')
+    : chip('must', '필수 보장 부족', cnt.must, 'warn', '미가입이거나 최소 기준에 못 미치는 담보가 있는 고객') + chip('rec', '권장만 미달', cnt.rec, '', '최소 기준은 넘지만 권장 금액에 못 미치는 담보만 있는 고객') + chip('map', '매핑 필요', cnt.map, 'warn') + chip('empty', '계약 미입력', cnt.empty) + chip('consent', '동의 확인', cnt.consent, 'warn') + chip('dup', '중복 의심', cnt.dup, 'warn') + chip('prop', '진행 중 제안', cnt.prop, '', '제안함·검토 중·청약 단계 제안이 있는 고객') + chip('clm', '진행 중 청구', cnt.clm, '', '서류 준비·접수·심사 중인 보험금 청구가 있는 고객') + (ui.filter === 'stale' ? chip('stale', '오래 연락 안 함', cnt.stale, 'warn') : '');
   chips += '<button class="todo cf-chip cf-link' + (relTodo ? ' warn' : '') + '" data-act="goList" data-id="care" title="고객관계 → 연락할 차례에서 연락 주기에 맞춰 봅니다">연락할 차례 <b>' + relTodo + '</b> →</button>';
   var tagChipsBar = tagUsed.length ? '<span class="cf-sep" aria-hidden="true"></span><span class="muted cf-lab">표시</span>' + tagUsed.map(function (t) { var on = ui.cTag === t; return '<button class="todo cf-chip' + (on ? ' on' : '') + '" data-act="uiPick" data-k="cTag" data-id="' + attr(t) + '" aria-pressed="' + on + '">' + esc(t) + ' <b>' + TG[t] + '</b></button>'; }).join('') : '';
   var fbar = !store.customers.length ? '' : '<div class="cfbar" role="group" aria-label="고객 걸러 보기"><div class="seg ck-tabs" role="tablist" aria-label="고객 구분">' + [['', '전체'], ['가망', '가망'], ['계약', '계약'], ['휴면', '휴면']].map(function (t) { var on = tab === t[0]; return '<button class="seg-btn' + (on ? ' on' : '') + '" role="tab" aria-selected="' + on + '" data-act="cTab" data-id="' + t[0] + '">' + t[1] + ' <span class="num">' + tabN[t[0]] + '</span></button>'; }).join('') + '</div>' +
@@ -5699,6 +5714,26 @@ function nextBirthday(c) {
 var NOTE_METHODS = ['전화', '대면', '문자', '기타'];
 
 // 고객 정보 아래: 이 고객의 보험금 청구 (2026-11-05)
+// ===== 고객 메뉴 연결 (2026-11-06): 제안 후속·진행 중 제안/청구·상담 → 제안 =====
+function propAgo(s) { var d = daysUntil(String((s && (s.stageAt || s.at)) || '').slice(0, 10)); return d == null ? null : -d; }
+function propIsOpen(s) { return !!STAGE_OPEN[snapStage(s)]; }
+function propIsStale(s) { var g = propAgo(s); return propIsOpen(s) && g != null && g > 14; }
+function propOpenN(c) { return (c.snapshots || []).filter(propIsOpen).length; }
+function claimOpenN(c) { return (c.claims || []).filter(function (x) { return CLAIM_OPEN[x.stage]; }).length; }
+function propTodo(c) { // 진행 중 제안: 단계를 바꾼 날부터 14일이 되면 후속 연락할 일
+  var nm = c.name || '이름 없음', out = [];
+  (c.snapshots || []).forEach(function (s, i) {
+    if (!propIsOpen(s)) return; var b = String(s.stageAt || s.at || '').slice(0, 10); if (!/^\d{4}-\d{2}-\d{2}$/.test(b)) return;
+    var t = new Date(b + 'T00:00:00'); t.setDate(t.getDate() + 14);
+    out.push({ date: isoDate(t), kind: 'prop', label: nm + ' 제안 후속 · ' + snapStage(s) + (s.title ? ' · ' + s.title : ''), cid: c.id, si: i, tab: 'proposal' });
+  });
+  return out;
+}
+function propAskBox(c) { // '계약' 주제 상담을 남긴 직후: 제안 기록도 만들지 묻기
+  if (!c || ui.prAsk !== c.id) return '';
+  return '<div class="notice clm-ask"><b>' + esc(c.name || '고객') + '님 계약 상담을 남겼습니다.</b> 제안 기록도 만들어 진행 단계를 챙길까요? <span class="row" style="gap:6px;margin-top:6px"><button class="btn primary sm" data-act="propAskYes" data-id="' + c.id + '">제안 기록 만들기</button><button class="btn ghost sm" data-act="propAskNo">괜찮아요</button></span></div>';
+}
+function askBoxes(c) { return claimAskBox(c) + propAskBox(c); }
 function claimAskBox(c) { // 청구 주제 상담을 남긴 직후: 청구 기록도 만들지 묻기
   if (!c || ui.clmAsk !== c.id) return '';
   return '<div class="notice clm-ask"><b>' + esc(c.name || '고객') + '님 청구 상담을 남겼습니다.</b> 보험금 청구 기록도 만들어 서류·진행을 챙길까요? <span class="row" style="gap:6px;margin-top:6px"><button class="btn primary sm" data-act="claimAskYes" data-id="' + c.id + '">청구 기록 만들기</button><button class="btn ghost sm" data-act="claimAskNo">괜찮아요</button></span></div>';
@@ -5725,14 +5760,10 @@ function renderNotesPanel(c) {
       '<td class="cn-act" style="white-space:nowrap">' + (n.next ? '<button class="btn sm' + (n.done ? '' : ' tel') + '" data-act="noteDone" data-pid="' + c.id + '" data-id="' + n.id + '">' + (n.done ? '완료됨' : '연락 완료') + '</button>' : '') +
       ' <button class="btn ghost sm' + (del ? ' danger armed' : '') + '" data-act="delNote" data-pid="' + c.id + '" data-id="' + n.id + '">' + (del ? '한 번 더' : '삭제') + '</button></td></tr>';
   }).join('');
-  return '<section class="panel" id="notes">' + claimAskBox(c) + '<div class="row between"><h2>상담 기록 ' + list.length + '건</h2>' +
-    (nx ? '<span class="pill ' + (daysUntil(nx.next) < 0 ? 'v-short' : 'v-ok') + '">다음 연락 ' + esc(nx.next) + ' · ' + dLabel(daysUntil(nx.next)) + '</span>' : '<span class="muted">다음 연락일이 없습니다</span>') + '</div>' +
-    '<div class="form-grid nd-grid">' + lbl('상담일', f('ui', 'ndDate', ui.ndDate || today(), { type: 'date' })) +
-    lbl('방법', f('ui', 'ndMethod', ui.ndMethod || '전화', { type: 'select', options: NOTE_METHODS.map(function (m) { return [m, m]; }) })) +
-    lbl('주제', f('ui', 'ndTopic', ui.ndTopic || '', { type: 'select', options: [['', '자동']].concat(NOTE_TOPICS.map(function (x) { return [x, x]; })) })) +
-    lbl('상담 내용', f('ui', 'ndText', ui.ndText || '', { ph: '예: 실손 중복 설명, 다음 주 증권 사진 받기로 함' }), 'g-title') +
-    lbl('다음 연락일', f('ui', 'ndNext', ui.ndNext || '', { type: 'date', quick: true })) +
-    '<div class="field"><span>&nbsp;</span><button class="btn primary" data-act="addNote">기록 추가</button></div></div>' + noteTplChips('nd') +
+  return '<section class="panel" id="notes">' + askBoxes(c) + '<div class="row between"><h2>상담 기록 ' + list.length + '건</h2><div class="row" style="gap:8px;flex-wrap:wrap">' +
+    (nx ? '<span class="pill ' + (daysUntil(nx.next) < 0 ? 'v-short' : 'v-ok') + '">다음 연락 ' + esc(nx.next) + ' · ' + dLabel(daysUntil(nx.next)) + '</span>' : '<span class="muted">다음 연락일이 없습니다</span>') +
+    '<button class="btn primary sm" data-act="custNoteQuick" data-id="' + c.id + '">+ 상담 기록</button></div></div>' +
+    (rows ? '' : '<p class="muted" style="margin:0">아직 상담 기록이 없습니다. "+ 상담 기록"으로 남기면 고객관계·업무 화면의 연락 일정에 이어집니다.</p>') +
     (rows ? '<div class="tablewrap"><table class="t cnote-table"><thead><tr><th>상담일</th><th>방법</th><th>내용</th><th>다음 연락일</th><th></th></tr></thead><tbody>' + rows + '</tbody></table></div>' : '') + '</section>';
 }
 
@@ -5742,14 +5773,14 @@ function renderListSub() {
   if (!hit) { ui.lsub = 'list'; return renderList(); }
   var title = LIST_TITLES[sub] || hit[1], body = '';
   if (sub === 'todo') body = renderTodo();
-  else if (sub === 'notes') { var askC = ui.clmAsk ? custById(ui.clmAsk) : null; var nAll = [], nCnt = {}; store.customers.forEach(function (c) { (c.notes || []).forEach(function (n) { nAll.push(n); nCnt[n.method] = (nCnt[n.method] || 0) + 1; }); });
+  else if (sub === 'notes') { var askC = (ui.clmAsk || ui.prAsk) ? custById(ui.clmAsk || ui.prAsk) : null; var nAll = [], nCnt = {}; store.customers.forEach(function (c) { (c.notes || []).forEach(function (n) { nAll.push(n); nCnt[n.method] = (nCnt[n.method] || 0) + 1; }); });
     // 요약 칸(누르면 거르기)·기간 칩·+ 추가 (2026-11-03)
     var nTm = today().slice(0, 7), nMonth = nAll.filter(function (n) { return String(n.date || '').slice(0, 7) === nTm; }).length;
     var nLm = (function () { var d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - 1); return isoDate(d).slice(0, 7); })(), nLast = nAll.filter(function (n) { return String(n.date || '').slice(0, 7) === nLm; }).length;
     var nThis = nAll.filter(function (n) { return String(n.date || '').slice(0, 7) === nTm; }), nFace = nThis.filter(function (n) { return n.method === '대면'; }).length, nCall = nThis.filter(function (n) { return n.method === '전화' || n.method === '문자'; }).length;
     var nk = function (key, k2, label, v, tone) { var on = (ui[k2] || '') === key; return '<button class="kpi' + (on ? ' on' : '') + (tone && v ? ' ' + tone : '') + '" data-act="uiPick" data-k="' + k2 + '" data-id="' + key + '"><span class="k">' + label + '</span><span class="v num">' + v + '<small>건</small></span></button>'; };
     if (ui.nF) ui.nF = ''; // 연락 예정 거르기는 고객 → 관계로 옮김 (2026-11-04)
-    body = claimAskBox(askC) + '<div class="kpis">' + nk('this', 'nP', '이번 달 상담', nMonth).replace('<small>건</small>', '<small>건 · 지난달 ' + nLast + '</small>') + nk('대면', 'nMethod', '이번 달 대면', nFace) + nk('전화', 'nMethod', '이번 달 전화·문자', nCall) +
+    body = (askC ? askBoxes(askC) : '') + (ui.clmAsk && ui.prAsk && ui.clmAsk !== ui.prAsk ? propAskBox(custById(ui.prAsk)) : '') + '<div class="kpis">' + nk('this', 'nP', '이번 달 상담', nMonth).replace('<small>건</small>', '<small>건 · 지난달 ' + nLast + '</small>') + nk('대면', 'nMethod', '이번 달 대면', nFace) + nk('전화', 'nMethod', '이번 달 전화·문자', nCall) +
       '<button class="kpi" data-act="goList" data-id="contacts"><span class="k">연락할 차례 보기</span><span class="v" style="font-size:15px">고객 → 고객관계 ›</span></button></div>' + noteStats(nAll) +
       '<section class="panel"><div class="row between"><h2>상담 기록 <span id="nqCnt">' + notesFiltered().length + '</span>건</h2><div class="row" style="gap:6px">' +
       '<input type="search" id="nq" class="mini-search" placeholder="고객·내용 검색" value="' + attr(ui.nq) + '" aria-label="상담 기록 검색"><button class="btn primary sm" data-act="noteAddOpen">+ 추가</button></div></div>' +
@@ -5826,6 +5857,14 @@ function renderClaims() {
     chips + table +
     '<p class="muted" style="margin:0">줄을 두 번 누르면 서류 체크·금액·메모를 고칠 수 있습니다. "접수 →"·"심사 →"로 단계를 넘기면 접수일이 자동으로 들어갑니다. 보험금 청구권은 사고·진료일부터 3년 안에 청구해야 합니다(상법 제662조). 필요한 서류는 보험사·상품마다 다르니 보험 → 보험 가이드의 청구 안내도 함께 보세요. 서류 사진은 이 프로그램에 올리지 마세요.</p></section>';
 }
+function claimInsBox(x) { // 청구 창: 보험사 연락처(보상 접수·고객센터·청구 팩스·청구 앱)
+  var nm = String(x.insurer || '').trim(); if (!nm) return '';
+  var ic = insContactOf(nm);
+  if (!ic) return '<div class="field span2 clm-ins"><span>보험사 연락처</span><span class="muted">보험 → 보험사 연락처에 "' + esc(nm) + '"이(가) 없습니다. <button type="button" class="link-btn" data-act="icFind" data-k="' + attr(nm) + '">보험사 연락처 열기</button></span></div>';
+  var it = function (lab, v, tel) { return v ? '<span class="ci-it"><small class="muted">' + lab + '</small> <b class="num">' + esc(v) + '</b>' + (tel ? ' ' + telLink(v) : '') + '</span>' : ''; };
+  var w = webUrl(ic.web), inner = it('보상 접수', ic.claim, true) + it('고객센터', ic.call, true) + it('청구 팩스', ic.fax) + (w ? '<a class="btn sm" href="' + attr(w) + '" target="_blank" rel="noopener">청구 앱·홈페이지 ↗</a>' : '');
+  return '<div class="field span2 clm-ins"><span>보험사 연락처 <button type="button" class="link-btn" data-act="icFind" data-k="' + attr(nm) + '">수정</button></span><span class="ci-row">' + (inner || '<span class="muted">번호가 비어 있습니다. "수정"을 눌러 보상 접수·청구 팩스를 넣어 두세요.</span>') + '</span></div>';
+}
 function claimModalBody(r) {
   var c = r.c, x = r.x, A = function (k, v, o) { o = o || {}; o.id = x.id; o.pid = c.id; return f('claim', k, v, o); };
   var seg = function (k, cur, L) { return '<span class="seg seg-f">' + L.map(function (o) { return '<button type="button" class="seg-btn' + (cur === o ? ' on' : '') + '" data-act="claimSet" data-id="' + c.id + '" data-pid="' + x.id + '" data-k="' + k + '" data-v="' + attr(o) + '">' + o + '</button>'; }).join('') + '</span>'; };
@@ -5835,7 +5874,7 @@ function claimModalBody(r) {
     '<div class="field span2"><span>청구 종류</span>' + seg('kind', x.kind, CLAIM_KINDS.map(function (y) { return y[0]; })) + '</div>' +
     lbl('사고·진료일' + (du && du.left != null ? ' <b class="lbl-val">청구 기한 ' + du.date.replace(/-/g, '.') + (du.left < 0 ? ' (지남)' : ' (' + du.left + '일 남음)') + '</b>' : ''), A('date', x.date, { type: 'date', past: true })) +
     lbl('계약', A('polId', x.polId || '', { type: 'select', options: pols })) +
-    lbl('보험사', A('insurer', x.insurer, { kind: 'insurer', ph: '보험사 이름' })) +
+    lbl('보험사', A('insurer', x.insurer, { kind: 'insurer', ph: '보험사 이름' })) + claimInsBox(x) +
     lbl('청구 금액 (원)' + (num(x.req) ? ' <b class="lbl-val">' + fmtWon(x.req) + '</b>' : ''), A('req', x.req ? fmtWon(x.req).replace('원', '') : '', { ph: '예: 35만 또는 350000', inputmode: 'numeric' })) +
     '<div class="field span2"><span>진행 단계</span>' + seg('stage', x.stage, CLAIM_STAGES) + '</div>' +
     lbl('접수일', A('reqDate', x.reqDate, { type: 'date', past: true })) +
@@ -5871,15 +5910,32 @@ function renderRelation() {
   return tabs + dorm + (tab === 'target' ? relTarget() : tab === 'ref' ? relRef() : relCare());
 }
 // --- 1) 연락할 차례 ---
+function relStOf(last, lastM, next, cyc) { var t = today(), since = last ? -daysUntil(last) : null, nd = next ? daysUntil(next) : null;
+  var st = nd != null && nd < 0 ? 'late' : since == null ? 'none' : since >= cyc ? 'due' : (nd != null && nd <= 7) || cyc - since <= 7 ? 'week' : 'ok';
+  return { last: last, lastM: lastM, since: since, next: next, nd: nd, cyc: cyc, st: st }; }
+function relEntries() { // 연락 관리 단위: 사람, 또는 '가족으로 묶어 보기'면 가족 하나
+  var pool = relPool();
+  if (!ui.relHh) return pool.map(function (c) { return { c: c, r: relInfo(c) }; });
+  var H = {}, out = [];
+  store.settings.households.forEach(function (h) { H[h.id] = h; });
+  var by = {}; pool.forEach(function (c) { if (c.householdId && H[c.householdId]) (by[c.householdId] = by[c.householdId] || []).push(c); else out.push({ c: c, r: relInfo(c) }); });
+  Object.keys(by).forEach(function (hid) { var mem = by[hid];
+    if (mem.length < 2) { out.push({ c: mem[0], r: relInfo(mem[0]) }); return; }
+    var R = mem.map(relInfo), last = '', lastM = '', next = '', cyc = Infinity;
+    R.forEach(function (r) { if (r.last > last) { last = r.last; lastM = r.lastM; } if (r.next && (!next || r.next < next)) next = r.next; cyc = Math.min(cyc, r.cyc); });
+    var rep = mem.slice().sort(function (a, b) { var ra = (String(a.phone || '').replace(/\D/g, '') ? 0 : 10) + (REL_ORDER[a.relation] != null ? REL_ORDER[a.relation] : 6), rb = (String(b.phone || '').replace(/\D/g, '') ? 0 : 10) + (REL_ORDER[b.relation] != null ? REL_ORDER[b.relation] : 6); return ra - rb; })[0];
+    out.push({ c: rep, r: relStOf(last, lastM, next, cyc), hh: H[hid], mem: mem }); });
+  return out;
+}
 function relCareList() {
   var F2 = ui.rcF || '', q = norm(ui.rq), qd = String(ui.rq || '').replace(/\D/g, ''), rank = { late: 0, due: 1, none: 2, week: 3, ok: 4 };
-  return relPool().map(function (c) { return { c: c, r: relInfo(c) }; }).filter(function (o) {
+  return relEntries().filter(function (o) {
     var st = o.r.st;
     if (F2 === 'todo' && st !== 'late' && st !== 'due') return false;
     if (F2 === 'week' && st !== 'week') return false;
     if (F2 === 'none' && st !== 'none') return false;
     if (F2 === 'recent' && !(o.r.since != null && o.r.since <= 30)) return false;
-    if (q && norm(o.c.name).indexOf(q) < 0 && !(qd.length >= 3 && String(o.c.phone || '').replace(/\D/g, '').indexOf(qd) >= 0)) return false;
+    if (q) { var M9 = o.mem || [o.c]; if (!(o.hh && norm(o.hh.name).indexOf(q) >= 0) && !M9.some(function (c) { return norm(c.name).indexOf(q) >= 0 || (qd.length >= 3 && String(c.phone || '').replace(/\D/g, '').indexOf(qd) >= 0); })) return false; }
     return true;
   }).sort(function (a, b) {
     var d = rank[a.r.st] - rank[b.r.st]; if (d) return d;
@@ -5895,22 +5951,25 @@ function relCareRows() {
   if (!L.length) return '<div class="empty"><strong>해당하는 고객이 없습니다</strong><span>위 숫자 칸을 다시 누르면 전체가 보입니다.</span></div>';
   var rows = L.slice(0, lim).map(function (o) {
     var c = o.c, r = o.r, sc = REL_ST[r.st];
-    return '<tr class="crow row-dbl" data-dbl="cust:' + c.id + '" title="두 번 누르면 이름·연락처·주소 수정"><td class="cname">' + relWho(c) + '</td>' +
+    var who = o.hh ? '<b>' + esc(o.hh.name || '가족') + '</b> <small class="muted">' + o.mem.length + '명</small><div class="rel-mem">' + o.mem.map(function (m) { return custLink(m, 'info'); }).join(' · ') + '</div>' : relWho(c);
+    return '<tr class="crow row-dbl" data-dbl="cust:' + c.id + '" title="두 번 누르면 ' + attr(c.name || '') + ' 이름·연락처·주소 수정"><td class="cname">' + who + '</td>' +
       '<td data-l="마지막 연락" class="num">' + (r.last ? (r.since === 0 ? '오늘' : r.since + '일 전') + (r.lastM ? ' · ' + esc(r.lastM) : '') : '<span class="muted">기록 없음</span>') + '</td>' +
       '<td data-l="다음 예정" class="num">' + (r.next ? esc(r.next.slice(0, 4) === today().slice(0, 4) ? r.next.slice(5).replace('-', '.') : r.next.replace(/-/g, '.')) + ' <small class="muted">(' + dLabel(r.nd) + ')</small>' : '<span class="muted">–</span>') + '</td>' +
-      '<td data-l="주기">' + f('custc', 'cycle', c.cycle ? String(c.cycle) : '', { id: c.id, type: 'select', options: [['', '기본 ' + relCycleDef() + '일']].concat(CYCLE_OPTS), aria: (c.name || '') + ' 연락 주기' }) + '</td>' +
+      '<td data-l="주기">' + (o.hh ? '<span class="muted" title="가족 중 가장 짧은 주기">' + r.cyc + '일</span>' : f('custc', 'cycle', c.cycle ? String(c.cycle) : '', { id: c.id, type: 'select', options: [['', '기본 ' + relCycleDef() + '일']].concat(CYCLE_OPTS), aria: (c.name || '') + ' 연락 주기' })) + '</td>' +
       '<td data-l="상태"><span class="chip' + (sc[1] ? ' ' + sc[1] : '') + '">' + sc[0] + (r.st === 'due' ? ' +' + (r.since - r.cyc) + '일' : '') + '</span></td>' +
-      '<td class="rel-act">' + telLink(c.phone) + relSms(c.phone) + '<button class="btn sm primary" data-act="rcDone" data-id="' + c.id + '" title="오늘 연락했다고 상담 기록에 남깁니다">연락함</button></td></tr>';
+      '<td class="rel-act">' + telLink(c.phone) + relSms(c.phone) + '<button class="btn sm primary" data-act="rcDone" data-id="' + c.id + '" title="' + (o.hh ? attr(c.name || '대표') + '님께 오늘 연락했다고 상담 기록에 남깁니다 (가족 전체가 연락한 것으로 셈)' : '오늘 연락했다고 상담 기록에 남깁니다') + '">연락함</button></td></tr>';
   }).join('');
   return '<div class="tablewrap"><table class="t ctable rel-table"><thead><tr><th>고객</th><th>마지막 연락</th><th>다음 예정</th><th>연락 주기</th><th>상태</th><th>연락</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
     (L.length > 30 ? '<button class="btn sm more-btn" data-act="toggleBox" data-id="rcAll">' + (ui.rcAll ? '접기 ▲' : '더보기 (' + (L.length - 30) + '명 더) ▼') + '</button>' : '');
 }
 function relCare() {
-  var A = relPool().map(relInfo), F2 = ui.rcF || '';
-  var k = function (key, label, v, tone, unit) { var on = F2 === key; return '<button class="kpi' + (on ? ' on' : '') + (tone && v ? ' ' + tone : '') + '" data-act="uiPick" data-k="rcF" data-id="' + key + '" aria-pressed="' + on + '"><span class="k">' + label + '</span><span class="v num">' + v + '<small>' + (unit || '명') + '</small></span></button>'; };
+  var A = relEntries().map(function (o) { return o.r; }), F2 = ui.rcF || '', U = ui.relHh ? '건' : '명';
+  var k = function (key, label, v, tone, unit) { var on = F2 === key; return '<button class="kpi' + (on ? ' on' : '') + (tone && v ? ' ' + tone : '') + '" data-act="uiPick" data-k="rcF" data-id="' + key + '" aria-pressed="' + on + '"><span class="k">' + label + '</span><span class="v num">' + v + '<small>' + (unit || U) + '</small></span></button>'; };
   var kp = '<div class="kpis">' + k('todo', '연락할 차례', A.filter(function (r) { return r.st === 'late' || r.st === 'due'; }).length, 'warn') + k('week', '이번 주 연락', A.filter(function (r) { return r.st === 'week'; }).length) +
     k('none', '연락 기록 없음', A.filter(function (r) { return r.st === 'none'; }).length) + k('recent', '최근 30일 연락함', A.filter(function (r) { return r.since != null && r.since <= 30; }).length) + '</div>';
+  var nHh = store.settings.households.length;
   return kp + '<section class="panel"><div class="row between"><h2>연락 관리 <span class="muted num" id="rqCnt">' + relCareList().length + '</span></h2><div class="row" style="gap:6px;flex-wrap:wrap">' +
+    (nHh ? '<button class="chk-chip' + (ui.relHh ? ' on' : '') + '" aria-pressed="' + !!ui.relHh + '" data-act="relHh" title="가족 중 한 명과 연락했으면 그 가족 전체를 연락한 것으로 셉니다">가족으로 묶어 보기</button>' : '') +
     '<span class="rel-cyc"><span class="muted">기본 주기</span>' + f('param', 'contactCycle', String(relCycleDef()), { type: 'select', options: CYCLE_OPTS, aria: '기본 연락 주기' }) + '</span>' +
     '<input type="search" id="rq" class="mini-search" placeholder="이름·전화번호 검색" value="' + attr(ui.rq || '') + '" aria-label="고객 검색"></div></div>' +
     '<div id="rqWrap">' + relCareRows() + '</div>' +
@@ -5918,7 +5977,8 @@ function relCare() {
 }
 // --- 3) 안내 대상 뽑기 ---
 var TG_CONDS = [['bdThis', '이번 달 생일'], ['bdNext', '다음 달 생일'], ['auto60', '자동차 만기 60일 안'], ['fire60', '화재 만기 60일 안'], ['renew90', '갱신 90일 안'], ['renew', '갱신형 보유'],
-  ['noDrv', '운전하는데 운전자보험 없음'], ['noSil', '실손 없음'], ['noPol', '계약 없음'], ['care', '연락할 차례'], ['noConsent', '동의 확인 필요'], ['noPhone', '휴대폰 미입력'], ['noAddr', '주소 미입력'], ['noBirth', '생년월일 미입력']];
+  ['noDrv', '운전하는데 운전자보험 없음'], ['noSil', '실손 없음'], ['noPol', '계약 없음'], ['care', '연락할 차례'], ['noConsent', '동의 확인 필요'], ['noPhone', '휴대폰 미입력'], ['noAddr', '주소 미입력'], ['noBirth', '생년월일 미입력'],
+  ['propOpen', '진행 중 제안'], ['propStale', '14일 넘게 멈춘 제안'], ['clmOpen', '진행 중 청구'], ['prospect', '가망고객'], ['noHh', '가족 미지정']];
 function tgMonthOf(off) { var d = new Date(); d.setDate(1); d.setMonth(d.getMonth() + off); return { y: d.getFullYear(), m: ('0' + (d.getMonth() + 1)).slice(-2) }; }
 function tgEnd(arr) { var best = null; (arr || []).forEach(function (a) { var d = a && a.end ? daysUntil(a.end) : null; if (d != null && d >= 0 && d <= 60 && (best == null || d < best)) best = d; }); return best; }
 function tgTest(c, key) {
@@ -5937,6 +5997,11 @@ function tgTest(c, key) {
     case 'noPhone': return String(c.phone || '').trim() ? null : '휴대폰 없음';
     case 'noAddr': return String(c.address || '').trim() ? null : '주소 없음';
     case 'noBirth': return c.birth ? null : '생년월일 없음';
+    case 'propOpen': { var po = propOpenN(c); return po ? '진행 중 제안 ' + po + '건' : null; }
+    case 'propStale': { var ps9 = (c.snapshots || []).filter(propIsStale); return ps9.length ? '제안 ' + Math.max.apply(null, ps9.map(propAgo)) + '일째 멈춤' : null; }
+    case 'clmOpen': { var co = claimOpenN(c); return co ? '진행 중 청구 ' + co + '건' : null; }
+    case 'prospect': return custKind(c) === '가망' ? '가망고객' : null;
+    case 'noHh': return c.householdId && store.settings.households.some(function (h) { return h.id === c.householdId; }) ? null : '가족 미지정';
   }
   return null;
 }
@@ -5944,7 +6009,7 @@ function tgList() {
   var C = ui.tgC || {}, keys = TG_CONDS.map(function (x) { return x[0]; }).filter(function (k) { return C[k]; });
   var age = ui.tgAge || '', g = ui.tgG || '', ad = norm(ui.tgAddr), pr = norm(ui.tgProd), tg = ui.tgTag || '';
   if (!keys.length && !age && !g && !ad && !pr && !tg) return null;
-  return relPool().map(function (c) {
+  var out0 = relPool().map(function (c) {
     var why = [];
     for (var i = 0; i < keys.length; i++) { var w = tgTest(c, keys[i]); if (!w) return null; why.push(w); }
     if (age) { var a = c.birth ? ageOf(c.birth) : null; if (a == null || (age === '60' ? a < 60 : Math.floor(a / 10) * 10 !== Number(age))) return null; }
@@ -5954,6 +6019,14 @@ function tgList() {
     if (pr) { var hp = (c.policies || []).filter(function (p) { return norm(p.product).indexOf(pr) >= 0 || norm(p.insurer).indexOf(pr) >= 0; })[0]; if (!hp) return null; why.push(hp.product || hp.insurer); }
     return { c: c, why: why };
   }).filter(Boolean).sort(function (a, b) { return String(a.c.name || '').localeCompare(String(b.c.name || ''), 'ko'); });
+  return ui.tgHh ? tgOnePerHh(out0) : out0;
+}
+function tgOnePerHh(L) { // 가족당 한 명: 본인 → 배우자 → 휴대폰 있는 사람 순으로 대표 한 명
+  var seen = {}, rank = function (c) { return (String(c.phone || '').replace(/\D/g, '') ? 0 : 10) + (REL_ORDER[c.relation] != null ? REL_ORDER[c.relation] : 6); };
+  var by = {}; L.forEach(function (o) { var h = o.c.householdId; if (h && store.settings.households.some(function (x) { return x.id === h; })) (by[h] = by[h] || []).push(o); });
+  return L.filter(function (o) { var h = o.c.householdId, g = h && by[h]; if (!g || g.length < 2) return true; if (seen[h]) return false;
+    var best = g.slice().sort(function (a, b) { return rank(a.c) - rank(b.c); })[0]; if (best !== o) return false; seen[h] = 1;
+    var hh = store.settings.households.filter(function (x) { return x.id === h; })[0]; o.why = o.why.concat(['가족 대표 · ' + (hh ? hh.name : '') + ' ' + g.length + '명 중']); return true; });
 }
 function relTarget() {
   var C = ui.tgC || {}, L = tgList(), msg = ui.tgMsg != null ? ui.tgMsg : '{이름}님, 안녕하세요. {FC}입니다. ';
@@ -5962,7 +6035,7 @@ function relTarget() {
     lbl('성별', f('ui', 'tgG', ui.tgG || '', { type: 'select', options: [['', '전체'], ['남', '남'], ['여', '여']] })) +
     lbl('주소에 들어간 말', f('ui', 'tgAddr', ui.tgAddr || '', { ph: '예: 일산동구' })) + lbl('보유 상품·보험사', f('ui', 'tgProd', ui.tgProd || '', { ph: '예: 암, 종신, 삼성' })) +
     lbl('표시', f('ui', 'tgTag', ui.tgTag || '', { type: 'select', options: [['', '전체']].concat(Object.keys(allTags()).filter(function (t) { return allTags()[t] > 0; }).map(function (t) { return [t, t]; })) })) + '</div>';
-  var head = '<section class="panel"><div class="row between"><h2>조건 고르기</h2>' + (L ? '<button class="btn ghost sm" data-act="tgClear">조건 지우기</button>' : '') + '</div>' + chips + more +
+  var head = '<section class="panel"><div class="row between"><h2>조건 고르기</h2><div class="row" style="gap:6px"><button class="chk-chip' + (ui.tgHh ? ' on' : '') + '" aria-pressed="' + !!ui.tgHh + '" data-act="tgHh" title="같은 가족이면 한 명(본인·배우자 우선)에게만 보냅니다">가족당 한 명만</button>' + (L ? '<button class="btn ghost sm" data-act="tgClear">조건 지우기</button>' : '') + '</div></div>' + chips + more +
     '<p class="muted" style="margin:0">고른 조건을 모두 만족하는 고객만 뽑습니다. 여러 개를 고르면 더 좁혀집니다.</p></section>';
   if (!L) return head + '<section class="panel"><div class="empty"><strong>위에서 조건을 하나 이상 고르세요</strong><span>예: "이번 달 생일" + 40대, "자동차 만기 60일 안", "운전하는데 운전자보험 없음"</span></div></section>';
   var withPh = L.filter(function (o) { return String(o.c.phone || '').replace(/\D/g, ''); }), armL = ui.armed === 'tgLog', lim = ui.tgAll ? L.length : 50;
@@ -6019,7 +6092,7 @@ function todoCard(title, hint, rows, empty, key) {
     (key && more > 0 ? '<button class="btn sm more-btn" data-act="toggleBox" data-id="' + key + '" aria-expanded="' + !!open + '">' + (open ? '접기 ▲' : '더보기 (' + more + '건 더) ▼') + '</button>' : '') + '</section>';
 }
 function renderTodo() {
-  var P = store.settings.params, follow = [], renew = [], birth = [], consent = [], claimRows = [], tw = isoDate(new Date(Date.now() + 7 * 864e5));
+  var P = store.settings.params, follow = [], renew = [], birth = [], consent = [], claimRows = [], propRows = [], tw = isoDate(new Date(Date.now() + 7 * 864e5));
   store.customers.slice().sort(byName).forEach(function (c) {
     var nx = nextContact(c);
     if (nx) { var dn = daysUntil(nx.next); if (dn <= num(P.followDays)) follow.push({ d: dn, h: '<li><span class="when ' + (dn < 0 ? 'late' : dn === 0 ? 'now' : '') + '">' + dLabel(dn) + '</span>' + custLink(c, 'info') + '<span class="what">' + esc(nx.text) + '</span>' + (c.phone ? telLink(c.phone) : '') + '<button class="btn sm tel" data-act="noteDone" data-pid="' + c.id + '" data-id="' + nx.id + '">연락 완료</button></li>' }); }
@@ -6044,6 +6117,8 @@ function renderTodo() {
     (c.claims || []).forEach(function (x) { var L = claimTodo(c, x).filter(function (it) { return it.date <= tw; }); if (!L.length) return; var it = L.sort(function (a, b) { return a.date < b.date ? -1 : 1; })[0], dn = daysUntil(it.date);
       var dueX = claimDue(x), isDue = it.label.indexOf(' 청구 기한 ') >= 0 && dueX && dueX.left != null, wl = isDue ? (dueX.left < 0 ? '기한 지남' : '기한 ' + dueX.left + '일 남음') : dLabel(dn);
       claimRows.push({ d: isDue ? Math.min(dn, -1) : dn, h: '<li><span class="when ' + (isDue || dn < 0 ? 'late' : dn === 0 ? 'now' : '') + '">' + wl + '</span>' + custLink(c, 'info') + '<span class="what">' + esc(it.label.replace((c.name || '이름 없음') + ' ', '')) + ' (' + esc(x.stage) + ')</span><button class="btn sm" data-act="claimOpen" data-id="' + c.id + '" data-pid="' + x.id + '">청구 보기</button></li>' }); });
+    propTodo(c).forEach(function (it) { if (it.date > tw) return; var s9 = c.snapshots[it.si], g9 = propAgo(s9), dn9 = daysUntil(it.date);
+      propRows.push({ d: dn9, h: '<li><span class="when ' + (dn9 < 0 ? 'late' : dn9 === 0 ? 'now' : '') + '">' + (g9 != null ? g9 + '일째' : dLabel(dn9)) + '</span>' + custLink(c, 'proposal') + '<span class="what" title="' + attr(String(s9.stageAt || s9.at).slice(0, 10).replace(/-/g, '.')) + '부터 단계 그대로">' + esc(snapStage(s9)) + ' 단계' + (s9.title ? ' · ' + esc(s9.title) : '') + '</span><button class="btn sm tel" data-act="propFollow" data-id="' + c.id + '" data-pid="' + it.si + '">후속 연락</button></li>' }); });
     if (!c.consent) consent.push({ d: -999, h: '<li><span class="when late">미동의</span>' + custLink(c, 'info') + '<span class="what">개인(신용)정보 수집·이용 동의를 받지 않았습니다</span></li>' });
     else { var ce = consentExpiry(c), cd = daysUntil(ce); if (ce && cd <= 30) consent.push({ d: cd, h: '<li><span class="when ' + (cd < 0 ? 'late' : '') + '">' + dLabel(cd) + '</span>' + custLink(c, 'info') + '<span class="what">동의 만료 ' + esc(ce) + ' · 다시 받아야 합니다</span></li>' }); }
   });
@@ -6066,6 +6141,7 @@ function renderTodo() {
     todoCard('갱신·납입 완료 예정', num(P.renewDays) + '일 안', srt(renew), '예정된 갱신·납입 완료가 없습니다. 계약 입력에서 다음 갱신일을 넣으면 여기에 보입니다.', 'tmRenew') +
     todoCard('생일·기념일', bdDaysN() + '일 안' + (birth.length ? ' · 축하 남음 ' + bLeft : ''), srt(birth), '가까운 생일·기념일이 없습니다.', 'tmBirth') +
     todoCard('보험금 청구', '확인할 때가 된 청구', srt(claimRows), '챙길 청구가 없습니다. 고객 → 보험금청구에서 청구를 기록하면 여기에 보입니다.', 'tmClaim') +
+    todoCard('제안 후속', '단계가 14일 넘게 그대로인 제안', srt(propRows), '멈춘 제안이 없습니다. 고객 → 제안기록에서 단계를 바꾸면 여기서 빠집니다.', 'tmProp') +
     todoCard('개인정보 동의', num(P.consentMonths) ? '미동의·만료 30일 안' : '미동의 (보유 기간 미설정)', srt(consent), '확인할 동의가 없습니다.', 'tmConsent') +
     '</div>';
 }
@@ -6158,7 +6234,7 @@ function propSmsText(c, s) {
 function renderProps() {
   var all = [];
   store.customers.forEach(function (c) { (c.snapshots || []).forEach(function (sn, i) { all.push({ c: c, s: sn, i: i, st: snapStage(sn) }); }); });
-  if (!all.length) return '<section class="panel"><div class="empty"><strong>제안 기록이 없습니다</strong><span>고객 상세 → 제안서에서 "현재 분석 기록 남기기"를 누르면 여기에 모입니다.</span></div></section>';
+  if (!all.length) return (ui.prAsk ? propAskBox(custById(ui.prAsk)) : '') + '<section class="panel"><div class="empty"><strong>제안 기록이 없습니다</strong><span>"+ 추가"로 바로 남기거나, 고객 상세 → 제안서에서 "현재 분석 기록 남기기"를 누르면 여기에 모입니다.</span><button class="btn primary" data-act="propAdd">+ 추가</button></div></section>';
   all.sort(function (a, b) { return String(b.s.at).localeCompare(String(a.s.at)); });
   var cnt = {}; STAGES.forEach(function (r) { cnt[r] = 0; }); all.forEach(function (x) { cnt[x.st] = (cnt[x.st] || 0) + 1; });
   var ago = function (x) { var d = daysUntil(String(x.s.stageAt || x.s.at || '').slice(0, 10)); return d == null ? null : -d; };
@@ -6186,17 +6262,17 @@ function renderProps() {
   var rows = list.map(function (x) {
     var d = num(x.s.after) - num(x.s.before), g = ago(x), sl = stale(x), ph = String(x.c.phone || '').replace(/[^\d+]/g, '');
     var reasonSel = x.st === '거절' || x.st === '보류' ? '<select data-scope="snap" data-k="reason" data-id="' + x.c.id + '" data-pid="' + x.i + '" id="snapr-' + x.c.id + '-' + x.i + '" aria-label="거절·보류 사유"><option value="">사유 선택</option>' + PROP_REASONS.map(function (r) { return '<option value="' + attr(r) + '"' + sel(x.s.reason || '', r) + '>' + esc(r) + '</option>'; }).join('') + '</select>' : '<span class="muted">–</span>';
-    return '<tr' + (sl ? ' class="prop-stale"' : '') + '><td class="num" data-l="제안일">' + esc(String(x.s.at).slice(0, 10)) + '</td><td data-l="고객">' + custLink(x.c, 'proposal') + '</td>' +
+    return '<tr' + (sl ? ' class="prop-stale"' : '') + '><td class="num" data-l="제안일">' + esc(String(x.s.at).slice(0, 10)) + '</td><td data-l="고객">' + custLink(x.c, 'proposal') + (x.s.title ? '<div class="muted prop-title">' + esc(x.s.title) + '</div>' : '') + '</td>' +
       '<td class="num" data-l="경과">' + (g == null ? '–' : '<span class="chip' + (sl ? ' warn' : '') + '">' + (g <= 0 ? '오늘' : g + '일') + '</span>') + '</td>' +
       '<td class="r num" data-l="월 보험료">' + fmtWon(x.s.before) + ' → ' + fmtWon(x.s.after) + (d ? ' <small class="muted">(' + (d > 0 ? '+' : '') + fmtWon(d) + ')</small>' : '') + '</td><td class="r num" data-l="부족 담보">' + x.s.shortBefore + ' → ' + x.s.shortAfter + '</td>' +
       '<td style="min-width:110px" data-l="단계"><select data-scope="snap" data-k="result" data-id="' + x.c.id + '" data-pid="' + x.i + '" id="snap-' + x.c.id + '-' + x.i + '" aria-label="진행 단계">' + STAGES.map(function (r) { return '<option value="' + r + '"' + sel(x.st, r) + '>' + r + '</option>'; }).join('') + '</select></td>' +
       '<td style="min-width:120px" data-l="사유">' + reasonSel + '</td>' +
-      '<td class="prop-go">' + (STAGE_OPEN[x.st] ? '<button class="btn sm' + (sl ? ' primary' : '') + '" data-act="propFollow" data-id="' + x.c.id + '" data-pid="' + x.i + '" title="오늘 후속 연락을 상담 기록에 남기고 7일 뒤 다음 연락일을 잡습니다">후속 연락</button>' : '') +
+      '<td class="prop-go">' + (x.st === '성사' ? (x.s.polId && (x.c.policies || []).some(function (p) { return p.id === x.s.polId; }) ? '<button class="btn ghost sm" data-act="goCust" data-id="' + x.c.id + '" data-pid="policies" title="이 제안으로 만든 계약 보기">계약 입력됨 ✓</button>' : '<button class="btn primary sm" data-act="propToPol" data-id="' + x.c.id + '" data-pid="' + x.i + '" title="정리·설계의 추가 설계를 새 계약 초안으로 만들고 계약 입력 화면으로 갑니다">계약 입력</button>') : '') + (STAGE_OPEN[x.st] ? '<button class="btn sm' + (sl ? ' primary' : '') + '" data-act="propFollow" data-id="' + x.c.id + '" data-pid="' + x.i + '" title="오늘 후속 연락을 상담 기록에 남기고 7일 뒤 다음 연락일을 잡습니다">후속 연락</button>' : '') +
       (ph ? '<a class="btn sm" href="sms:' + attr(ph) + SMS_SEP + 'body=' + encodeURIComponent(propSmsText(x.c, x.s)) + '">요약 문자</a>' : '') +
       '<button class="btn ghost sm" data-act="goCust" data-id="' + x.c.id + '" data-pid="proposal">제안서</button></td></tr>';
   }).join('');
-  return kpis + '<section class="panel"><div class="row between"><h2>진행 단계</h2><span class="muted">단계를 누르면 그 제안만 봅니다</span></div>' + pipe + '</section>' +
-    '<section class="panel"><div class="row between"><h2>제안 기록 ' + list.length + '건</h2><div class="row" style="gap:6px"><input type="search" id="prq" class="mini-search" placeholder="고객 이름 검색" value="' + attr(ui.prq || '') + '" aria-label="제안 기록 검색"></div></div>' +
+  return (ui.prAsk ? propAskBox(custById(ui.prAsk)) : '') + kpis + '<section class="panel"><div class="row between"><h2>진행 단계</h2><span class="muted">단계를 누르면 그 제안만 봅니다</span></div>' + pipe + '</section>' +
+    '<section class="panel"><div class="row between"><h2>제안 기록 ' + list.length + '건</h2><div class="row" style="gap:6px"><input type="search" id="prq" class="mini-search pr-q" placeholder="고객 이름 검색" value="' + attr(ui.prq || '') + '" aria-label="제안 기록 검색"><button class="btn primary sm" data-act="propAdd" title="분석 없이 전화·방문으로 한 제안도 기록합니다">+ 추가</button></div></div>' +
     (rows ? '<div class="tablewrap"><table class="t ctab prop-table"><thead><tr><th>제안일</th><th>고객</th><th>경과</th><th class="r">월 보험료 (전 → 후)</th><th class="r">부족 담보</th><th>단계</th><th>사유</th><th></th></tr></thead><tbody>' + rows + '</tbody></table></div>'
       : '<div class="empty"><strong>조건에 맞는 제안 기록이 없습니다</strong></div>') +
     '<p class="muted" style="margin:0">단계를 바꾼 날부터 경과일을 셉니다. 제안함·검토 중·청약에서 14일 넘게 멈춘 제안은 주황색으로 표시합니다. "후속 연락"은 오늘 상담 기록을 남기고 7일 뒤를 다음 연락일로 잡습니다. "요약 문자"는 정리 전후 보험료와 부족 담보 수를 담은 문자를 휴대폰 문자 앱으로 엽니다(외부 발송 없음). 성사율은 결과가 난 제안(성사·보류·거절) 중 성사 비율입니다.</p></section>' + reasonP;
@@ -6921,6 +6997,7 @@ function workItems(from, to) {
     });
     var ce = consentExpiry(c); if (inR(ce)) out.push({ date: ce, kind: 'consent', label: nm + ' 동의 만료', cid: c.id, tab: 'info' });
     (c.claims || []).forEach(function (x) { claimTodo(c, x).forEach(function (it) { if (inR(it.date)) out.push(it); }); });
+    propTodo(c).forEach(function (it) { if (inR(it.date)) out.push(it); });
   });
   annivList().forEach(function (a) { for (var ya = Number(from.slice(0, 4)); ya <= Number(to.slice(0, 4)); ya++) { var ad = annivDateIn(a, ya); if (ad && inR(ad)) out.push({ date: ad, kind: 'anniv', label: annivWho(a) + ' ' + (a.type || '기념일') + annivYears(a, ad), cid: a.who === 'c' ? a.cid : '', tab: 'info', aid: a.id }); } });
   friendsWithBd().forEach(function (fr) { for (var yf = Number(from.slice(0, 4)); yf <= Number(to.slice(0, 4)); yf++) birthdaysInYear(fr, yf).forEach(function (bd) { if (inR(bd)) out.push({ date: bd, kind: 'birthday', label: (fr.rel || '지인') + ' ' + (fr.name || '이름 없음') + ' 생일' + (fr.bdCal === 'lunar' ? ' (' + bdDesc(fr) + ')' : ''), phone: fr.phone }); }); });
@@ -6931,7 +7008,7 @@ function workItems(from, to) {
   });
   return out.sort(function (a, b) { return String(a.date).localeCompare(String(b.date)) || String(a.time || '99').localeCompare(String(b.time || '99')); });
 }
-var KIND = { lic: ['라이선스', 'k-claim'], claim: ['보험금 청구', 'k-claim'], org: ['지점 일정', 'k-org'], event: ['일정', 'k-event'], task: ['할 일 기한', 'k-task'], follow: ['연락 예정', 'k-follow'], birthday: ['생일', 'k-bd'], sbd: ['직원 생일', 'k-sbd'], sang: ['상령일', 'k-sang'], renew: ['갱신', 'k-renew'], payend: ['납입완료', 'k-pay'], consent: ['동의', 'k-consent'], anniv: ['기념일', 'k-anniv'] };
+var KIND = { lic: ['라이선스', 'k-claim'], claim: ['보험금 청구', 'k-claim'], prop: ['제안 후속', 'k-claim'], org: ['지점 일정', 'k-org'], event: ['일정', 'k-event'], task: ['할 일 기한', 'k-task'], follow: ['연락 예정', 'k-follow'], birthday: ['생일', 'k-bd'], sbd: ['직원 생일', 'k-sbd'], sang: ['상령일', 'k-sang'], renew: ['갱신', 'k-renew'], payend: ['납입완료', 'k-pay'], consent: ['동의', 'k-consent'], anniv: ['기념일', 'k-anniv'] };
 function itemLabel(it) { return it.kind === 'event' ? (it.type || '일정') : KIND[it.kind][0]; }
 function evKey(e) { return [e.date, String(e.title || '').replace(/\s+/g, ''), e.cid || ''].join('|'); }
 function evIsDup(id) { // 같은 날짜·내용·고객 일정이 먼저 있으면 중복
@@ -6952,7 +7029,8 @@ function itemRow(it, showDate) {
     it.kind === 'org' ? '<button class="btn ghost sm" data-act="openOrg" data-id="' + it.id + '" title="지점 일정 수정">수정</button>' :
     it.kind === 'anniv' ? '<button class="btn ghost sm" data-act="openAnniv" data-id="' + it.aid + '" title="기념일 수정">수정</button>' :
     it.kind === 'lic' ? '<button class="btn ghost sm" data-act="licEdit" data-id="' + it.lid + '">라이선스</button>' :
-    it.kind === 'claim' ? (it.due ? '<span class="chip warn">' + esc(it.due) + '</span>' : '') + '<button class="btn ghost sm" data-act="claimOpen" data-id="' + it.cid + '" data-pid="' + it.clid + '">청구 보기</button>' : '';
+    it.kind === 'claim' ? (it.due ? '<span class="chip warn">' + esc(it.due) + '</span>' : '') + '<button class="btn ghost sm" data-act="claimOpen" data-id="' + it.cid + '" data-pid="' + it.clid + '">청구 보기</button>' :
+    it.kind === 'prop' ? '<button class="btn sm tel" data-act="propFollow" data-id="' + it.cid + '" data-pid="' + it.si + '" title="오늘 후속 연락을 기록하고 7일 뒤 다음 연락일을 잡습니다">후속 연락</button><button class="btn ghost sm" data-act="goList" data-id="props">제안기록</button>' : '';
   var link = c ? '<button class="link-btn" data-act="goCust" data-id="' + c.id + '" data-pid="' + (it.tab || 'info') + '">' + esc(c.name || '고객') + '</button>' : '';
   if (it.kind === 'task') act = '';
   return '<li class="' + (it.done ? 'is-done' : '') + (it.kind === 'task' ? ' is-task' : '') + '">' + (it.kind === 'task' ? '<button class="check-btn" data-act="taskDone" data-id="' + it.id + '" aria-label="완료 표시"></button>' : '') + (showDate ? '<span class="wdate num">' + esc(it.date.slice(5).replace('-', '.')) + '</span>' : '') +
@@ -7264,8 +7342,8 @@ function bdEventBtn(kind, x) {
 }
 function autoTodoItems() { // 일정을 뺀, 고객 자료에서 생기는 해야 할 일
   var t = today(), lim = isoDate(new Date(Date.now() + Math.max(7, num(store.settings.params.renewDays) || 60) * 864e5));
-  var past = workItems('2000-01-01', isoDate(new Date(Date.now() - 864e5))).filter(function (it) { return it.kind === 'follow' || it.kind === 'claim' || it.kind === 'lic'; });
-  var next = workItems(t, lim).filter(function (it) { return ['follow', 'renew', 'payend', 'consent', 'sang', 'claim', 'lic'].indexOf(it.kind) >= 0; });
+  var past = workItems('2000-01-01', isoDate(new Date(Date.now() - 864e5))).filter(function (it) { return it.kind === 'follow' || it.kind === 'claim' || it.kind === 'lic' || it.kind === 'prop'; });
+  var next = workItems(t, lim).filter(function (it) { return ['follow', 'renew', 'payend', 'consent', 'sang', 'claim', 'lic', 'prop'].indexOf(it.kind) >= 0; });
   return past.concat(next);
 }
 function workTasks() {
@@ -7275,7 +7353,7 @@ function workTasks() {
   return '<section class="panel"><div class="row between"><h2>남은 할 일 ' + open.length + '건</h2><button class="btn ' + (ui.tkOpen ? '' : 'primary ') + 'sm" data-act="toggleBox" data-id="tkOpen" aria-expanded="' + !!ui.tkOpen + '">' + (ui.tkOpen ? '닫기' : '+ 추가') + '</button></div>' +
     (ui.tkOpen ? '<div class="cal-add kind-tk"><h3 style="margin:0"><span class="kind-dot tk"></span>할 일 추가</h3><p class="kind-help">' + TK_HELP + ' 날짜·시간이 정해진 약속은 <button class="link-btn" data-act="goWork" data-id="calendar">일정</button>에 넣으세요.</p>' + taskForm(false) + '</div>' : '') + (open.length ? '<ul class="wlist tasks">' + open.map(row).join('') + '</ul>' : '<p class="muted" style="margin:0">남은 할 일이 없습니다.</p>') + '</section>' +
     (function () {
-      var A = autoTodoItems(), F = ui.atF || '', kinds = [['', '전체'], ['follow', '연락 예정'], ['claim', '보험금 청구'], ['lic', '내 자격'], ['renew', '갱신'], ['payend', '납입 완료'], ['consent', '동의 만료'], ['sang', '상령일']];
+      var A = autoTodoItems(), F = ui.atF || '', kinds = [['', '전체'], ['follow', '연락 예정'], ['claim', '보험금 청구'], ['prop', '제안 후속'], ['lic', '내 자격'], ['renew', '갱신'], ['payend', '납입 완료'], ['consent', '동의 만료'], ['sang', '상령일']];
       var cnt = {}; A.forEach(function (it) { cnt[it.kind] = (cnt[it.kind] || 0) + 1; });
       var L = A.filter(function (it) { return !F || it.kind === F; }), late = A.filter(function (it) { return it.date < today(); }).length;
       return '<section class="panel"><div class="row between"><h2>고객 자료에서 생긴 할 일 ' + A.length + '건' + (late ? ' <span class="chip warn">밀림 ' + late + '</span>' : '') + '</h2><span class="muted">앞으로 ' + (num(store.settings.params.renewDays) || 60) + '일 · 일정 제외</span></div>' +
@@ -7503,7 +7581,7 @@ function setField(el) {
     ad[k] = v;
   } else if (scope === 'fc') { s.fc[k] = v; }
   else if (scope === 'ui') { if (k === 'bkTag') { var bt2 = Object.keys(ui.csel || {}).map(custById).filter(Boolean); if (v) { bt2.forEach(function (x) { if (custTags(x).indexOf(v) < 0) { x.tags = custTags(x).concat([v]); stampCustomer(x); } }); save(); toast(bt2.length + '명에게 "' + v + '" 표시를 붙였습니다'); } render(); return; }
-    if (k === 'brDrop' && ui.brImport) { ui.brImport.drop = !!v; render(); return; } ui[k] = v; if (/^(nd|ev|tk|hhN|qa|qf|org|edu|dn|tm|tn|te|demo|cTagNew)/.test(k) && el.dataset.kind !== 'date' && el.dataset.kind !== 'datecal') return; render(); return; }
+    if (k === 'brDrop' && ui.brImport) { ui.brImport.drop = !!v; render(); return; } ui[k] = v; if (/^(nd|ev|tk|hhN|qa|qf|org|edu|dn|tm|tn|te|demo|cTagNew|praT|praA)/.test(k) && el.dataset.kind !== 'date' && el.dataset.kind !== 'datecal') return; render(); return; }
   else if (scope === 'ev' || scope === 'task') {
     var lst5 = scope === 'ev' ? s.events : s.tasks; var it5 = lst5.filter(function (x) { return x.id === id; })[0]; if (!it5) return;
     if (k === 'title' && !String(v).trim()) { toast('내용을 비울 수 없습니다'); render(); return; }
@@ -7526,7 +7604,7 @@ function setField(el) {
     render(); return;
   } else if (scope === 'snap') {
     var sc2 = custById(id); if (!sc2 || !sc2.snapshots[Number(pid)]) return; var sn2 = sc2.snapshots[Number(pid)]; sn2[k] = v;
-    if (k === 'result') { sn2.stageAt = today(); if (v !== '거절' && v !== '보류') sn2.reason = ''; if (v === '성사' && custKind(sc2) !== '계약') { sc2.cstat = '계약'; toast((sc2.name || '고객') + '님을 계약고객으로 바꿨습니다'); } } stampCustomer(sc2);
+    if (k === 'result') { sn2.stageAt = today(); if (v !== '거절' && v !== '보류') sn2.reason = ''; if (v === '성사') { if (custKind(sc2) !== '계약') sc2.cstat = '계약'; toast((sc2.name || '고객') + '님 성사! 계약고객으로 바꿨습니다. 줄 끝 "계약 입력"으로 계약을 바로 만드세요'); } } stampCustomer(sc2);
   } else if (scope === 'clan') {
     var cl9 = clanList().filter(function (x) { return x.id === id; })[0]; if (!cl9) return; cl9[k] = v;
   } else if (scope === 'hhc') {
@@ -7633,7 +7711,7 @@ function doAction(el) {
     case 'ndaGo': { // 상담 기록 화면에서 바로 기록 추가
       var nc = custById(ui.ndaCid || ''); if (!nc) { toast('고객을 고르세요'); break; }
       if (!String(ui.ndaText || '').trim()) { toast('상담 내용을 입력하세요'); break; }
-      nc.notes = nc.notes || []; nc.notes.push({ id: uid(), date: ui.ndaDate || today(), method: ui.ndaMethod || '전화', topic: ui.ndaTopic || '', text: String(ui.ndaText).trim(), next: ui.ndaNext || '', done: false }); if (noteTopic(nc.notes[nc.notes.length - 1]) === '청구') ui.clmAsk = nc.id;
+      nc.notes = nc.notes || []; nc.notes.push({ id: uid(), date: ui.ndaDate || today(), method: ui.ndaMethod || '전화', topic: ui.ndaTopic || '', text: String(ui.ndaText).trim(), next: ui.ndaNext || '', done: false }); var ntp = noteTopic(nc.notes[nc.notes.length - 1]); if (ntp === '청구') ui.clmAsk = nc.id; if (ntp === '계약') ui.prAsk = nc.id;
       stampCustomer(nc); ui.ndaText = ''; ui.ndaNext = ''; ui.ndaDate = ''; ui.ndaTopic = ''; ui.modal = null; save(); toast('상담 기록을 남겼습니다'); break; }
     case 'expMsg': { var em = id.split(':'), eo = em[0] === 'auto' ? autoById(em[1], em[2]) : fireById(em[1], em[2]); if (eo) copyText(expMsgText(em[0], eo.c, eo.a), '만기 안내 문자를 복사했습니다. 문자·카톡에 붙여 넣으세요'); return; }
     case 'polaGo': { // 장기보험: 고른 고객에게 빈 계약을 만들고 계약 입력으로
@@ -7767,7 +7845,7 @@ function doAction(el) {
       if (!String(ui.ndText || '').trim()) { toast('상담 내용을 입력하세요'); break; }
       c.notes = c.notes || [];
       c.notes.push({ id: uid(), date: ui.ndDate || today(), method: ui.ndMethod || '전화', topic: ui.ndTopic || '', text: String(ui.ndText).trim(), next: ui.ndNext || '', done: false });
-      var lastN = c.notes[c.notes.length - 1]; if (noteTopic(lastN) === '청구') ui.clmAsk = c.id;
+      var lastN = c.notes[c.notes.length - 1], ltp = noteTopic(lastN); if (ltp === '청구') ui.clmAsk = c.id; if (ltp === '계약') ui.prAsk = c.id;
       stampCustomer(c); ui.ndText = ''; ui.ndNext = ''; ui.ndDate = ''; ui.ndTopic = ''; save(); toast('상담 기록을 남겼습니다'); break;
     }
     case 'noteDone': { var c3 = custById(el.dataset.pid); var n3 = c3 && c3.notes.filter(function (x) { return x.id === id; })[0]; if (n3) { n3.done = !n3.done; stampCustomer(c3); save(); } break; }
@@ -8153,6 +8231,29 @@ function doAction(el) {
     case 'relDorm': ui.relDorm = !ui.relDorm; break;
     case 'claimAdd': openDetail('claimadd'); return;
     case 'claimAskNo': ui.clmAsk = ''; break;
+    case 'propAskNo': ui.prAsk = ''; break;
+    case 'propAskYes': { ui.prAsk = ''; var pa0 = custById(id); if (!pa0) break; var ln0 = (pa0.notes || []).slice(-1)[0]; ui.praCid = pa0.id; ui.praTitle = ln0 ? String(ln0.text || '').slice(0, 60) : ''; ui.praAfter = ''; ui.praStage = '제안함'; ui.modal = { kind: 'propadd' }; break; }
+    case 'propAdd': ui.praTitle = ''; ui.praAfter = ''; ui.praStage = '제안함'; if (ui.view === 'customer' && ui.cid) ui.praCid = ui.cid; ui.modal = { kind: 'propadd' }; break;
+    case 'praGo': { var pr0 = custById(ui.praCid || ''); if (!pr0) { toast('고객을 고르세요'); break; }
+      if (!String(ui.praTitle || '').trim()) { toast('무엇을 제안했는지 적어 주세요'); break; }
+      var an0 = analyze(pr0, store.settings), af0 = String(ui.praAfter || '').trim(), d0 = new Date();
+      pr0.snapshots = pr0.snapshots || [];
+      pr0.snapshots.push({ result: ui.praStage || '제안함', at: today() + ' ' + String(d0.getHours()).padStart(2, '0') + ':' + String(d0.getMinutes()).padStart(2, '0'), stageAt: today(), before: an0.premium, after: af0 ? num(parseWon(af0)) : an0.premium, shortBefore: an0.counts.short, shortAfter: an0.counts.short, title: String(ui.praTitle).trim().slice(0, 80), manual: true });
+      stampCustomer(pr0); ui.modal = null; save(); toast('제안 기록을 남겼습니다. 14일 동안 단계가 그대로면 업무 → 오늘·할 일에 후속 연락으로 나옵니다'); break; }
+    case 'propToPol': { var tc0 = custById(id), ts0 = tc0 && tc0.snapshots && tc0.snapshots[Number(el.dataset.pid)]; if (!ts0) break;
+      tc0.plan = tc0.plan || { actions: {}, additions: [] }; var ad0 = (tc0.plan.additions || []).filter(function (a) { return a.code; });
+      var np0 = blankPolicy(); np0.product = ts0.title || (ad0.length ? '신규 설계 (' + String(ts0.at).slice(0, 10) + ' 제안)' : ''); np0.start = today(); np0.mine = true;
+      var adP = ad0.reduce(function (t, a) { return t + num(a.premium); }, 0); np0.premium = adP || Math.max(0, num(ts0.after) - num(ts0.before)) || 0;
+      ad0.forEach(function (a) { np0.coverages.push({ id: uid(), raw: stdName(a.code) + (a.note ? ' (' + a.note + ')' : ''), amount: num(a.amount), code: a.code }); });
+      if (!np0.coverages.length) np0.coverages.push({ id: uid(), raw: '', amount: 0, code: null });
+      tc0.policies.push(np0); if (ad0.length) tc0.plan.additions = tc0.plan.additions.filter(function (a) { return !a.code; });
+      ts0.polId = np0.id; ui.openPol = ui.openPol || {}; ui.openPol[np0.id] = true; stampCustomer(tc0); save();
+      go('customer', { cid: tc0.id, tab: 'policies' });
+      toast(ad0.length ? '추가 설계 ' + ad0.length + '개 담보로 새 계약 초안을 만들었습니다. 보험사·보험료·계약일을 확인하세요' : '새 계약을 만들었습니다. 보험사·상품·보험료·담보를 넣으세요');
+      setTimeout(function () { var x = document.querySelector('[data-pid="' + np0.id + '"][data-k="insurer"], [data-id="' + np0.id + '"][data-k="insurer"]'); if (x) { x.scrollIntoView({ block: 'center' }); x.focus && x.focus(); } }, 50); break; }
+    case 'icFind': { var nmI = el.dataset.k || ''; var hitI = insContactOf(nmI); ui.modal = null; ui.icq = hitI ? '' : nmI; if (hitI) { ui.icOpen = ui.icOpen || {}; ui.icOpen[hitI.id] = true; ui.icq = hitI.name; } go('insurance', { isub: 'insurer' }); break; }
+    case 'relHh': ui.relHh = !ui.relHh; break;
+    case 'tgHh': ui.tgHh = !ui.tgHh; break;
     case 'payMsg': { var hpm = claimById(id, el.dataset.pid); if (hpm) copyText(payMsgText(hpm.c, hpm.x), '지급 안내 문자를 복사했습니다. 문자·카톡에 붙여 넣으세요'); return; }
     case 'claimAskYes': { ui.clmAsk = ''; var ca2 = custById(id); if (!ca2) break; var nk = blankClaim(ca2); var ln = (ca2.notes || []).slice(-1)[0]; if (ln) { nk.memo = String(ln.text || '').slice(0, 300); } ca2.claims = ca2.claims || []; ca2.claims.unshift(nk); stampCustomer(ca2); save(); ui.modal = { kind: 'claim', cid: ca2.id, id: nk.id, isNew: true }; break; }
     case 'claimAddFor': { var cf = custById(id); if (!cf) break; var nf = blankClaim(cf); cf.claims = cf.claims || []; cf.claims.unshift(nf); stampCustomer(cf); save(); ui.modal = { kind: 'claim', cid: cf.id, id: nf.id, isNew: true }; break; }
@@ -8689,6 +8790,20 @@ function detailModalHtml() {
       '<div class="field span2"><button class="btn primary" data-act="ndaGo">기록 추가</button></div></div>'
       : '<p class="muted">아직 고객이 없습니다. 고객 → 고객목록에서 먼저 고객을 등록하세요.</p>';
     del = '';
+  } else if (m.kind === 'propadd') {
+    var RL = store.customers.slice().sort(function (a, b) { return (a.sample ? 1 : 0) - (b.sample ? 1 : 0) || byName(a, b); });
+    if (!custById(ui.praCid || '') && RL[0]) ui.praCid = RL[0].id;
+    var prC = custById(ui.praCid || ''), prP = prC ? analyze(prC, store.settings).premium : 0;
+    title = '제안 기록 추가'; head = '분석 없이 전화·방문으로 한 제안도 남겨 진행 단계를 챙기세요';
+    body = RL.length ? '<div class="grid-form dm-grid">' + lbl('고객', f('ui', 'praCid', ui.praCid || '', { type: 'select', options: RL.map(function (c) { return [c.id, (c.name || '이름 없음') + ' · ' + custKind(c)]; }) }), 'span2') +
+      lbl('제안 내용', f('ui', 'praTitle', ui.praTitle || '', { ph: '예: 암 진단비 보강, 실손 4세대 전환 검토' }), 'span2') +
+      lbl('지금 월 보험료', '<span class="ro-val num">' + fmtWon(prP) + '</span>') +
+      lbl('제안 후 월 보험료 (선택)', f('ui', 'praAfter', ui.praAfter || '', { ph: '비우면 지금과 같음 · 예: 35만', inputmode: 'numeric' })) +
+      '<div class="field span2"><span>단계</span><span class="seg seg-f">' + ['제안함', '검토 중', '청약'].map(function (st) { return '<button type="button" class="seg-btn' + ((ui.praStage || '제안함') === st ? ' on' : '') + '" data-act="uiPick" data-k="praStage" data-id="' + st + '">' + st + '</button>'; }).join('') + '</span></div>' +
+      '<div class="field span2"><button class="btn primary" data-act="praGo">제안 기록 남기기</button></div>' +
+      '<p class="muted span2" style="margin:0">보장분석까지 한 제안은 고객 상세 → 제안서의 "현재 분석 기록 남기기"를 쓰면 부족 담보 변화도 함께 남습니다.</p></div>'
+      : '<p class="muted">아직 고객이 없습니다. 고객 → 고객목록에서 먼저 고객을 등록하세요.</p>';
+    del = '';
   } else if (m.kind === 'poladd') {
     var PL = store.customers.slice().sort(function (a, b) { return (a.sample ? 1 : 0) - (b.sample ? 1 : 0) || byName(a, b); });
     if (!custById(ui.polaCid || '') && PL[0]) ui.polaCid = PL[0].id;
@@ -8794,7 +8909,7 @@ function detailModalHtml() {
   return '<div class="dmodal" role="dialog" aria-modal="true" aria-labelledby="dmTitle"><div class="dm-box' + (m.kind === 'auto' || m.kind === 'fire' || m.kind === 'claim' ? ' dm-wide' : '') + '">' +
     '<div class="dm-head"><div><h2 id="dmTitle">' + esc(title) + '</h2>' + (head ? '<div class="muted">' + esc(head) + '</div>' : '') + '</div><button class="btn ghost sm" data-act="dmClose" aria-label="닫기">✕</button></div>' +
     '<div class="dm-body">' + body + '</div>' +
-    (m.kind === 'custdel' ? '' : '<div class="dm-foot">' + del + '<span class="muted dm-hint">입력하면 바로 저장됩니다</span><button class="btn primary" data-act="dmClose">닫기</button></div>') + '</div></div>';
+    (m.kind === 'custdel' ? '' : '<div class="dm-foot">' + del + '<span class="muted dm-hint">' + (/^(propadd|noteadd|poladd|drvadd|claimadd|bdadd|bulkmsg)$/.test(m.kind) ? '' : '입력하면 바로 저장됩니다') + '</span><button class="btn' + (/^(propadd|noteadd|poladd|drvadd|claimadd|bdadd)$/.test(m.kind) ? '' : ' primary') + '" data-act="dmClose">' + (/^(propadd|noteadd|poladd|drvadd|claimadd|bdadd)$/.test(m.kind) ? '취소' : '닫기') + '</button></div>') + '</div></div>';
 }
 function openDetail(spec) {
   var p = String(spec).split(':');
