@@ -1771,6 +1771,17 @@ html.reduce-motion *, html.reduce-motion *::before, html.reduce-motion *::after 
 .news-title:hover { text-decoration: underline; }
 .news-desc { margin: 4px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .news-meta { display: flex; gap: 10px; align-items: center; margin-top: 4px; font-size: 12px; color: var(--ink-3); flex-wrap: wrap; }
+/* 보험뉴스 보기 방식 (2026-11-06): 자세히 · 제목만 · 카드 */
+.news-view .seg-btn { padding: 4px 10px; font-size: 12.5px; }
+.news-list.nv-title li { display: flex; align-items: baseline; gap: 10px; padding: 8px 0; }
+.news-list.nv-title .news-title { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
+.news-list.nv-title .news-meta { margin: 0; flex: none; flex-wrap: nowrap; white-space: nowrap; }
+.news-list.nv-card { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+.news-list.nv-card li { display: flex; flex-direction: column; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.news-list.nv-card li:last-child { border-bottom: 1px solid var(--line); }
+.news-list.nv-card .news-desc { -webkit-line-clamp: 3; flex: 1; }
+.news-list.nv-card .news-meta { margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--line); }
+@media (max-width: 520px) { .news-list.nv-title li { flex-direction: column; gap: 2px; } .news-list.nv-title .news-title { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; } }
 @media (max-width: 520px) { .news-seg { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; width: 100%; border-radius: 12px; } .news-seg .seg-btn { padding: 6px 2px; white-space: nowrap; } }
 .rel-cyc { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; white-space: nowrap; }
 .rel-cyc select { width: auto; min-width: 0; padding-top: 6px; padding-bottom: 6px; }
@@ -2753,7 +2764,10 @@ var SETTING_SUBS = [['me', '내정보'], ['account', '계정설정'], ['display'
 var WORK_SUBS = [['home', '오늘'], ['calendar', '일정'], ['tasks', '할 일'], ['birthday', '생일'], ['anniv', '기념일'], ['gifts', '선물'], ['stats', '실적'], ['comm', '수수료']];
 var OFFICE_SUBS = [['news', '보험뉴스'], ['notice', '공지사항'], ['schedule', '지점일정'], ['staff', '직원정보'], ['branch', '지사·사업단']]; // 직원 생일은 업무 → 생일(직원)로 합침(2026-11-03)
 var OFFICE_TITLES = { sbd: '직원 생일' }; // 메뉴 이름은 짧게, 화면 제목은 그대로
-function officeSubs() { return team.info ? OFFICE_SUBS.concat([['team', '지점현황']]) : OFFICE_SUBS; }
+function officeSubs() { // 팀에 들어가 있으면 '지점현황'을 '지사·사업단' 앞에 (2026-11-06)
+  if (!team.info) return OFFICE_SUBS;
+  var out = []; OFFICE_SUBS.forEach(function (x) { if (x[0] === 'branch') out.push(['team', '지점현황']); out.push(x); }); return out;
+}
 var LIST_SUBS = [['list', '고객목록'], ['family', '가족·가구'], ['contacts', '고객관계'], ['notes', '고객상담'], ['props', '제안기록'], ['claims', '보험금청구']]; // 관리 필요는 고객목록 숫자 칸으로 합침(2026-11-03)
 var LIST_TITLES = { list: '고객목록', contacts: '고객관계', family: '가족·가구', notes: '고객상담', props: '제안기록', claims: '보험금청구' }; // 메뉴 이름은 짧게, 화면 제목은 그대로(2026-11-03)
 var INS_SUBS = [['all', '보장보험'], ['fire', '화재보험'], ['drv', '운전자보험'], ['auto', '자동차보험'], ['insurer', '보험사 연락처'], ['guide', '보험 가이드']]; // 2026-11-05 이름 변경
@@ -7080,6 +7094,8 @@ function eventForm(dateDefault) {
 var NEWS_TOPICS = [['all', '전체'], ['life', '생명'], ['nonlife', '손해'], ['silson', '실손'], ['auto', '자동차'], ['fc', '설계사'], ['fss', '감독·제도']];
 var NEWS_LINKS = [['금융감독원', 'https://www.fss.or.kr'], ['금융위원회', 'https://www.fsc.go.kr'], ['생명보험협회', 'https://www.klia.or.kr'], ['손해보험협회', 'https://www.knia.or.kr']];
 var news = { cache: {}, busy: '', err: {} };
+var NEWS_VIEWS = [['full', '자세히', '제목 + 요약'], ['title', '제목만', '한 줄에 제목만'], ['card', '카드', '카드로 나란히']];
+function newsView() { var v = ''; try { v = localStorage.getItem('fcp-newsview') || ''; } catch (e) {} return NEWS_VIEWS.some(function (x) { return x[0] === v; }) ? v : 'full'; }
 var NEWS_ERR = {
   login: '로그인한 상태에서만 뉴스를 볼 수 있습니다.',
   offline: '지금은 오프라인이라 뉴스를 불러올 수 없습니다. 인터넷이 연결되면 "새로고침"을 누르세요.',
@@ -7118,17 +7134,18 @@ function renderNews() {
   var tp = ui.newsT || 'all', c = news.cache[tp], err = news.err[tp], busy = news.busy === tp;
   if (!c && !err && !busy) setTimeout(function () { newsLoad(tp); render(); }, 0);
   var seg = '<div class="seg news-seg" role="tablist">' + NEWS_TOPICS.map(function (t) { return '<button class="seg-btn' + (tp === t[0] ? ' on' : '') + '" role="tab" aria-selected="' + (tp === t[0]) + '" data-act="newsTopic" data-id="' + t[0] + '">' + t[1] + '</button>'; }).join('') + '</div>';
-  var items = c ? c.items : [], lim = ui.newsAll ? items.length : 20;
+  var items = c ? c.items : [], lim = ui.newsAll ? items.length : 20, nv = newsView();
+  var viewSeg = '<div class="seg news-view" role="radiogroup" aria-label="보기 방식">' + NEWS_VIEWS.map(function (v) { return '<button class="seg-btn' + (nv === v[0] ? ' on' : '') + '" role="radio" aria-checked="' + (nv === v[0]) + '" title="' + v[2] + '" data-act="newsView" data-id="' + v[0] + '">' + v[1] + '</button>'; }).join('') + '</div>';
   var list = busy && !c ? '<div class="empty"><strong>뉴스를 불러오는 중…</strong></div>'
     : err && !c ? '<div class="empty"><strong>뉴스를 보여 줄 수 없습니다</strong><span>' + esc(NEWS_ERR[err] || NEWS_ERR.network) + '</span></div>'
     : !items.length ? '<div class="empty"><strong>새 기사가 없습니다</strong><span>다른 주제를 눌러 보세요.</span></div>'
-    : '<ul class="news-list">' + items.slice(0, lim).map(function (it, i) {
-      return '<li><a class="news-title" href="' + attr(it.link) + '" target="_blank" rel="noopener noreferrer">' + esc(it.title) + '</a>' +
-        (it.desc ? '<p class="news-desc">' + esc(it.desc) + '</p>' : '') +
+    : '<ul class="news-list nv-' + nv + '">' + items.slice(0, lim).map(function (it, i) {
+      return '<li><a class="news-title" href="' + attr(it.link) + '" target="_blank" rel="noopener noreferrer"' + (nv === 'title' ? ' title="' + attr(it.title) + '"' : '') + '>' + esc(it.title) + '</a>' +
+        (it.desc && nv !== 'title' ? '<p class="news-desc">' + esc(it.desc) + '</p>' : '') +
         '<div class="news-meta"><span>' + esc(newsHost(it.link)) + '</span><span>' + esc(newsAgo(it.date)) + '</span><button class="link-btn" data-act="newsCopy" data-id="' + i + '">링크 복사</button></div></li>'; }).join('') + '</ul>' +
       (items.length > 20 ? '<button class="btn sm more-btn" data-act="toggleBox" data-id="newsAll">' + (ui.newsAll ? '접기 ▲' : '더보기 (' + (items.length - 20) + '건 더) ▼') + '</button>' : '');
   var q = (NEWS_TOPICS.filter(function (t) { return t[0] === tp; })[0] || [])[1];
-  return '<section class="panel"><div class="row between news-head">' + seg + '<div class="row" style="gap:8px"><span class="muted news-at">' + (busy ? '불러오는 중…' : c ? newsAgo(new Date(c.t).toISOString()) + ' 갱신' : '') + '</span>' +
+  return '<section class="panel"><div class="row between news-head">' + seg + '<div class="row" style="gap:8px;flex-wrap:wrap">' + viewSeg + '<span class="muted news-at">' + (busy ? '불러오는 중…' : c ? newsAgo(new Date(c.t).toISOString()) + ' 갱신' : '') + '</span>' +
     '<button class="btn sm" data-act="newsRefresh"' + (busy ? ' disabled' : '') + '>새로고침</button></div></div>' +
     (err && c ? '<div class="notice">' + esc(NEWS_ERR[err] || NEWS_ERR.network) + ' (아래는 마지막으로 불러온 기사입니다)</div>' : '') + list +
     '<p class="muted" style="margin:0">네이버 뉴스 검색에서 "' + esc(q || '전체') + '" 주제의 최신 기사를 보여 줍니다. 제목을 누르면 언론사 기사가 새 창으로 열립니다. 기사 내용과 저작권은 각 언론사에 있습니다.</p></section>' +
@@ -7984,6 +8001,7 @@ function doAction(el) {
     }
     case 'licPdfDown': licPdfDown(id); return;
     case 'newsTopic': ui.newsT = id; ui.newsAll = false; break;
+    case 'newsView': try { localStorage.setItem('fcp-newsview', id); } catch (e) {} break;
     case 'newsRefresh': { var nt0 = ui.newsT || 'all'; news.err[nt0] = ''; newsLoad(nt0, true); break; }
     case 'newsCopy': { var nc = news.cache[ui.newsT || 'all'], ni = nc && nc.items[Number(id)]; if (ni) copyText(ni.title + '\n' + ni.link, '기사 링크를 복사했습니다'); return; }
     case 'relTab': ui.relTab = id; ui.armed = null; break;
