@@ -2391,8 +2391,8 @@ function generateDemoData(opt) {
   })();
   custs.forEach(function (c) { c.sample = true; stampCustomer(c); store.customers.push(c); }); made.cust = custs.length;
   // 2) 직원 4명 (생일 포함, 지점은 ABA 목록에서) — 전화번호는 실제 번호와 겹치지 않게 비움
-  var roles = ['단장', '지점장', '팀장', 'FC', '총무'];
-  for (var rk = roles.length; rk < nStaff; rk++) roles.push(rk % 4 === 0 ? '팀장' : 'FC'); // 입력한 인원만큼 직원 추가 (주로 FC)
+  var roles = ['사업단장', '지점장', '팀장', '팀장', '총무'];
+  for (var rk = roles.length; rk < nStaff; rk++) roles.push(rk % 12 === 0 ? '지점장' : '팀장'); // 입력한 인원만큼 직원 추가 (주로 팀장, 2026-11-07 FC 단계 없앰)
   var sn = ['김', '이', '박', '최', '정', '강'], gn = ['영호', '미선', '정훈', '수진', '태호', '은정'];
   // 지점 목록을 모두 지운 경우에도 멈추지 않게: 사업단이 없으면 아무 지점, 그것도 없으면 '예시사업단' (2026-11-04)
   var brAll = getBranches() || [], brSa = brAll.filter(function (b) { return b && b[0] === '사업단'; });
@@ -2482,10 +2482,10 @@ function fixup(s) {
   s.settings.aliases = s.settings.aliases || d.aliases;
   s.settings.params = Object.assign(d.params, s.settings.params || {});
   if (s.settings.params.bdDaysV !== 2) { if (num(s.settings.params.birthdayDays) === 14) s.settings.params.birthdayDays = 7; s.settings.params.bdDaysV = 2; } // 예전 기본 14일 → 생일 메뉴와 같은 7일
-  s.settings.fc = Object.assign(d.fc, s.settings.fc || {});
+  s.settings.fc = Object.assign(d.fc, s.settings.fc || {}); if (s.settings.fc.role === '단장') s.settings.fc.role = '사업단장';
   s.settings.contacts = Object.assign({ staff: [], insurers: [] }, s.settings.contacts || {});
   s.settings.contacts.insurers = s.settings.contacts.insurers || []; s.settings.contacts.insurers.forEach(function (x) { var ik = typeof insurerKind === 'function' ? insurerKind(x.name) : ''; if (ik) x.kind = ik; });
-  s.settings.contacts.staff = s.settings.contacts.staff || []; s.settings.contacts.staff.forEach(function (x) { if (!x.bdCal) x.bdCal = 'solar'; }); s.settings.contacts.insurers = s.settings.contacts.insurers || [];
+  s.settings.contacts.staff = s.settings.contacts.staff || []; s.settings.contacts.staff.forEach(function (x) { if (!x.bdCal) x.bdCal = 'solar'; if (x.role === '단장') x.role = '사업단장'; }); s.settings.contacts.insurers = s.settings.contacts.insurers || [];
   s.settings.products = s.settings.products || [];
   s.settings.households = s.settings.households || [];
   s.settings.licenses = s.settings.licenses || [];
@@ -3785,7 +3785,7 @@ function renderSettings() {
     body = renderAccountSection() + teamSection() + passkeySection();
     if (!cloud.on || !cloud.user) body = '<div class="info">로그인 없이 이 기기에만 저장하는 방식으로 쓰고 있습니다. 내 계정·패스키 로그인은 로그인해서 쓸 때 여기에 나옵니다.</div>' + body;
   } else if (sub === 'me') {
-    var fcRoles = [['', '선택'], ['FC', 'FC'], ['팀장', '팀장'], ['지점장', '지점장'], ['단장', '단장']]; if (s.fc.role && !fcRoles.some(function (o) { return o[0] === s.fc.role; })) fcRoles.push([s.fc.role, s.fc.role]);
+    var fcRoles = [['', '선택'], ['팀장', '팀장'], ['지점장', '지점장'], ['사업단장', '사업단장']]; if (s.fc.role && !fcRoles.some(function (o) { return o[0] === s.fc.role; })) fcRoles.push([s.fc.role, s.fc.role]);
     var fcLine = fcLineText(s.fc);
     var miss = [!s.fc.name && '이름', !s.fc.phone && '연락처', !s.fc.org && '소속'].filter(Boolean);
     body = '<section class="panel"><h2>FC 정보 <span class="muted">제안서·축하 문자에 표시됩니다</span></h2><div class="grid-form">' +
@@ -4024,7 +4024,8 @@ function insPopHtml(q) {
   });
   return html || '<div class="ins-empty">목록에 없는 회사입니다. 그대로 입력하면 저장됩니다.</div>';
 }
-var STAFF_ROLES = ['단장', '지점장', '팀장', 'FC', '총무'];
+var STAFF_ROLES = ['사업단장', '지점장', '팀장', '총무']; // 2026-11-07 조직 = 사업단장 > 지점장 > 팀장 (FC 단계 없음, 총무는 조직 밖 직급). '단장'은 '사업단장'으로 바꿈(roleName()/fixup). 예전에 'FC'로 저장한 직원은 그 값 그대로 보임
+function roleName(r) { r = String(r || '').trim(); return r === '단장' ? '사업단장' : r; }
 // ABA금융서비스 사업단·지사 (abafs.com/about/branch.php, 2026-07-14 기준 공개 자료) [구분, 지역, 이름, 전화, 주소]
 var ABA_BRANCHES = [
   ['사업단','서울','VIP사업단','02-6404-0235','서울특별시 중구 칠패로 46, 6층 601호(봉래동1가, 우남빌딩)'],
@@ -4354,7 +4355,7 @@ function exportStaffXlsx() {
       ['직원 연락처 엑셀 작성 안내'], [],
       ['칸', '쓰는 법'],
       ['이름', '꼭 넣습니다. 이름이 비어 있는 줄은 건너뜁니다.'],
-      ['직급', '단장 · 지점장 · 팀장 · 총무 중 하나 (다른 직급도 그대로 저장됩니다)'],
+      ['직급', '사업단장 · 지점장 · 팀장 · 총무 중 하나 (단장은 사업단장으로 읽음, 다른 직급도 그대로 저장됩니다)'],
       ['사업단·지사', '예: 스마트방송사업단, 인스일산지사 (지점·사업단 목록의 이름)'],
       ['지점', '예: 일산지점, 주엽지점 (사업단 안의 지점 이름)'],
       ['휴대폰 · 사무실', '숫자만 넣어도 됩니다. 010-0000-0000 모양으로 바뀝니다.'],
@@ -4389,7 +4390,7 @@ function parseStaffSheet(X, wb) {
     map.forEach(function (k, i) { if (k) o[k] = String(row[i] == null ? '' : row[i]).trim(); });
     if (!o.name) return;
     if (o.bd && !o.bdMonth) { var pbd = parseBdInput(o.bd.replace(/[년월]/g, '.').replace(/일/g, '')); if (pbd && !pbd.empty) { o.bdYear = pbd.y; o.bdMonth = String(pbd.m); o.bdDay = String(pbd.d); if (pbd.lunar) o.bdCal = '음력'; if (pbd.leap) o.bdLeap = 'Y'; } }
-    var x = { name: o.name, role: o.role || '', dept: o.dept || '', branch: o.branch || '', phone: o.phone ? formatPhone(o.phone) : '', office: o.office ? formatPhone(o.office) : '', email: o.email || '', memo: o.memo || '' };
+    var x = { name: o.name, role: roleName(o.role), dept: o.dept || '', branch: o.branch || '', phone: o.phone ? formatPhone(o.phone) : '', office: o.office ? formatPhone(o.office) : '', email: o.email || '', memo: o.memo || '' };
     var bm = parseInt(o.bdMonth, 10), bdd = parseInt(o.bdDay, 10);
     if (bm >= 1 && bm <= 12 && bdd >= 1 && bdd <= 31) { x.bdCal = /음/.test(o.bdCal || '') ? 'lunar' : 'solar'; x.bdMonth = bm; x.bdDay = bdd; if (o.bdYear) x.bdYear = o.bdYear; x.bdLeap = x.bdCal === 'lunar' && /^(y|yes|o|예|윤|true|1)$/i.test(o.bdLeap || ''); }
     out.push(x);
@@ -4678,7 +4679,7 @@ function staffTable() {
   if (!list.length) return '<div class="empty"><strong>조건에 맞는 직원이 없습니다</strong><span>검색어나 직급을 바꿔 보세요.</span></div>';
   return '<div class="tablewrap"><table class="t ctab br-table staff-table"><thead><tr><th>직급</th><th>이름</th><th>사업단·지사</th><th>지점</th><th>휴대폰</th><th>생일</th><th>사무실</th><th>이메일</th><th>메모</th></tr></thead><tbody>' + list.map(function (x) {
     var nb = hasBirthday(x) ? nextBirthday(x) : null, armed = ui.armed === 'delK:' + x.id;
-    return '<tr class="row-dbl" data-dbl="staff:' + x.id + '" tabindex="0" title="두 번 클릭하면 상세 보기·수정"><td>' + (x.role ? '<span class="chip' + (x.role === '단장' || x.role === '지점장' ? ' ok-chip' : '') + '">' + esc(x.role) + '</span>' : '<span class="muted">–</span>') + '</td>' +
+    return '<tr class="row-dbl" data-dbl="staff:' + x.id + '" tabindex="0" title="두 번 클릭하면 상세 보기·수정"><td>' + (x.role ? '<span class="chip' + (x.role === '사업단장' || x.role === '지점장' ? ' ok-chip' : '') + '">' + esc(x.role) + '</span>' : '<span class="muted">–</span>') + '</td>' +
       '<td><b>' + esc(x.name || '이름 없음') + '</b></td>' +
       '<td>' + esc(x.dept || '–') + '</td>' +
       '<td>' + esc(x.branch || '–') + '</td>' +
@@ -7615,11 +7616,6 @@ function setField(el) {
   else if (scope === 'note') {
     var nc = custById(pid); if (!nc) return; var nt = (nc.notes || []).filter(function (x) { return x.id === id; })[0]; if (!nt) return;
     nt[k] = v; stampCustomer(nc);
-  } else if (scope === 'tmrole') {
-    var TRm = teamRoles(), tr0 = TRm[id] = TRm[id] || {}; tr0[k] = v;
-    if (k === 'r' && v === '팀장') tr0.lead = '';
-    if (k === 'r' && v !== '팀장') Object.keys(TRm).forEach(function (u) { if (TRm[u].lead === id) TRm[u].lead = ''; });
-    save(); render(); return;
   } else if (scope === 'claim') {
     var hc = claimById(pid, id); if (!hc) return; var cx9 = hc.x;
     if (k === 'req' || k === 'pay') v = parseWon(v);
@@ -8202,7 +8198,7 @@ function doAction(el) {
       break;
     case 'authView': ui.auth = id; cloud.msg = ''; break;
     case 'teamJoin': teamRpc('join_team', { p_code: String(ui.tmCode || '').trim(), p_my_name: teamMyName() }, function (d) { return (d && d.name ? d.name + ' 팀에' : '팀에') + ' 들어갔습니다'; }); return;
-    case 'teamCreate': teamRpc('create_team', { p_name: String(ui.tmName || '').trim(), p_my_name: teamMyName() }, function (d) { return '팀을 만들었습니다. 초대 코드 ' + (d && d.code || '') + '를 FC에게 알려 주세요'; }); return;
+    case 'teamCreate': teamRpc('create_team', { p_name: String(ui.tmName || '').trim(), p_my_name: teamMyName() }, function (d) { return '팀을 만들었습니다. 초대 코드 ' + (d && d.code || '') + '를 팀장에게 알려 주세요'; }); return;
     case 'teamRefresh': teamLoad(true); return;
     case 'teamCopy': try { navigator.clipboard.writeText(team.info.code).then(function () { toast('초대 코드를 복사했습니다'); }, function () { toast('복사하지 못했습니다. 코드를 직접 적어 주세요'); }); } catch (e) { toast('복사하지 못했습니다'); } return;
     case 'teamRotate': if (ui.armed !== 'tmRotate') { ui.armed = 'tmRotate'; keepArm = true; break; } ui.armed = null; teamRpc('rotate_team_code', { p_team: team.info.id }, function () { return '새 초대 코드를 만들었습니다'; }); return;
@@ -9511,7 +9507,7 @@ function startCloud(cfg) {
 }
 // ===== 팀(지점) — 초대 코드, 팀 공지(지점장만 작성), 지점현황(실적 숫자만) =====
 // 서버 표: teams · team_members · team_notices · team_stats (supabase_setup.sql 3단계). 고객 자료는 팀에 공유되지 않는다.
-// 지점장는 FC가 "실적 숫자 공유"를 켠 경우에만 그 FC의 합계(myTeamStats)를 본다.
+// 지점장은 FC가 "실적 숫자 공유"를 켠 경우에만 그 FC의 합계(myTeamStats)를 본다.
 var team = { loaded: false, loading: false, info: null, me: null, members: [], notices: [], stats: [], events: [], att: [], err: '', at: 0, pushTimer: null, lastPush: '' };
 function teamReset() { clearTimeout(team.pushTimer); team = { loaded: false, loading: false, info: null, me: null, members: [], notices: [], stats: [], events: [], att: [], err: '', at: 0, pushTimer: null, lastPush: '' }; }
 function teamJoinHint() { // 로그인했는데 팀이 없으면 지점 화면 위에 안내
@@ -9519,7 +9515,7 @@ function teamJoinHint() { // 로그인했는데 팀이 없으면 지점 화면 �
   if (!team.loaded) { teamLoad(); return ''; }
   if (team.info) return '';
   return '<section class="panel team-hint"><div class="row between"><h2>팀 공지 · 팀 일정 함께 쓰기</h2><button class="btn primary sm" data-act="goSettings" data-id="account">팀 설정으로</button></div>' +
-    '<p style="margin:0">지점장(지점장)이 팀을 만들고 초대 코드를 나눠 주면, 팀 공지와 팀 일정을 팀원 모두가 함께 보고 참석 여부도 각자 체크합니다. 팀 만들기와 초대 코드 입력은 설정 → 계정설정의 "팀" 칸에 있습니다.</p></section>';
+    '<p style="margin:0">지점장이 팀을 만들고 초대 코드를 나눠 주면, 팀 공지와 팀 일정을 팀원 모두가 함께 보고 참석 여부도 각자 체크합니다. 팀 만들기와 초대 코드 입력은 설정 → 계정설정의 "팀" 칸에 있습니다.</p></section>';
 }
 function teamOk() { return !!(cloud.on && cloud.client && cloud.user && !cloud.offline); }
 function teamErr(e) {
@@ -9600,23 +9596,23 @@ function teamSection() {
   var err = team.err ? '<div class="notice" role="alert">' + esc(team.err) + '</div>' : '', busy = team.busy ? ' disabled' : '';
   if (!team.info) {
     return '<section class="panel"><h2>팀</h2>' + err +
-      '<p style="margin:0 0 10px">지점장이 팀을 만들고 초대 코드를 팀장·FC에게 알려 주세요. 팀에 들어가면 <b>팀 공지</b>를 함께 보고, 원하면 <b>실적 숫자</b>(고객 수·제안·성사 같은 합계)를 지점장에게 공유합니다. 고객 이름·연락처·계약 내용은 공유되지 않습니다.</p>' +
-      '<div class="team-forms"><div class="team-form"><h3>초대 코드로 들어가기 <small class="muted">FC</small></h3><div class="row">' + f('ui', 'tmCode', ui.tmCode || '', { ph: '예: 2VFDPQ', aria: '초대 코드' }) +
+      '<p style="margin:0 0 10px">지점장이 팀을 만들고 초대 코드를 팀장들에게 알려 주세요. 팀에 들어가면 <b>팀 공지</b>를 함께 보고, 원하면 <b>실적 숫자</b>(고객 수·제안·성사 같은 합계)를 지점장에게 공유합니다. 고객 이름·연락처·계약 내용은 공유되지 않습니다.</p>' +
+      '<div class="team-forms"><div class="team-form"><h3>초대 코드로 들어가기 <small class="muted">팀장</small></h3><div class="row">' + f('ui', 'tmCode', ui.tmCode || '', { ph: '예: 2VFDPQ', aria: '초대 코드' }) +
       '<button class="btn primary" data-act="teamJoin"' + busy + '>들어가기</button></div></div>' +
       '<div class="team-form"><h3>새 팀 만들기 <small class="muted">지점장</small></h3><div class="row">' + f('ui', 'tmName', ui.tmName || '', { ph: '예: 일산지점', aria: '팀 이름' }) +
-      '<button class="btn" data-act="teamCreate"' + busy + '>만들기</button></div><p class="muted" style="margin:6px 0 0">만든 사람이 지점장가 됩니다. 한 계정은 한 팀에만 들어갈 수 있습니다.</p></div></div></section>';
+      '<button class="btn" data-act="teamCreate"' + busy + '>만들기</button></div><p class="muted" style="margin:6px 0 0">만든 사람이 지점장이 됩니다. 한 계정은 한 팀에만 들어갈 수 있습니다.</p></div></div></section>';
   }
   var mgr = team.info.role === 'manager', me = team.me || {};
   var rows = team.members.map(function (m) {
     var isMe = m.user_id === cloud.user.id, arm = 'tmKick:' + m.user_id;
-    return '<li class="row between"><span>' + esc(m.name || '이름 없음') + (isMe ? ' <small class="muted">(나)</small>' : '') + ' <span class="chip' + (m.role === 'manager' ? ' warn' : '') + '">' + teamRoleOf(m) + '</span>' + (mgr && m.role === 'member' && teamRoleOf(m) === 'FC' && teamLeadOf(m) ? ' <small class="muted">' + esc(teamLeadName(teamLeadOf(m))) + ' 팀장 팀</small>' : '') +
+    return '<li class="row between"><span>' + esc(m.name || '이름 없음') + (isMe ? ' <small class="muted">(나)</small>' : '') + ' <span class="chip' + (m.role === 'manager' ? ' warn' : '') + '">' + teamRoleOf(m) + '</span>' +
       (m.role === 'member' ? ' <small class="muted">' + (m.share_stats ? '실적 공유 중' : '실적 비공유') + '</small>' : '') + '</span>' +
       (mgr && !isMe ? '<button class="btn ghost sm' + (ui.armed === arm ? ' danger armed' : '') + '" data-act="teamKick" data-id="' + attr(m.user_id) + '">' + (ui.armed === arm ? '한 번 더 누르면 내보내기' : '내보내기') + '</button>' : '') + '</li>';
   }).join('');
-  return '<section class="panel"><div class="row between"><h2>팀 · ' + esc(team.info.name) + ' <span class="chip' + (mgr ? ' warn' : '') + '">' + (mgr ? '지점장' : 'FC') + '</span></h2><button class="btn sm" data-act="teamRefresh"' + busy + '>새로 고침</button></div>' + err +
+  return '<section class="panel"><div class="row between"><h2>팀 · ' + esc(team.info.name) + ' <span class="chip' + (mgr ? ' warn' : '') + '">' + (mgr ? '지점장' : '팀장') + '</span></h2><button class="btn sm" data-act="teamRefresh"' + busy + '>새로 고침</button></div>' + err +
     (mgr ? '<div class="team-code"><span class="muted">초대 코드</span><b class="num">' + esc(team.info.code) + '</b><button class="btn sm" data-act="teamCopy">복사</button>' +
       '<button class="btn ghost sm' + (ui.armed === 'tmRotate' ? ' danger armed' : '') + '" data-act="teamRotate"' + busy + '>' + (ui.armed === 'tmRotate' ? '한 번 더 누르면 새 코드 (예전 코드는 막힘)' : '새 코드 만들기') + '</button></div>' +
-      '<p class="muted" style="margin:6px 0 10px">FC에게 이 코드를 알려 주면 설정 → 계정설정 → 팀에서 코드를 넣고 들어옵니다. 팀 공지는 지점 → 공지사항에서 올리고, FC 실적은 지점 → 지점현황에서 봅니다.</p>'
+      '<p class="muted" style="margin:6px 0 10px">팀장에게 이 코드를 알려 주면 설정 → 계정설정 → 팀에서 코드를 넣고 들어옵니다. 팀 공지는 지점 → 공지사항에서 올리고, 팀장 실적은 지점 → 지점현황에서 봅니다.</p>'
       : '<div class="field" style="margin:4px 0 10px"><span>지점장에게 실적 숫자 공유 <small class="muted">고객 수, 이번 달 상담·제안·성사, 갱신 예정, 할 일 건수만. 고객 이름·연락처는 안 보냅니다.</small></span>' +
         '<span class="seg seg-f"><button type="button" class="seg-btn' + (me.share_stats ? ' on' : '') + '" data-act="teamShare" data-id="1"' + busy + '>공유</button><button type="button" class="seg-btn' + (!me.share_stats ? ' on' : '') + '" data-act="teamShare" data-id=""' + busy + '>안 함</button></span></div>') +
     '<h3 class="sub-h">구성원 ' + team.members.length + '명</h3><ul class="team-list">' + rows + '</ul>' +
@@ -9658,7 +9654,7 @@ function teamNoticeSection() {
   }).join('');
   return '<section class="panel team-notices"><div class="row between"><h2>팀 공지 · ' + esc(team.info.name) + ' <span class="muted num">' + list.length + '건' + (unread ? ' · 안 읽음 ' + unread : '') + '</span></h2>' +
     (mgr && !ui.tnEdit ? '<button class="btn primary sm" data-act="tnNew">+ 팀 공지</button>' : '') + '</div>' + (team.err ? '<div class="notice" role="alert">' + esc(team.err) + '</div>' : '') + form +
-    (cards ? '<div class="nt-list">' + cards + '</div>' : '<p class="muted" style="margin:0">' + (mgr ? '"+ 팀 공지"로 올리면 팀원 모두의 공지 화면에 보입니다.' : '아직 지점장가 올린 팀 공지가 없습니다.') + '</p>') + '</section>';
+    (cards ? '<div class="nt-list">' + cards + '</div>' : '<p class="muted" style="margin:0">' + (mgr ? '"+ 팀 공지"로 올리면 팀원 모두의 공지 화면에 보입니다.' : '아직 지점장이 올린 팀 공지가 없습니다.') + '</p>') + '</section>';
 }
 function teamStatsPanel() {
   if (!teamOk()) return '<section class="panel"><div class="empty"><strong>인터넷에 연결된 로그인 상태에서만 볼 수 있습니다</strong></div></section>';
@@ -9679,38 +9675,23 @@ function teamStatsPanel() {
   var dataOf = function (m) { var st = byU[m.user_id], d = st && st.data; return { st: st, d: d, old: d && d.month !== mm }; };
   var addTo = function (o, m) { var x = dataOf(m); if (x.d && !x.old) { o.n++; KEYS.forEach(function (k) { o[k] += num(x.d[k]); }); } };
   members.forEach(function (m) { var x = dataOf(m); if (x.d && !x.old) shared++; addTo(sum, m); });
-  var leaders = members.filter(function (m) { return teamRoleOf(m) === '팀장'; }).sort(function (a, b) { return byName(a, b); });
-  var roleSel = function (m) { return '<select data-scope="tmrole" data-k="r" data-id="' + attr(m.user_id) + '" aria-label="' + attr((m.name || '') + ' 직급') + '">' + [['FC', 'FC'], ['팀장', '팀장']].map(function (o) { return '<option value="' + o[0] + '"' + (teamRoleOf(m) === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select>'; };
-  var leadSel = function (m) { return '<select data-scope="tmrole" data-k="lead" data-id="' + attr(m.user_id) + '" aria-label="' + attr((m.name || '') + ' 소속 팀장') + '"><option value="">팀장 없음</option>' + leaders.map(function (l) { return '<option value="' + attr(l.user_id) + '"' + (teamLeadOf(m) === l.user_id ? ' selected' : '') + '>' + esc(l.name || '이름 없음') + ' 팀장</option>'; }).join('') + '</select>'; };
+  var row = function (m) { var x = dataOf(m);
+    return '<tr><td><b>' + esc(m.name || '이름 없음') + '</b>' + (!m.share_stats ? ' <small class="muted">비공유</small>' : '') + '</td>' + cells(x.d, x.old) + '<td class="muted num">' + (x.st ? esc(offAtText(x.st.updated_at).slice(5)) : '') + '</td></tr>'; };
   var cells = function (d, old) { var c = function (k) { return d ? '<td class="r num">' + (old && /^(notes|props|won)$/.test(k) ? '<span class="muted">-</span>' : num(d[k])) + '</td>' : '<td class="r muted">-</td>'; };
     return c('customers') + c('notes') + c('props') + c('won') + (d ? '<td class="r num">' + (num(d.props) && !old ? Math.round(num(d.won) / num(d.props) * 100) + '%' : '-') + '</td>' : '<td class="r muted">-</td>') + c('renew') + c('tasksLate'); };
-  var row = function (m, sub) { var x = dataOf(m), isL = teamRoleOf(m) === '팀장';
-    return '<tr class="' + (isL ? 'br-lead' : sub ? 'br-sub' : '') + '"><td>' + (sub ? '<span class="br-ind" aria-hidden="true">└</span> ' : '') + '<b>' + esc(m.name || '이름 없음') + '</b>' + (!m.share_stats ? ' <small class="muted">비공유</small>' : '') + '</td>' +
-      '<td>' + roleSel(m) + '</td><td>' + (isL ? '<span class="muted">–</span>' : leadSel(m)) + '</td>' + cells(x.d, x.old) + '<td class="muted num">' + (x.st ? esc(offAtText(x.st.updated_at).slice(5)) : '') + '</td></tr>'; };
-  var subRow = function (label, o) { return '<tr class="br-total"><td colspan="3">' + label + ' <small class="muted">공유 ' + o.n + '명</small></td>' + cells(o, false) + '<td></td></tr>'; };
-  var body = '';
-  leaders.forEach(function (l) {
-    var fcs = members.filter(function (m) { return teamRoleOf(m) === 'FC' && teamLeadOf(m) === l.user_id; }).sort(byName), g = zero();
-    addTo(g, l); fcs.forEach(function (m) { addTo(g, m); });
-    body += row(l, false) + fcs.map(function (m) { return row(m, true); }).join('') + subRow(esc(l.name || '팀장') + ' 팀 합계 (' + (fcs.length + 1) + '명)', g);
-  });
-  var rest = members.filter(function (m) { return teamRoleOf(m) === 'FC' && !teamLeadOf(m); }).sort(byName);
-  if (rest.length) body += (leaders.length ? '<tr class="br-group"><td colspan="13">팀장 없이 지점장 바로 아래 FC</td></tr>' : '') + rest.map(function (m) { return row(m, false); }).join('');
-  if (members.length) body += subRow('지점 전체 합계 (' + members.length + '명)', sum);
+  var body = members.slice().sort(byName).map(row).join('');
+  if (members.length) body += '<tr class="br-total"><td>지점 전체 합계 (팀장 ' + members.length + '명) <small class="muted">공유 ' + sum.n + '명</small></td>' + cells(sum, false) + '<td></td></tr>';
   var kp = function (k, v, u, tone) { return '<div class="kpi' + (tone && v ? ' ' + tone : '') + '" style="cursor:default"><span class="k">' + k + '</span><span class="v num">' + v + '<small>' + u + '</small></span></div>'; };
-  var nFC = members.length - leaders.length;
-  return '<div class="kpis">' + kp('팀장 · FC', leaders.length + ' · ' + nFC, '명') + kp('공유 중', shared + ' / ' + members.length, '명') + kp('이번 달 제안', sum.props, '건') + kp('이번 달 성사', sum.won, '건', 'warn') + kp('갱신 예정', sum.renew, '건') + kp('기한 지난 할 일', sum.tasksLate, '건', 'warn') + '</div>' +
+  var boss = (team.members.filter(function (m) { return m.role === 'manager'; })[0] || {}).name || '';
+  return '<div class="kpis">' + kp('팀장', members.length, '명') + kp('공유 중', shared + ' / ' + members.length, '명') + kp('이번 달 제안', sum.props, '건') + kp('이번 달 성사', sum.won, '건', 'warn') + kp('갱신 예정', sum.renew, '건') + kp('기한 지난 할 일', sum.tasksLate, '건', 'warn') + '</div>' +
     '<section class="panel"><div class="row between"><h2>지점현황 · ' + esc(team.info.name) + '</h2><button class="btn sm" data-act="teamRefresh">새로 고침</button></div>' +
-    '<p class="br-tree muted" style="margin:0"><b>지점장</b> ' + esc((team.members.filter(function (m) { return m.role === 'manager'; })[0] || {}).name || '') + ' → 팀장 ' + leaders.length + '명 → FC ' + nFC + '명</p>' +
-    (members.length ? '<div class="tablewrap"><table class="t ctab br-table"><thead><tr><th>이름</th><th>직급</th><th>소속 팀장</th><th class="r">고객</th><th class="r">이번 달 상담</th><th class="r">제안</th><th class="r">성사</th><th class="r">성사율</th><th class="r">갱신 예정</th><th class="r">기한 지난 할 일</th><th>마지막 반영</th></tr></thead><tbody>' + body + '</tbody></table></div>'
-      : '<div class="empty"><strong>아직 들어온 팀장·FC가 없습니다</strong><span>설정 → 계정설정 → 팀의 초대 코드를 알려 주세요.</span></div>') +
-    '<p class="muted" style="margin:0">직급(팀장·FC)과 소속 팀장은 지점장이 이 표에서 정하며, 지점장 계정에만 저장됩니다(팀장·FC 화면에는 아직 표시되지 않음). 실적 숫자는 본인이 "실적 숫자 공유"를 켠 경우에만 보이고, 앱을 쓸 때마다 자동으로 반영됩니다. 고객 이름·연락처·계약 내용은 지점장에게도 보이지 않습니다. 지난달 숫자가 그대로인 사람은 이번 달에 아직 앱을 열지 않은 것입니다(-로 표시).</p></section>';
+    '<p class="br-tree muted" style="margin:0"><b>지점장</b> ' + esc(boss) + ' → 팀장 ' + members.length + '명</p>' +
+    (members.length ? '<div class="tablewrap"><table class="t ctab br-table"><thead><tr><th>팀장</th><th class="r">고객</th><th class="r">이번 달 상담</th><th class="r">제안</th><th class="r">성사</th><th class="r">성사율</th><th class="r">갱신 예정</th><th class="r">기한 지난 할 일</th><th>마지막 반영</th></tr></thead><tbody>' + body + '</tbody></table></div>'
+      : '<div class="empty"><strong>아직 들어온 팀장이 없습니다</strong><span>설정 → 계정설정 → 팀의 초대 코드를 알려 주세요.</span></div>') +
+    '<p class="muted" style="margin:0">조직은 사업단장 &gt; 지점장 &gt; 팀장입니다(총무는 실적 표에 넣지 않음). 실적 숫자는 팀장 본인이 "실적 숫자 공유"를 켠 경우에만 보이고, 앱을 쓸 때마다 자동으로 반영됩니다. 고객 이름·연락처·계약 내용은 지점장에게도 보이지 않습니다. 지난달 숫자가 그대로인 사람은 이번 달에 아직 앱을 열지 않은 것입니다(-로 표시).</p></section>';
 }
-// 지점장 아래 팀장·FC 구분 (2026-11-05): 서버 직급은 지점장(manager)·구성원(member) 그대로, 팀장 지정·소속 팀장은 지점장 설정(settings.teamRoles)에 저장
-function teamRoles() { var s = store.settings; return s.teamRoles = s.teamRoles || {}; }
-function teamRoleOf(m) { if (!m) return ''; if (m.role === 'manager') return '지점장'; var r = teamRoles()[m.user_id]; return r && r.r === '팀장' ? '팀장' : 'FC'; }
-function teamLeadOf(m) { var r = teamRoles()[m.user_id], l = r && r.lead; if (!l) return ''; var lm = (team.members || []).filter(function (x) { return x.user_id === l; })[0]; return lm && teamRoleOf(lm) === '팀장' ? l : ''; }
-function teamLeadName(uid) { var lm = (team.members || []).filter(function (x) { return x.user_id === uid; })[0]; return lm ? lm.name || '이름 없음' : ''; }
+// 지점 구성원 직급 (2026-11-07): 지점장(manager) 아래는 모두 팀장(member). 예전의 팀장·FC 나누기(settings.teamRoles)는 쓰지 않는다.
+function teamRoleOf(m) { if (!m) return ''; return m.role === 'manager' ? '지점장' : '팀장'; }
 // ===== 오프라인 모드 =====
 // 로그인 상태에서 인터넷이 끊겨도 계속 쓴다. 자료 사본을 이 기기(IndexedDB)에 두고, 연결되면 못 올린 것만 서버에 올린다.
 // 사본 = { uid, email, meta, store(JSON), cache(JSON: 서버에 올라간 상태), at }. store와 cache가 다른 고객·설정이 '올릴 것'.
