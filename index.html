@@ -7695,7 +7695,7 @@ function learnAlias(raw, code) {
 var CHANGING_ACTS = ['addPolicy', 'addCov', 'delCov', 'doPaste', 'addAdd', 'delAdd', 'fillShort', 'snapshot', 'loadProd', 'pdfAdd'];
 function doAction(el) {
   var act = el.dataset.act, id = el.dataset.id;
-  if (!el.contains(document.activeElement)) commitActive();
+  if (!(el.contains && el.contains(document.activeElement))) commitActive(); // 검색 결과 등은 화면 요소가 아닌 객체로 부름
   var c = cur();
   var keepArm = false;
   if (ui.setMenu && ['setTheme', 'setZoom', 'setMotion', 'setMenu'].indexOf(act) < 0) ui.setMenu = false;
