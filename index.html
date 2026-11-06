@@ -2588,10 +2588,10 @@ function licDocText() { var L = licList().filter(function (x) { return x.doc && 
 function licHas(x) { return !!(x.img || x.pdf || x.imgPath || x.pdfPath); }
 function licImgBlock(x) {
   var fid = 'licImg-' + x.id, armI = ui.armed === 'licImgDel:' + x.id, has = licHas(x), busy = ui.licBusy === x.id;
-  var thumb = x.img ? '<img src="' + attr(x.img) + '" alt="' + attr((x.kind || '라이선스') + (x.pdf ? ' PDF 1쪽' : ' 이미지')) + '">' : x.imgPath ? '<span class="lic-pdf-ico">…</span>' : '<span class="lic-pdf-ico">PDF</span>';
-  return '<div class="lic-img">' + (has ? '<button type="button" class="lic-thumb" data-act="licImgView" data-id="' + x.id + '" title="크게 보기">' + thumb + (x.pdf ? '<span class="lic-badge">PDF</span>' : '') + '</button>' :
+  var thumb = x.img ? '<img src="' + attr(x.img) + '" alt="' + attr((x.kind || '라이선스') + (x.pdf || x.pdfPath ? ' PDF 1쪽' : ' 이미지')) + '">' : x.imgPath ? '<span class="lic-pdf-ico">…</span>' : '<span class="lic-pdf-ico">PDF</span>';
+  return '<div class="lic-img">' + (has ? '<button type="button" class="lic-thumb" data-act="licImgView" data-id="' + x.id + '" title="크게 보기">' + thumb + (x.pdf || x.pdfPath ? '<span class="lic-badge">PDF</span>' : '') + '</button>' :
     '<label class="lic-thumb lic-empty" for="' + fid + '"><b>자격증 이미지·PDF</b><span>' + (busy ? '파일 읽는 중…' : '눌러서 사진·스캔 파일이나 PDF 고르기') + '</span></label>') +
-    '<div class="lic-img-side"><span class="muted">' + (busy ? '파일을 읽는 중입니다…' : has ? (x.pdf ? 'PDF 파일' + (x.pdfName ? ' ' + esc(x.pdfName) : '') : '등록증·자격증 이미지') + (x.imgAt ? ' (' + esc(x.imgAt) + ' 등록)' : '') + '. 누르면 크게 보고 PDF로 내려받을 수 있습니다.' : '자격증·등록증을 사진으로 찍거나 스캔한 이미지·PDF를 올려 두세요. 큰 사진은 자동으로 줄여 저장합니다.') + '</span>' +
+    '<div class="lic-img-side"><span class="muted">' + (busy ? '파일을 읽는 중입니다…' : has ? (x.pdf || x.pdfPath ? 'PDF 파일' + (x.pdfName ? ' ' + esc(x.pdfName) : '') : '등록증·자격증 이미지') + (x.imgAt ? ' (' + esc(x.imgAt) + ' 등록)' : '') + '. 누르면 크게 보고 PDF로 내려받을 수 있습니다.' : '자격증·등록증을 사진으로 찍거나 스캔한 이미지·PDF를 올려 두세요. 큰 사진은 자동으로 줄여 저장합니다.') + '</span>' +
     '<div class="row" style="gap:6px;flex-wrap:wrap"><label class="btn sm' + (has ? '' : ' primary') + '" for="' + fid + '">' + (has ? '파일 바꾸기' : '이미지·PDF 올리기') + '</label><input type="file" id="' + fid + '" accept="image/*,application/pdf,.pdf" data-kind="licimg" data-id="' + x.id + '" hidden>' +
     (has ? '<button class="btn sm danger' + (armI ? ' armed' : '') + '" data-act="licImgDel" data-id="' + x.id + '">' + (armI ? '한 번 더 누르면 파일 삭제' : '파일 삭제') + '</button>' : '') + '</div></div></div>';
 }
@@ -2651,6 +2651,7 @@ function licPdfDown(lid) {
   var x = licList().filter(function (y) { return y.id === lid; })[0]; if (!x || !licHas(x)) { toast('먼저 이미지나 PDF를 올리세요'); return; }
   var name = ((x.kind || '라이선스') + (x.no ? '_' + x.no : '')).replace(/[\\/:*?"<>|\s]+/g, '_') + '.pdf';
   if (x.pdf) { offerFile(name, new Blob([dataUrlBytes(x.pdf)], { type: 'application/pdf' })); return; }
+  if (x.pdfPath) { toast('PDF 원본을 받는 중입니다…'); fileNeed(x, 'pdf', 'pdfPath', function (d) { if (d) offerFile(name, new Blob([dataUrlBytes(d)], { type: 'application/pdf' })); else toast('PDF를 받지 못했습니다. 인터넷 연결을 확인하고 다시 눌러 주세요'); }); return; }
   if (!x.img) { toast(x.imgPath || x.pdfPath ? '파일을 아직 불러오는 중입니다. 잠시 뒤 다시 눌러 주세요' : '올린 파일이 없습니다'); return; }
   jpegToPdf(x.img).then(function (blob) { offerFile(name, blob); }).catch(function (e) { toast('PDF를 만들지 못했습니다: ' + e.message); });
 }
@@ -2666,7 +2667,7 @@ function licensePanel() {
     (next ? '<span class="muted lic-next">다음: ' + esc(next.kind || '자격') + ' · ' + esc(next.renew.replace(/-/g, '.')) + ' (' + esc(licState(next).t.replace('다음 교육·갱신 ', '')) + ')</span>' : '') + '</div>';
   var cards = L.map(function (x) {
     var st = licState(x), has = licHas(x), fid = 'licImgW-' + x.id;
-    var thumb = has ? '<button type="button" class="lw-thumb" data-act="licImgView" data-id="' + x.id + '" title="크게 보기">' + (x.img ? '<img src="' + attr(x.img) + '" alt="' + attr((x.kind || '라이선스') + ' 사본') + '">' : x.imgPath ? '<span class="lic-pdf-ico">…</span>' : '<span class="lic-pdf-ico">PDF</span>') + (x.pdf ? '<span class="lic-badge">PDF</span>' : '') + '</button>'
+    var thumb = has ? '<button type="button" class="lw-thumb" data-act="licImgView" data-id="' + x.id + '" title="크게 보기">' + (x.img ? '<img src="' + attr(x.img) + '" alt="' + attr((x.kind || '라이선스') + ' 사본') + '">' : x.imgPath ? '<span class="lic-pdf-ico">…</span>' : '<span class="lic-pdf-ico">PDF</span>') + (x.pdf || x.pdfPath ? '<span class="lic-badge">PDF</span>' : '') + '</button>'
       : '<label class="lw-thumb lw-empty" for="' + fid + '" title="자격증 사진·PDF 올리기">' + (ui.licBusy === x.id ? '읽는 중…' : '＋ 사진·PDF') + '</label><input type="file" id="' + fid + '" accept="image/*,application/pdf,.pdf" data-kind="licimg" data-id="' + x.id + '" hidden>';
     return '<article class="lic-wallet lw-' + st.k + '" data-dbl="lic:' + x.id + '" tabindex="0">' + thumb +
       '<div class="lw-body"><b class="lw-kind">' + esc(x.kind || '자격 종류 미입력') + '</b>' +
@@ -4877,8 +4878,8 @@ function renderAllPolicies() {
   });
   var sum = list.reduce(function (t, x) { return t + num(x.p.premium); }, 0), custN = {}; list.forEach(function (x) { custN[x.c.id] = 1; });
   var sortTh = function (key, label, cls) { var on = srt === key; return '<th class="' + (cls || '') + '"><button class="th-sort' + (on ? ' on' : '') + '" data-act="polSort" data-id="' + key + '">' + label + (on ? ' ▾' : '') + '</button></th>'; };
-  var prev = null;
-  var rows = list.map(function (x) {
+  var prev = null, ppg = pageCut(list, 'polLim', 100); // 계약이 많으면 100건씩 (2026-11-06, 수백 건이면 그리기가 느려짐)
+  var rows = ppg.shown.map(function (x) {
     var p = x.p, tags = [], pay = polPay(p), nx = polNext(p), ct = insContactOf(p.insurer), k = polKind(p);
     if (p.renewable) tags.push('<span class="chip">갱신형</span>');
     if (num(p.silsonGen)) tags.push('<span class="chip' + (num(p.silsonGen) <= 2 ? ' warn' : '') + '">실손 ' + num(p.silsonGen) + '세대</span>');
@@ -4896,7 +4897,7 @@ function renderAllPolicies() {
       '<td class="num" style="white-space:nowrap" data-l="계약일">' + esc(p.start || '–') + '</td><td class="r num" data-l="담보">' + p.coverages.length + '개</td></tr>';
   }).join('');
   return '<p class="muted ins-sum num">' + list.length + '건 · 고객 ' + Object.keys(custN).length + '명 · 월 보험료 합계 <b>' + fmtWon(sum) + '</b></p>' +
-    (rows ? '<div class="tablewrap"><table class="t ctab pol-table"><thead><tr>' + sortTh('cust', '고객') + sortTh('ins', '보험사') + '<th>상품</th>' + sortTh('prem', '월보험료', 'r') + '<th>납입</th>' + sortTh('next', '다가오는 일') + '<th>구분</th>' + sortTh('start', '계약일') + '<th class="r">담보</th></tr></thead><tbody>' + rows + '</tbody></table></div>' : '<div class="empty"><strong>조건에 맞는 계약이 없습니다</strong>' + (ui.polF || ui.insFilter || ui.insKind || ui.iq ? '<button class="btn" data-act="polReset">조건 지우기</button>' : '') + '</div>');
+    (rows ? '<div class="tablewrap"><table class="t ctab pol-table"><thead><tr>' + sortTh('cust', '고객') + sortTh('ins', '보험사') + '<th>상품</th>' + sortTh('prem', '월보험료', 'r') + '<th>납입</th>' + sortTh('next', '다가오는 일') + '<th>구분</th>' + sortTh('start', '계약일') + '<th class="r">담보</th></tr></thead><tbody>' + rows + '</tbody></table></div>' + ppg.more : '<div class="empty"><strong>조건에 맞는 계약이 없습니다</strong>' + (ui.polF || ui.insFilter || ui.insKind || ui.iq ? '<button class="btn" data-act="polReset">조건 지우기</button>' : '') + '</div>');
 }
 function polKpis() {
   var all = allPols().filter(function (x) { return polLive(x.p); }), prem = 0, kind = { '생명': 0, '손해': 0 }, soon = 0, sil = 0, nocov = 0;
@@ -7252,7 +7253,7 @@ function autoFold() {
   main.querySelectorAll('table.t').forEach(function (tb) {
     if (tb.closest('.dmodal, details, .gd-table, .auto-guide') || tb.classList.contains('gd-table') || tb.classList.contains('auto-guide') || tb.classList.contains('no-fold')) return;
     var body = tb.tBodies[0]; if (!body) return;
-    var w0 = tb.closest('.tablewrap') || tb, n0 = w0.nextElementSibling; if (n0 && n0.classList.contains('more-btn')) return; // 자체 더보기·접기가 있는 표(생일·기념일 월별)는 두 번 접지 않음
+    var w0 = tb.closest('.tablewrap') || tb, n0 = w0.nextElementSibling; if (n0 && (n0.classList.contains('more-btn') || n0.classList.contains('page-more'))) return; // 자체 더보기·접기가 있는 표(생일·기념일 월별)는 두 번 접지 않음
     var rows = [].slice.call(body.rows), mainRows = rows.filter(function (r) { return !/drv-detail|br-form/.test(r.className); });
     var key = base + '|t' + (idx++);
     if (mainRows.length <= AUTOFOLD_TABLE) return;
@@ -7263,7 +7264,7 @@ function autoFold() {
   // 카드·목록
   main.querySelectorAll('ul.wlist, .nt-list, .edu-list, .prod-list').forEach(function (ls) {
     if (ls.closest('.dmodal')) return;
-    var next = ls.nextElementSibling; if (next && next.classList.contains('more-btn')) return; // 자체 접기 있음
+    var next = ls.nextElementSibling; if (next && (next.classList.contains('more-btn') || next.classList.contains('page-more'))) return; // 자체 접기 있음
     var items = [].slice.call(ls.children).filter(function (c) { return !/org-month/.test(c.className); });
     var key = base + '|l' + (idx++);
     if (items.length <= AUTOFOLD_LIST) return;
@@ -8016,7 +8017,10 @@ function doAction(el) {
     case 'tgClear': ui.tgC = {}; ui.tgAge = ''; ui.tgG = ''; ui.tgAddr = ''; ui.tgProd = ''; ui.tgTag = ''; break;
     case 'tgCopy': { var tl = tgList() || []; var nums = tl.map(function (o) { return String(o.c.phone || '').trim(); }).filter(function (x) { return x.replace(/\D/g, ''); }); copyText(nums.join(', '), '번호 ' + nums.length + '개를 복사했습니다'); return; }
     case 'tgLog': { if (ui.armed !== 'tgLog') { ui.armed = 'tgLog'; keepArm = true; break; } var tl2 = tgList() || [], tx = String(ui.tgMsg || '').trim(); tl2.forEach(function (o) { o.c.notes = o.c.notes || []; o.c.notes.push({ id: uid(), date: today(), method: '문자', text: '안내 문자' + (tx ? ': ' + relTpl(tx, o.c).slice(0, 60) : ''), next: '', done: true }); stampCustomer(o.c); }); save(); toast(tl2.length + '명에게 연락 기록을 남겼습니다'); break; }
-    case 'licPdfOpen': { var lo = licList().filter(function (y) { return y.id === id; })[0]; if (!lo || !lo.pdf) return; var bu = URL.createObjectURL(new Blob([dataUrlBytes(lo.pdf)], { type: 'application/pdf' })); var w = window.open(bu, '_blank'); if (!w) { licPdfDown(id); } setTimeout(function () { URL.revokeObjectURL(bu); }, 60000); return; }
+    case 'licPdfOpen': { var lo = licList().filter(function (y) { return y.id === id; })[0]; if (!lo) return;
+      if (!lo.pdf && lo.pdfPath) { var pw = window.open('', '_blank'); if (pw) { try { pw.document.title = 'PDF 불러오는 중'; pw.document.body.innerHTML = '<p style="font-family:sans-serif;padding:24px">PDF를 불러오는 중입니다…</p>'; } catch (e) {} } toast('PDF 원본을 받는 중입니다…');
+        fileNeed(lo, 'pdf', 'pdfPath', function (d) { if (!d) { if (pw) pw.close(); toast('PDF를 받지 못했습니다. 인터넷 연결을 확인하고 다시 눌러 주세요'); return; } var bu2 = URL.createObjectURL(new Blob([dataUrlBytes(d)], { type: 'application/pdf' })); if (pw && !pw.closed) pw.location.href = bu2; else licPdfDown(id); setTimeout(function () { URL.revokeObjectURL(bu2); }, 60000); }); return; }
+      if (!lo.pdf) return; var bu = URL.createObjectURL(new Blob([dataUrlBytes(lo.pdf)], { type: 'application/pdf' })); var w = window.open(bu, '_blank'); if (!w) { licPdfDown(id); } setTimeout(function () { URL.revokeObjectURL(bu); }, 60000); return; }
     case 'licImgView': ui.modal = { kind: 'licimg', id: id }; ui.armed = null; break;
     case 'licImgDel': { var ik = 'licImgDel:' + id; if (ui.armed !== ik) { ui.armed = ik; keepArm = true; break; } var li = licList().filter(function (y) { return y.id === id; })[0]; if (li) { li.img = ''; li.pdf = ''; li.pdfName = ''; li.imgAt = ''; save(); toast('라이선스 파일을 지웠습니다'); } break; }
     case 'licAdd': { var nl = licNew(''); licList().push(nl); save(); ui.modal = { kind: 'lic', id: nl.id, isNew: true }; break; }
@@ -8424,17 +8428,19 @@ function fileCleanup(S) {
   return cloud.client.storage.from(FILE_BUCKET).remove(gone).then(function (r) { if (!r || !r.error) gone.forEach(function (p) { delete site.fileUp[p]; delete fileMem[p]; offDel('file:' + p); }); }).catch(function () {});
 }
 // 불러온 설정에 경로만 있는 파일을 채운다: 메모리 → 이 기기 사본 → 서버 순
-function fileHydrate(S, server) {
+function fileHydrate(S, server, want) { // want: 지금 꼭 받을 경로(PDF 원본은 볼 때만 받음)
   fileState();
   fileSlots(S).forEach(function (f) {
     var p = f.o[f.pk], sig = f.o[f.sk]; if (!p) return;
     if (server) site.fileUp[p] = sig;
-    if (f.o[f.k]) return;
-    var m = fileMem[p]; if (m && m.sig === sig) { f.o[f.k] = m.data; return; }
+    if (f.o[f.k]) { fileWaitDone(p, f.o[f.k]); return; }
+    var m = fileMem[p]; if (m && m.sig === sig) { f.o[f.k] = m.data; fileWaitDone(p, m.data); return; }
+    if (want && want !== p) return;
     site.fileMiss[p] = 1;
     offGet('file:' + p).then(function (rec) {
       if (rec && rec.sig === sig && rec.data) return rec.data;
       if (!cloud.on || !cloud.client || cloud.offline) return null;
+      if (f.k === 'pdf' && want !== p) return null; // 라이선스 PDF 원본은 '크게 보기'에서 열거나 받을 때만 내려받는다
       return cloud.client.storage.from(FILE_BUCKET).download(p).then(function (r) {
         if (!r || r.error || !r.data) return null;
         return new Promise(function (ok) { var rd = new FileReader(); rd.onload = function () { ok(String(rd.result || '')); }; rd.onerror = function () { ok(null); }; var bt = r.data.type && !/octet|multipart/.test(r.data.type) ? r.data.type : f.k === 'pdf' ? 'application/pdf' : 'image/jpeg'; rd.readAsDataURL(new Blob([r.data], { type: bt })); });
@@ -8444,17 +8450,25 @@ function fileHydrate(S, server) {
         fileCachePut(p, fileSig(d), d); return d;
       });
     }).then(function (d) {
-      if (!d) return;
+      if (!d) { fileWaitDone(p, null); return; }
       var sg = fileSig(d); fileMem[p] = { sig: sg, data: d }; if (site.fileUp[p]) site.fileUp[p] = sg;
       delete site.fileMiss[p];
       // 지금 설정(그사이 바뀌었을 수도 있음)에서 같은 경로의 빈 칸만 채운다. 저장 대기 중인 수정이 없으면 "저장됨" 상태 유지
       var clean = site.cache && site.cache.settings === JSON.stringify(store.settings), hit = false;
       fileSlots(store.settings).forEach(function (g) { if (g.o[g.pk] === p && !g.o[g.k]) { g.o[g.k] = d; g.o[g.sk] = sg; hit = true; } });
+      fileWaitDone(p, d);
       if (!hit) return;
       if (clean) site.cache.settings = JSON.stringify(store.settings);
       offSaveSoon(); remoteRender(true);
-    }).catch(function () {});
+    }).catch(function () { fileWaitDone(p, null); });
   });
+}
+function fileWaitDone(p, d) { var w = site.fileWait && site.fileWait[p]; if (!w) return; delete site.fileWait[p]; w.forEach(function (cb) { try { cb(d); } catch (e) {} }); }
+function fileNeed(o, k, pk, cb) { // 메모리에 없는 파일(주로 PDF 원본)을 지금 받아서 cb(data|null)
+  if (o[k]) { cb(o[k]); return; }
+  var p = o[pk]; if (!p || !cloud.on) { cb(null); return; }
+  site.fileWait = site.fileWait || {}; var first = !site.fileWait[p]; (site.fileWait[p] = site.fileWait[p] || []).push(cb);
+  if (first) fileHydrate(store.settings, false, p);
 }
 // 서버 모양으로 비교 (이미지 data URL 빼고)
 function fileServerForm(S) { var c = JSON.parse(JSON.stringify(S)); fileSlots(c).forEach(function (f) { if (f.o[f.pk]) f.o[f.k] = ''; }); return c; }
@@ -8724,9 +8738,9 @@ function detailModalHtml() {
     var lv = licList().filter(function (y) { return y.id === m.id; })[0]; if (!lv || !licHas(lv)) { ui.modal = null; return ''; }
     return '<div class="dmodal" role="dialog" aria-modal="true" aria-labelledby="dmTitle"><div class="dm-box dm-wide">' +
       '<div class="dm-head"><div><h2 id="dmTitle">' + esc(lv.kind || '라이선스') + '</h2>' + (lv.no ? '<div class="muted">' + esc(lv.no) + '</div>' : '') + '</div><button class="btn ghost sm" data-act="dmClose" aria-label="닫기">✕</button></div>' +
-      '<div class="dm-body">' + (lv.img ? '<img class="lic-big" src="' + attr(lv.img) + '" alt="' + attr((lv.kind || '라이선스') + (lv.pdf ? ' PDF 1쪽' : ' 이미지')) + '">' : '<div class="empty"><strong>미리보기를 만들지 못했습니다</strong><span>"PDF 열기"로 원본을 확인하세요.</span></div>') +
-      (lv.pdf ? '<p class="muted" style="margin:8px 0 0">PDF 1쪽 미리보기입니다. 전체는 "PDF 열기"로 확인하세요.</p>' : '') + '</div>' +
-      '<div class="dm-foot">' + (lv.pdf ? '<button class="btn" data-act="licPdfOpen" data-id="' + lv.id + '">PDF 열기</button>' : '') + '<button class="btn" data-act="licPdfDown" data-id="' + lv.id + '">PDF 다운</button><button class="btn primary" data-act="dmClose" style="margin-left:auto">닫기</button></div></div></div>';
+      '<div class="dm-body">' + (lv.img ? '<img class="lic-big" src="' + attr(lv.img) + '" alt="' + attr((lv.kind || '라이선스') + (lv.pdf || lv.pdfPath ? ' PDF 1쪽' : ' 이미지')) + '">' : '<div class="empty"><strong>미리보기를 만들지 못했습니다</strong><span>"PDF 열기"로 원본을 확인하세요.</span></div>') +
+      (lv.pdf || lv.pdfPath ? '<p class="muted" style="margin:8px 0 0">PDF 1쪽 미리보기입니다. 전체는 "PDF 열기"로 확인하세요.</p>' : '') + '</div>' +
+      '<div class="dm-foot">' + (lv.pdf || lv.pdfPath ? '<button class="btn" data-act="licPdfOpen" data-id="' + lv.id + '">PDF 열기</button>' : '') + '<button class="btn" data-act="licPdfDown" data-id="' + lv.id + '">PDF 다운</button><button class="btn primary" data-act="dmClose" style="margin-left:auto">닫기</button></div></div></div>';
   }
   if (m.kind === 'staff') {
     var x = store.settings.contacts.staff.filter(function (y) { return y.id === m.id; })[0]; if (!x) { ui.modal = null; return ''; }
@@ -9181,11 +9195,20 @@ function moveLocalExtra() {
 // ===== 계정 로그인 (Supabase) =====
 // 서버 주소와 공개 키를 여기에 넣으면 처음부터 로그인 화면이 뜬다. 비워 두면 첫 화면에서 입력받는다.
 // (공개 키는 웹페이지에 들어가도 되는 키입니다. 자료 보호는 서버의 접근 규칙(RLS)이 맡습니다.)
-var CLOUD_CONFIG = { url: 'https://vcwhoaqdrzrudfuovxuc.supabase.co', anonKey: 'sb_publishable_WnZ-L7PIeNZ2VQfpvvhlVA_6QBjtfvA' };
+var CLOUD_CONFIG = { url: 'https://zieatokesezsogzlbcus.supabase.co', anonKey: 'sb_publishable_QkaedEunOAr-rpb6c6G6sA_Qeyxbh7x' }; // 2026-11-06 서울(ap-northeast-2)로 옮김. 예전 파리 vcwhoaqdrzrudfuovxuc는 일시 정지(보관)
 // 로컬 테스트용: true면 로그인 없이 이 브라우저 저장으로만 동작한다. 인터넷에 올리기 전에 false로 되돌린다.
 var LOGIN_OFF = false;
 var CLOUD_CFG_KEY = 'fc-planner-cloud-config';
 var cloud = { on: false, client: null, user: null, recovery: false, busy: false, msg: '', msgKind: '', email: '' };
+// 다른 서버(예: 옮기기 전 파리 서버)에서 받은 로그인 정보는 지운다 — 서울 서버로 옮긴 뒤 만료 오류 대신 바로 로그인 화면 (2026-11-06)
+function dropForeignSession(url) {
+  try {
+    var raw = localStorage.getItem('fc-planner-auth'); if (!raw) return;
+    var t = (JSON.parse(raw) || {}).access_token || '', pl = t.split('.')[1]; if (!pl) return;
+    var iss = JSON.parse(decodeURIComponent(escape(atob(pl.replace(/-/g, '+').replace(/_/g, '/'))))).iss || '';
+    if (iss && iss.indexOf(String(url).replace(/\/$/, '')) !== 0) localStorage.removeItem('fc-planner-auth');
+  } catch (e) {}
+}
 function getCloudConfig() {
   if (CLOUD_CONFIG.url && CLOUD_CONFIG.anonKey) return { url: CLOUD_CONFIG.url, anonKey: CLOUD_CONFIG.anonKey, built: true };
   try { var c = JSON.parse(localStorage.getItem(CLOUD_CFG_KEY) || 'null'); if (c && c.url && c.anonKey) return c; } catch (e) {}
@@ -9396,10 +9419,10 @@ function enterCloud(user) {
   ui.auth = null; ui.booting = true; render();
   var seq = cloud.loadSeq = (cloud.loadSeq || 0) + 1;
   // 서버가 12초 넘게 답하지 않으면 끊긴 것으로 보고 이 기기 사본으로 연다(사본이 있을 때만)
-  var guard = new Promise(function (res, rej) { setTimeout(function () { offGet('copy:' + user.id).then(function (rec) { if (rec && offEnabled() && seq === cloud.loadSeq && ui.booting) { cloud.loadSeq++; rej({ message: 'timed out' }); } }); }, 12000); });
+  var guard = new Promise(function (res, rej) { setTimeout(function () { offGet('copy:' + user.id).then(function (rec) { if (offRecOk(rec) && offEnabled() && seq === cloud.loadSeq && ui.booting) { cloud.loadSeq++; rej({ message: 'timed out' }); } }); }, 12000); });
   Promise.race([loadCloud(seq), guard]).then(function () {
     // 오프라인 동안 이 기기에서 바꾼 것(서버에 못 올린 것)이 있으면 서버 자료 위에 덮어 놓고 바로 올린다
-    return offGet('copy:' + user.id).then(function (rec) { var p = rec ? offPending(rec) : null; if (p && p.n) offApply(p); return p ? p.n : 0; });
+    return offGet('copy:' + user.id).then(function (rec) { var p = offRecOk(rec) ? offPending(rec) : null; if (p && p.n) offApply(p); return p ? p.n : 0; });
   }).then(function (n) {
     site.on = true; cloud.offline = false; lastSaved = null; storageOk = true;
     offPut('last', user.id);
@@ -9424,6 +9447,7 @@ function startCloud(cfg) {
   var oerr = oauthReturnError(); if (oerr) { cloud.msg = oerr; cloud.msgKind = 'err'; }
   ui.booting = false; ui.auth = 'loading'; render();
   var slow = setTimeout(function () { if (ui.auth === 'loading' && navigator.onLine === false) { offBoot(); return; } if (ui.auth === 'loading') { ui.auth = 'login'; cloud.msg = '서버 응답이 늦습니다. 인터넷 연결을 확인하고 로그인해 보세요'; cloud.msgKind = 'err'; render(); } }, 10000);
+  dropForeignSession(cfg.url);
   cloud.client = window.supabase.createClient(cfg.url, cfg.anonKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, storageKey: 'fc-planner-auth', experimental: { passkey: true } } });
   cloud.client.auth.onAuthStateChange(function (ev) {
     if (ev === 'PASSWORD_RECOVERY') { cloud.recovery = true; ui.booting = false; ui.auth = 'newpw'; render(); }
@@ -9680,9 +9704,12 @@ function offSaveSoon() { if (!cloud.on || !cloud.user || !offEnabled()) return; 
 function offSaveNow() {
   clearTimeout(offTimer);
   if (!cloud.on || !cloud.user || !site.on || !offEnabled()) return Promise.resolve();
-  var u = cloud.user, rec = { uid: u.id, email: u.email || '', meta: u.user_metadata || {}, store: JSON.stringify(store), cache: JSON.stringify(site.cache), at: new Date().toISOString() };
+  var u = cloud.user, rec = { srv: offSrv(), uid: u.id, email: u.email || '', meta: u.user_metadata || {}, store: JSON.stringify(store), cache: JSON.stringify(site.cache), at: new Date().toISOString() };
   return offPut('copy:' + u.id, rec).then(function () { cloud.offAt = rec.at; });
 }
+// 사본은 만든 서버 주소와 같을 때만 쓴다 (2026-11-06 서울 서버로 옮김: 예전 파리 서버 사본은 무시)
+function offSrv() { var c = getCloudConfig(); return (c && c.url) || ''; }
+function offRecOk(rec) { return !!(rec && rec.srv && rec.srv === offSrv()); }
 function offPending(rec) {
   var out = { cust: {}, settings: null, n: 0 };
   try {
@@ -9714,7 +9741,7 @@ function offApply(p) {
 // 서버에 못 닿을 때: 이 기기 사본으로 연다
 function offEnter(user, rec0) {
   (rec0 ? Promise.resolve(rec0) : offGet('copy:' + user.id)).then(function (rec) {
-    if (!rec || !offEnabled()) {
+    if (!offRecOk(rec) || !offEnabled()) {
       cloud.on = false; site.on = false; ui.booting = false; ui.auth = 'login';
       cloud.msg = '인터넷에 연결되어 있지 않습니다. 이 기기에는 오프라인 사본이 없어서, 연결된 뒤 로그인해야 합니다'; cloud.msgKind = 'err'; render(); return;
     }
@@ -9727,7 +9754,7 @@ function offEnter(user, rec0) {
 }
 function offBoot() {
   offGet('last').then(function (uid) { return uid ? offGet('copy:' + uid) : null; }).then(function (rec) {
-    if (rec) offEnter({ id: rec.uid, email: rec.email, user_metadata: rec.meta || {} }, rec);
+    if (offRecOk(rec)) offEnter({ id: rec.uid, email: rec.email, user_metadata: rec.meta || {} }, rec);
     else { ui.booting = false; ui.auth = 'login'; cloud.msg = '인터넷에 연결되어 있지 않습니다. 이 기기에는 오프라인 사본이 없어서, 연결된 뒤 로그인해야 합니다'; cloud.msgKind = 'err'; render(); }
   });
 }
