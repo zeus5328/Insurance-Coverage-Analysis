@@ -1862,6 +1862,11 @@ html.reduce-motion *, html.reduce-motion *::before, html.reduce-motion *::after 
 
 @media (max-width: 760px) { .panel > .row.between:has(#prq) > .row { flex-wrap: nowrap !important; width: 100%; } .panel > .row.between:has(#prq) #prq { flex: 1 1 auto; min-width: 0; width: auto; } }
 .mo-table td { position: relative; } .mo-bar { position: absolute; left: 6px; bottom: 3px; height: 3px; width: calc((100% - 12px) * var(--w, 0) / 100); max-width: calc(100% - 12px); background: var(--accent); opacity: .45; border-radius: 2px; }
+.tax-months { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; margin-bottom: 8px; }
+.tax-months .field span { font-size: 12px; }
+@media (max-width: 760px) { .tax-months { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.tax-guide { margin: 0 0 8px; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; line-height: 1.55; }
+tr.on-row td { background: var(--accent-soft); }
 </style>
 </head>
 <body>
@@ -2730,6 +2735,7 @@ setInterval(function () { if (getThemeKey() === 'time') applyTheme(); }, 60000);
 function applyZoom() { var z = UI_ZOOM[zoomKeyNow()] || 1, de = document.documentElement; if (de.style.zoom !== String(z)) de.style.zoom = z === 1 ? '' : z; de.style.setProperty('--zf', String(z)); } // --zf: 화면 높이(vh) 기준 크기를 글자 크기 배율로 나눠 창이 화면 밖으로 넘치지 않게
 function render() {
   applyZoom(); applyTheme();
+  if (!ui.auth && !ui.booting && store && store.settings) { try { taxSeedEvents(); } catch (e) {} }
   var app = document.getElementById('app');
   if (ui.auth) {
     // 입력 중이던 값을 다시 그려도 지워지지 않게 보관
@@ -2762,7 +2768,7 @@ function render() {
 // ===== 화면 이동 (주소 # 으로 기억 → 뒤로가기 동작) =====
 var STEPS = [['info', '고객 정보'], ['policies', '계약 입력'], ['analysis', '보장분석'], ['plan', '정리·설계'], ['proposal', '제안서']];
 var SETTING_SUBS = [['me', '내정보'], ['account', '계정설정'], ['display', '화면설정'], ['data', '자료관리'], ['rules', '분석기준'], ['dict', '담보사전'], ['products', '상품관리']];
-var WORK_SUBS = [['home', '오늘'], ['calendar', '일정'], ['tasks', '할 일'], ['birthday', '생일'], ['anniv', '기념일'], ['gifts', '선물'], ['stats', '실적'], ['comm', '수수료']];
+var WORK_SUBS = [['home', '오늘'], ['calendar', '일정'], ['tasks', '할 일'], ['birthday', '생일'], ['anniv', '기념일'], ['gifts', '선물'], ['stats', '실적'], ['comm', '수수료'], ['tax', '세금']];
 var OFFICE_SUBS = [['news', '보험뉴스'], ['notice', '공지사항'], ['schedule', '지점일정'], ['staff', '직원정보'], ['branch', '지사·사업단']]; // 직원 생일은 업무 → 생일(직원)로 합침(2026-11-03)
 var OFFICE_TITLES = { sbd: '직원 생일' }; // 메뉴 이름은 짧게, 화면 제목은 그대로
 function officeSubs() { // 팀에 들어가 있으면 '지점현황', 사업단장이면 '사업단현황'을 '지사·사업단' 앞에 (2026-11-06, 11-07)
@@ -2814,7 +2820,7 @@ function applyHash() {
     ui.view = 'insurance'; ui.isub = 'all';
   } else if ((h === '' || h === '#') && store.settings.params.startView === 'office') {
     ui.view = 'office'; ui.osub = 'notice';
-  } else if ((m = h.match(/^#work(?:-(home|calendar|birthday|anniv|gifts|tasks|stats|comm|staff|branch))?$/)) || h === '#cust-gifts' || h === '#cust-todo' || h === '' || h === '#') {
+  } else if ((m = h.match(/^#work(?:-(home|calendar|birthday|anniv|gifts|tasks|stats|comm|tax|staff|branch))?$/)) || h === '#cust-gifts' || h === '#cust-todo' || h === '' || h === '#') {
     ui.view = 'work'; ui.wsub = (m && m[1]) || (h === '#cust-gifts' ? 'gifts' : 'home');
     if (ui.wsub === 'staff' || ui.wsub === 'branch') { ui.view = 'office'; ui.osub = ui.wsub; ui.wsub = 'home'; } // 예전 주소
   } else if ((m = h.match(/^#office(?:-(notice|news|schedule|edu|dine|staff|sbd|branch|team|org))?$/))) {
@@ -6981,7 +6987,7 @@ function annivModalBody(a) {
     lbl('메모', A('memo', a.memo, { type: 'textarea', ph: '예: 부부 함께 가입, 꽃 보내기' }), 'span2') + '</div>';
 }
 // ===== 업무 (오늘 · 일정 · 생일 · 기념일 · 할 일 · 실적) =====
-var EV_TYPES = ['상담', '방문', '연락', '교육', '회의', '개인', '기타'];
+var EV_TYPES = ['상담', '방문', '연락', '교육', '회의', '세무', '개인', '기타'];
 function calMonthOf() { var cm = ui.calMonth || today().slice(0, 7); return { y: Number(cm.slice(0, 4)), m: Number(cm.slice(5, 7)), key: cm }; }
 function custOptions(v) { return [['', '고객 선택 (선택)']].concat(store.customers.slice().sort(byName).map(function (c) { return [c.id, c.name || '이름 없음']; })); }
 function sangDate(c) { // 상령일: 생일에서 6개월이 지나면 보험나이가 한 살 오른다
@@ -7170,8 +7176,9 @@ function renderWork() {
   else if (sub === 'gifts') body = giftPanel();
   else if (sub === 'tasks') body = workTasks();
   else if (sub === 'comm') body = workComm();
+  else if (sub === 'tax') body = workTax();
   else body = workStats();
-  var title = sub === 'comm' ? '예상수수료' : WORK_SUBS.filter(function (x) { return x[0] === sub; })[0][1];
+  var title = sub === 'comm' ? '예상수수료' : sub === 'tax' ? '세금 · 종합소득세 예상' : WORK_SUBS.filter(function (x) { return x[0] === sub; })[0][1];
   var td = new Date(), wd = ['일', '월', '화', '수', '목', '금', '토'][td.getDay()];
   return '<section class="settings-page"><h1 class="page-title">' + (sub === 'home' ? '오늘 · ' + (td.getMonth() + 1) + '월 ' + td.getDate() + '일 (' + wd + ')' : title) + '</h1><div class="settings-body">' + body + '</div></section>';
 }
@@ -7384,6 +7391,170 @@ function workTasks() {
     })() +
     (done.length ? '<section class="panel"><div class="row between"><h2>완료 ' + done.length + '건</h2><button class="btn ghost sm' + (ui.armed === 'clearDone' ? ' danger armed' : '') + '" data-act="clearDoneTasks">' + (ui.armed === 'clearDone' ? '한 번 더 누르면 삭제' : '완료항목 삭제') + '</button></div><ul class="wlist tasks">' + done.slice(-30).reverse().map(row).join('') + '</ul></section>' : '');
 }
+// ===== 업무 → 세금 (종합소득세 예상, 2026-11-07) =====
+// 근거(2026-11 확인): 소득세법 제55조 기본세율(2023년 귀속부터, 2026년 귀속도 같음 — 2026.10 하위 구간 상향 개정안 발의, 통과 전),
+// 제129조 원천징수 3%(+지방소득세 0.3%), 제144조의2 보험모집인 사업소득 연말정산(간편장부대상자 = 직전 수입 7,500만원 미만, 시행령 제208조),
+// 시행령 제143조 단순경비율(직전 수입 3,600만원 미만)·기준경비율, 시행규칙 제67조 배율(간편장부 2.8 · 복식부기 3.4),
+// 보험설계사 업종코드 940906 경비율(단순 77.6%, 4천만원 초과분 68.6%, 기준 28.5% — 국세청 고시, 해마다 바뀜). 기본공제 1인 150만원, 표준세액공제 7만원, 지방소득세 10%.
+// 숫자는 참고용 추정이다. 실제 신고는 홈택스·세무사로 확인한다. 경비율은 화면에서 고칠 수 있다.
+var TAX_BRACKETS = [[14000000, 6], [50000000, 15], [88000000, 24], [150000000, 35], [300000000, 38], [500000000, 40], [1000000000, 42], [Infinity, 45]];
+var TAX_RATE_DEF = { code: '940906', simple: 77.6, over: 68.6, overAt: 40000000, standard: 28.5, at: '2025년 귀속 고시 기준' };
+var TAX_SIMPLE_LIMIT = 36000000, TAX_BOOK_LIMIT = 75000000, TAX_MULT = { easy: 2.8, double: 3.4 };
+function taxCalc(base) { var t = 0, lo = 0; for (var i = 0; i < TAX_BRACKETS.length && base > lo; i++) { var hi = TAX_BRACKETS[i][0]; t += (Math.min(base, hi) - lo) * TAX_BRACKETS[i][1] / 100; lo = hi; } return Math.floor(t); }
+function taxRate() { var r = store.settings.taxRate || {}; var o = {}; Object.keys(TAX_RATE_DEF).forEach(function (k) { o[k] = r[k] != null && r[k] !== '' ? r[k] : TAX_RATE_DEF[k]; }); return o; }
+function taxYearData(y) { var T = store.settings.tax = store.settings.tax || {}; var d = T[y] = T[y] || {}; d.inc = d.inc || {}; if (d.people == null) d.people = 1; return d; }
+// 예상수수료(업무 → 수수료)에서 그 해 달별 금액
+function commByMonth(y) {
+  var M = {}; for (var i = 1; i <= 12; i++) M[y + '-' + String(i).padStart(2, '0')] = 0;
+  commItems().filter(function (x) { return x.mine; }).forEach(function (x) { commSchedule(x).forEach(function (e) { if (M[e.m] != null) M[e.m] += e.amt; }); });
+  return M;
+}
+function taxIncomeOf(simpleAmt, R) { var Rt = taxRate(), at = num(Rt.overAt) || 40000000; return Math.max(0, Math.round(Math.min(R, at) * (1 - num(Rt.simple) / 100) + Math.max(0, R - at) * (1 - num(Rt.over) / 100))); }
+// 한 해 계산: 방법별(단순·기준·장부) 결과와 고른 방법
+function taxEstimate(y) {
+  var d = taxYearData(y), cm = commByMonth(y), Rt = taxRate(), months = [], R = 0, est = 0;
+  for (var i = 1; i <= 12; i++) { var k = String(i).padStart(2, '0'), mk = y + '-' + k, man = d.inc[k], v = man !== undefined && man !== '' ? num(man) : Math.round(cm[mk] || 0); if (!(man !== undefined && man !== '')) est += v; months.push({ k: k, mk: mk, v: v, man: man !== undefined && man !== '', cm: Math.round(cm[mk] || 0) }); R += v; }
+  var prev = d.prev !== undefined && d.prev !== '' ? num(d.prev) : null, double = prev != null && prev >= TAX_BOOK_LIMIT;
+  var simpleInc = taxIncomeOf(0, R);
+  var stdA = Math.max(0, Math.round(R - num(d.mainExp) - R * num(Rt.standard) / 100 * (double ? 0.5 : 1))), stdB = Math.round(simpleInc * (double ? TAX_MULT.double : TAX_MULT.easy));
+  var stdInc = Math.min(stdA, stdB), bookInc = Math.max(0, Math.round(R - num(d.bookExp)));
+  var autoM = prev == null ? 'simple' : prev < TAX_SIMPLE_LIMIT ? 'simple' : 'standard';
+  var method = d.method && d.method !== 'auto' ? d.method : autoM;
+  var ded = Math.max(1, num(d.people)) * 1500000 + num(d.pension) + num(d.otherDed);
+  var run = function (inc) {
+    var base = Math.max(0, inc - ded), calc = taxCalc(base), dec = Math.max(0, calc - 70000 - num(d.credit)), paid = d.paid !== undefined && d.paid !== '' ? num(d.paid) : Math.floor(R * 0.03 / 10) * 10, mid = num(d.mid);
+    return { inc: inc, base: base, calc: calc, dec: dec, paid: paid, mid: mid, due: dec - paid - mid, local: Math.floor(dec * 0.1) - Math.floor(R * 0.003 / 10) * 10 };
+  };
+  var res = { simple: run(simpleInc), standard: run(stdInc), book: run(bookInc) };
+  return { y: y, d: d, months: months, R: R, est: est, prev: prev, double: double, autoM: autoM, method: method, res: res, cur: res[method], stdA: stdA, stdB: stdB, ded: ded, Rt: Rt };
+}
+var TAX_METHODS = [['auto', '자동'], ['simple', '단순경비율'], ['standard', '기준경비율'], ['book', '장부(실제 경비)']];
+function workTax() {
+  var Y = Number(ui.taxY) || new Date().getFullYear(), E = taxEstimate(Y), d = E.d, c = E.cur, Rt = E.Rt;
+  var won = function (v) { return fmtWon(Math.round(v)); }, sign = function (v) { return v > 0 ? '<b class="warn-txt">' + won(v) + ' 더 냄</b>' : v < 0 ? '<b class="ok-txt">' + won(-v) + ' 돌려받음</b>' : '0원'; };
+  var kp = function (k, v, tone) { return '<div class="kpi' + (tone ? ' ' + tone : '') + '" style="cursor:default"><span class="k">' + k + '</span><span class="v num">' + v + '</span></div>'; };
+  var head = '<section class="panel"><div class="row between"><h2>' + Y + '년 귀속 종합소득세 예상 <small class="muted">' + (Y + 1) + '년 5월 신고분</small></h2><span class="seg seg-f">' +
+    [Y - 1, Y, Y + 1].map(function (y) { return '<button type="button" class="seg-btn' + (y === Y ? ' on' : '') + '" data-act="taxY" data-id="' + y + '">' + y + '년</button>'; }).join('') + '</span></div>' +
+    '<div class="kpis">' + kp('1년 수입 (3.3% 떼기 전)', won(E.R)) + kp('소득금액 (경비 뺀 뒤)', won(c.inc)) + kp('결정세액 (소득세)', won(c.dec)) + kp('이미 낸 3%', won(c.paid + c.mid)) +
+    kp('5월 정산', c.due > 0 ? won(c.due) + ' 더 냄' : c.due < 0 ? won(-c.due) + ' 환급' : '0원', c.due > 0 ? 'warn' : 'ok') + kp('지방소득세 정산', c.local > 0 ? won(c.local) + ' 더 냄' : c.local < 0 ? won(-c.local) + ' 환급' : '0원') + '</div>' +
+    '<p class="muted" style="margin:0">계산 방법: <b>' + (TAX_METHODS.filter(function (m) { return m[0] === E.method; })[0] || ['', ''])[1] + '</b>' + (d.method && d.method !== 'auto' ? '' : ' (자동: 직전 연도 수입 ' + (E.prev == null ? '미입력 → 단순경비율' : won(E.prev) + (E.prev < TAX_SIMPLE_LIMIT ? ' → 3,600만원 미만이라 단순경비율' : ' → 3,600만원 이상이라 기준경비율')) + ')') +
+    (E.est ? ' · 직접 넣지 않은 달은 업무 → 수수료의 예상 금액 ' + won(E.est) + '을 썼습니다' : '') + '</p></section>';
+  // 달별 수입
+  var mrow = E.months.map(function (m) { return '<div class="field tax-m"><span>' + Number(m.k) + '월' + (m.man ? '' : ' <small class="muted">예상</small>') + '</span>' + f('tax', 'inc_' + m.k, m.man ? d.inc[m.k] : '', { type: 'num', ph: m.cm ? String(m.cm) : '0', aria: Number(m.k) + '월 수입' }) + '</div>'; }).join('');
+  var inc = '<section class="panel"><div class="row between"><h2>달별 수입 <small class="muted">원천징수(3.3%) 떼기 전 지급액</small></h2>' + (Object.keys(d.inc).some(function (k) { return d.inc[k] !== ''; }) ? '<button class="btn ghost sm' + (ui.armed === 'taxClr' ? ' danger armed' : '') + '" data-act="taxClr">' + (ui.armed === 'taxClr' ? '한 번 더 누르면 지움' : '직접 넣은 금액 지우기') + '</button>' : '') + '</div>' +
+    '<div class="tax-months">' + mrow + '</div><p class="muted" style="margin:0">회사에서 받은 지급명세(사업소득 원천징수영수증)의 "지급액"을 달마다 넣으세요. 비워 둔 달은 업무 → 수수료의 예상 수수료(내가 모집한 계약)로 채웁니다. 원 단위, 예: 3500000</p></section>';
+  // 경비·공제
+  var mseg = '<span class="seg seg-f">' + TAX_METHODS.map(function (m) { return '<button type="button" class="seg-btn' + ((d.method || 'auto') === m[0] ? ' on' : '') + '" data-act="taxMethod" data-id="' + m[0] + '">' + m[1] + '</button>'; }).join('') + '</span>';
+  var form = '<section class="panel"><h2>경비와 공제</h2><div class="grid-form dm-grid">' +
+    '<div class="field span2"><span>경비 계산 방법</span>' + mseg + '</div>' +
+    lbl('직전 연도(' + (Y - 1) + '년) 수입금액', f('tax', 'prev', d.prev != null ? d.prev : '', { type: 'num', ph: '예: 32000000' })) +
+    lbl('기준경비율: 증빙 있는 주요경비 (임차료·인건비·매입)', f('tax', 'mainExp', d.mainExp || '', { type: 'num', ph: '0' })) +
+    lbl('장부: 1년 실제 경비 합계', f('tax', 'bookExp', d.bookExp || '', { type: 'num', ph: '0' })) +
+    lbl('기본공제 인원 (본인 포함)', f('tax', 'people', d.people, { type: 'num', ph: '1' })) +
+    lbl('국민연금 등 연금보험료 (1년 낸 돈)', f('tax', 'pension', d.pension || '', { type: 'num', ph: '0' })) +
+    lbl('그 밖의 소득공제 (노란우산 등)', f('tax', 'otherDed', d.otherDed || '', { type: 'num', ph: '0' })) +
+    lbl('그 밖의 세액공제 (자녀·연금계좌 등)', f('tax', 'credit', d.credit || '', { type: 'num', ph: '0' })) +
+    lbl('이미 원천징수된 소득세 3% (비우면 수입 × 3%)', f('tax', 'paid', d.paid != null ? d.paid : '', { type: 'num', ph: String(Math.floor(E.R * 0.03 / 10) * 10) })) +
+    lbl('중간예납으로 낸 소득세 (11월)', f('tax', 'mid', d.mid || '', { type: 'num', ph: '0' })) + '</div>' +
+    '<details class="lic-help"><summary>경비율 고치기 (업종코드 ' + esc(Rt.code) + ' 보험설계사 · ' + esc(Rt.at) + ')</summary><div class="grid-form dm-grid">' +
+    lbl('단순경비율 % (4천만원까지)', f('taxr', 'simple', Rt.simple, { type: 'num' })) + lbl('단순경비율 초과율 % (4천만원 넘는 부분)', f('taxr', 'over', Rt.over, { type: 'num' })) +
+    lbl('기준경비율 %', f('taxr', 'standard', Rt.standard, { type: 'num' })) + '</div><p class="muted" style="margin:0">경비율은 국세청이 해마다 3월쯤 고시합니다. 홈택스 → 조회/발급 → 기준·단순경비율(업종코드 ' + esc(Rt.code) + ')에서 확인해 바꾸세요. <button class="btn ghost sm" data-act="taxRateReset">처음 값으로</button></p></details></section>';
+  // 방법별 비교
+  var rows = [['simple', '단순경비율'], ['standard', '기준경비율'], ['book', '장부(실제 경비)']].map(function (m) { var r = E.res[m[0]];
+    return '<tr' + (m[0] === E.method ? ' class="on-row"' : '') + '><td><b>' + m[1] + '</b>' + (m[0] === E.method ? ' <span class="chip ok-chip">지금 계산</span>' : '') + '</td><td class="r num">' + won(r.inc) + '</td><td class="r num">' + won(r.base) + '</td><td class="r num">' + won(r.calc) + '</td><td class="r num">' + won(r.dec) + '</td><td class="r">' + sign(r.due) + '</td></tr>'; }).join('');
+  var cmp = '<section class="panel"><h2>방법별 비교</h2><div class="tablewrap no-fold"><table class="t ctab no-fold"><thead><tr><th>방법</th><th class="r">소득금액</th><th class="r">과세표준</th><th class="r">산출세액</th><th class="r">결정세액</th><th class="r">5월 정산 (소득세)</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
+    '<p class="muted" style="margin:0">공제 합계 ' + won(E.ded) + ' · 표준세액공제 7만원 포함. 기준경비율은 (수입 − 주요경비 − 수입 × ' + num(Rt.standard) + '%' + (E.double ? ' × ½' : '') + ')와 (단순경비율 소득금액 × ' + (E.double ? TAX_MULT.double : TAX_MULT.easy) + '배) 중 적은 금액 = ' + won(E.res.standard.inc) + '. 장부로 신고하려면 간편장부·증빙이 있어야 합니다.</p></section>';
+  // 안내
+  var guide = '<section class="panel"><h2>보험설계사 세금, 이렇게 됩니다</h2><ul class="tax-guide">' +
+    '<li><b>매달 3.3%</b> — 수당을 받을 때 소득세 3% + 지방소득세 0.3%를 회사가 미리 뗍니다. 최종 세금이 아니라 미리 낸 돈입니다.</li>' +
+    '<li><b>2월 회사 연말정산</b> — 한 회사에서만 수당을 받고 직전 연도 수입이 7,500만원 미만(간편장부대상자)이면 회사가 다음 해 2월에 정산합니다(단순경비율 방식). 다른 소득이 없으면 5월 신고를 안 해도 됩니다. 부양가족·연금 자료를 회사에 내야 공제가 들어갑니다.</li>' +
+    '<li><b>5월 종합소득세 신고</b> — 두 곳 이상에서 받았거나, 근로·임대 등 다른 소득이 있거나, 7,500만원 이상(복식부기의무자)이거나, 실제 경비가 많아 장부로 신고하는 게 유리하면 5월 31일까지 직접 신고합니다.</li>' +
+    '<li><b>부가가치세</b> — 혼자 하는 보험 모집은 면세 인적용역이라 부가세 신고 대상이 아닙니다. 따로 과세 사업자등록을 한 경우에만 해당합니다.</li>' +
+    '<li><b>주의</b> — 장부 없이 추계로 신고하면 수입 4,800만원 이상일 때 무기장가산세가 붙을 수 있고, 지역 건강보험료도 소득금액을 기준으로 정해집니다. 이 화면은 참고용 추정이며 실제 세액은 홈택스·세무사에게 확인하세요.</li></ul>' +
+    '<p class="muted" style="margin:0">세율: 과세표준 1,400만원 이하 6% · 5,000만원 15% · 8,800만원 24% · 1.5억 35% · 3억 38% · 5억 40% · 10억 42% · 초과 45% (2026년 귀속 기준, 개정안 발의 중). 지방소득세는 결정세액의 10%.</p></section>';
+  return head + inc + form + cmp + taxSchedPanel(Y) + guide;
+}
+// ===== 세무 일정 기본 넣기 (일정에 해마다 자동, 2026-11-07) =====
+// 기한이 토요일·일요일·공휴일·근로자의 날이면 다음 날(국세기본법 제5조). 공휴일: 고정 공휴일 + 설·추석·부처님오신날(음력 변환) + 대체공휴일(기본 규칙). 선거일 등 임시공휴일은 넣지 않음.
+var TAX_DEADLINES = [
+  ['vat2f', 1, 25, '부가가치세 확정신고 (전년 7~12월분)', true],
+  ['biz', 2, 10, '사업장현황신고 (면세 개인사업자, 전년분)', true],
+  ['vat1p', 4, 25, '부가가치세 예정신고·고지 (1~3월분)', true],
+  ['inc', 5, 31, '종합소득세 신고·납부 (전년 귀속)', false],
+  ['vat1f', 7, 25, '부가가치세 확정신고 (1~6월분)', true],
+  ['vat2p', 10, 25, '부가가치세 예정신고·고지 (7~9월분)', true],
+  ['mid', 11, 30, '종합소득세 중간예납 (고지분 납부)', false]
+];
+var KR_HOL_MEMO = {};
+function krHolidays(y) {
+  if (KR_HOL_MEMO[y]) return KR_HOL_MEMO[y];
+  var H = {}, add = function (iso, sub) { if (iso) H[iso] = sub ? 'sub' : 'hol'; };
+  var fixed = ['01-01', '03-01', '05-05', '06-06', '08-15', '10-03', '10-09', '12-25'], fixedSub = ['03-01', '05-05', '08-15', '10-03', '10-09', '12-25'];
+  fixed.forEach(function (md) { add(y + '-' + md); });
+  var shift = function (iso, n) { var d = new Date(iso + 'T00:00:00'); d.setDate(d.getDate() + n); return isoDate(d); };
+  var seol = null, chu = null, bud = null;
+  try { seol = lunarToSolar(y, 1, 1, false); chu = lunarToSolar(y, 8, 15, false); bud = lunarToSolar(y, 4, 8, false); } catch (e) {}
+  var multi = [];
+  if (seol && seol.slice(0, 4) == String(y)) multi.push([shift(seol, -1), seol, shift(seol, 1)]);
+  if (chu) multi.push([shift(chu, -1), chu, shift(chu, 1)]);
+  multi.forEach(function (g) { g.forEach(function (x) { add(x); }); });
+  if (bud) add(bud);
+  var dow = function (iso) { return new Date(iso + 'T00:00:00').getDay(); };
+  var nextFree = function (iso) { var x = shift(iso, 1); while (H[x] || dow(x) === 0 || dow(x) === 6) x = shift(x, 1); return x; };
+  // 대체공휴일: 설·추석은 일요일과 겹치면, 그 밖(3·1절·어린이날·광복절·개천절·한글날·성탄절·부처님오신날)은 토·일과 겹치면 다음 평일
+  multi.forEach(function (g) { if (g.some(function (x) { return dow(x) === 0; })) add(nextFree(g[2]), true); });
+  fixedSub.map(function (md) { return y + '-' + md; }).concat(bud ? [bud] : []).forEach(function (x) { if (dow(x) === 0 || dow(x) === 6) add(nextFree(x), true); });
+  return (KR_HOL_MEMO[y] = H);
+}
+function taxBizDay(iso) {
+  var d = new Date(iso + 'T00:00:00');
+  for (var i = 0; i < 10; i++) { var x = isoDate(d), w = d.getDay(), H = krHolidays(d.getFullYear()); if (w !== 0 && w !== 6 && !H[x] && x.slice(5) !== '05-01') return x; d.setDate(d.getDate() + 1); }
+  return iso;
+}
+function taxDeadlines(y) {
+  var wd = ['일', '월', '화', '수', '목', '금', '토'];
+  return TAX_DEADLINES.map(function (t) {
+    var orig = y + '-' + String(t[1]).padStart(2, '0') + '-' + String(t[2]).padStart(2, '0'), due = taxBizDay(orig), w = function (iso) { return wd[new Date(iso + 'T00:00:00').getDay()]; };
+    return { key: t[0] + '-' + y, k: t[0], title: t[3], vat: t[4], orig: orig, due: due, moved: due !== orig, label: Number(orig.slice(5, 7)) + '.' + Number(orig.slice(8)) + '(' + w(orig) + ')', dueLabel: Number(due.slice(5, 7)) + '.' + Number(due.slice(8)) + '(' + w(due) + ')' };
+  });
+}
+var TAX_MEMO = {
+  vat2f: '과세 사업자등록을 한 경우. 보험 모집(인적용역)은 면세라 해당 없음',
+  biz: '면세 사업자등록을 한 경우 전년 수입·시설 현황 신고. 사업자등록 없이 위촉만 된 보험설계사는 해당 없음',
+  vat1p: '개인 과세사업자는 대부분 고지서로 납부(예정고지). 보험 모집은 면세라 해당 없음',
+  inc: '두 곳 이상 수당·다른 소득·복식부기의무자·장부 신고면 직접 신고. 한 회사에서 2월 연말정산을 받았고 다른 소득이 없으면 생략 가능. 업무 → 세금에서 예상 금액 확인',
+  vat1f: '과세 사업자등록을 한 경우. 보험 모집(인적용역)은 면세라 해당 없음',
+  vat2p: '개인 과세사업자는 대부분 고지서로 납부(예정고지). 보험 모집은 면세라 해당 없음',
+  mid: '전년 종합소득세를 낸 경우 11월에 고지서(전년 세액의 절반)가 옴. 연말정산만 받은 보험설계사는 보통 해당 없음'
+};
+// 해마다 일정에 넣기: 아직 안 넣은 것만(한 번 넣은 것은 지워도 다시 넣지 않음), 오늘 이후 기한만
+var _taxSeedYear = null, _taxSeedObj = null;
+function taxSeedEvents(force) {
+  var S = store.settings; if (!S || !Array.isArray(S.events)) return false;
+  var cfg = S.taxEv = S.taxEv || { on: true, vat: true };
+  var Y = new Date().getFullYear(); if (!force && _taxSeedYear === Y && _taxSeedObj === S) return false; _taxSeedYear = Y; _taxSeedObj = S;
+  if (!cfg.on) return false;
+  var seeded = S.taxSeeded = S.taxSeeded || {}, t = today(), added = 0;
+  [Y, Y + 1].forEach(function (y) { taxDeadlines(y).forEach(function (x) {
+    if (seeded[x.key] || x.due < t || (x.vat && !cfg.vat)) return;
+    seeded[x.key] = true; added++;
+    S.events.push({ id: uid(), date: x.due, time: '', title: x.title, type: '세무', cid: '', memo: (x.moved ? '원래 기한 ' + x.label + ' → 주말·공휴일이라 ' + x.dueLabel + '까지 (국세기본법 제5조). ' : '') + TAX_MEMO[x.k], done: false, tax: x.key });
+  }); });
+  if (added) save();
+  return added;
+}
+function taxSchedPanel(Y) {
+  var cfg = store.settings.taxEv || { on: true, vat: true }, L = taxDeadlines(Y).concat(taxDeadlines(Y + 1)).filter(function (x) { return x.due >= Y + '-01-01'; }), t = today();
+  var inCal = {}; (store.settings.events || []).forEach(function (e) { if (e.tax) inCal[e.tax] = e; });
+  var rows = L.filter(function (x) { return x.due.slice(0, 4) === String(Y) || x.due.slice(0, 4) === String(Y + 1); }).map(function (x) { var e = inCal[x.key];
+    return '<tr' + (x.due < t ? ' class="dim"' : '') + '><td class="num">' + x.due.slice(0, 4) + '.' + x.dueLabel + (x.moved ? ' <small class="muted">(원래 ' + x.label + ')</small>' : '') + '</td><td>' + esc(x.title) + (x.vat ? ' <span class="chip">부가세·사업자</span>' : '') + '</td><td>' + (e ? '<span class="chip ok-chip">일정에 있음</span>' : x.due < t ? '<span class="muted">지남</span>' : (x.vat && !cfg.vat) || !cfg.on ? '<span class="muted">넣지 않음</span>' : '<span class="muted">—</span>') + '</td></tr>'; }).join('');
+  return '<section class="panel"><div class="row between"><h2>세무 일정 <small class="muted">업무 → 일정에 자동으로 넣음</small></h2><span class="row" style="gap:6px">' +
+    '<button class="btn sm' + (cfg.on ? ' primary' : '') + '" data-act="taxEvOn">' + (cfg.on ? '자동 넣기 켜짐' : '자동 넣기 꺼짐') + '</button>' +
+    '<button class="btn sm' + (cfg.vat ? '' : ' ghost') + '" data-act="taxEvVat">' + (cfg.vat ? '부가세 일정 포함' : '부가세 일정 빼기') + '</button></span></div>' +
+    '<div class="tablewrap no-fold"><table class="t ctab no-fold"><thead><tr><th>기한</th><th>내용</th><th>일정</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
+    '<p class="muted" style="margin:0">올해 남은 기한과 내년 기한을 업무 → 일정에 "세무"로 넣습니다. 주말·공휴일이면 다음 날로 옮겨 넣습니다(선거일 같은 임시공휴일은 반영하지 않으니 국세청 세무일정으로 확인). 넣은 일정은 고치거나 지워도 되고, 지운 일정은 다시 넣지 않습니다. 보험 모집만 하면 부가세 일정은 보통 해당 없으니 "부가세 일정 빼기"로 끌 수 있습니다.</p></section>';
+}
+
 // ===== 업무 → 예상 수수료 =====
 // 수수료율은 회사·상품마다 달라 미리 넣지 않는다. 사용자가 회사 수수료 표를 보고 넣는다.
 // settings.comm = { life: [Y1..Y7 % of 월보험료], nonlife: [..], auto: % of 연보험료, fire: % of 연환산 보험료, mode: 'lump'|'spread', keep: 유지 가정 % }
@@ -7554,6 +7725,14 @@ function setField(el) {
     if (k === 'title' || k === 'place' || k === 'memo') { var dt9 = document.getElementById('dmTitle'); if (dt9 && k === 'title') dt9.textContent = v || '지점 일정'; return; }
     render(); return;
   }
+  if (scope === 'tax') {
+    var TY = taxYearData(Number(ui.taxY) || new Date().getFullYear()), tv = String(v).replace(/[^0-9]/g, ''), mi = k.match(/^inc_(\d\d)$/);
+    if (mi) { if (tv === '') delete TY.inc[mi[1]]; else TY.inc[mi[1]] = Number(tv); }
+    else if (k === 'people') TY.people = Math.max(1, Math.min(20, Number(tv) || 1));
+    else if (tv === '') delete TY[k]; else TY[k] = Number(tv);
+    save(); render(); return;
+  }
+  if (scope === 'taxr') { var TR = store.settings.taxRate = store.settings.taxRate || {}, tn = String(v).replace(/[^0-9.]/g, ''); if (tn === '') delete TR[k]; else TR[k] = Math.max(0, Math.min(100, Number(tn) || 0)); save(); render(); return; }
   if (scope === 'comm') {
     var CC = commCfg(), mk = k.match(/^(life|nonlife)_(\d)$/), nv0 = v === '' ? 0 : Math.max(0, Number(v) || 0);
     if (mk) CC[mk[1]][Number(mk[2])] = nv0; else if (k === 'keep') CC.keep = Math.min(100, nv0); else CC[k] = nv0;
@@ -8220,6 +8399,18 @@ function doAction(el) {
         : cloud.client.from('team_notices').update(row).eq('id', ui.tnEdit);
       var wasNew = ui.tnEdit === 'new'; ui.tnEdit = null; teamDo(q, wasNew ? '팀 공지를 올렸습니다' : '팀 공지를 고쳤습니다'); return; }
     case 'tnDel': if (ui.armed !== 'tnDel:' + id) { ui.armed = 'tnDel:' + id; keepArm = true; break; } ui.armed = null; teamDo(cloud.client.from('team_notices').delete().eq('id', id), '팀 공지를 지웠습니다'); return;
+    case 'taxY': ui.taxY = Number(id) || new Date().getFullYear(); break;
+    case 'taxMethod': taxYearData(Number(ui.taxY) || new Date().getFullYear()).method = id; save(); break;
+    case 'taxClr': if (ui.armed !== 'taxClr') { ui.armed = 'taxClr'; keepArm = true; break; } ui.armed = null; taxYearData(Number(ui.taxY) || new Date().getFullYear()).inc = {}; save(); toast('직접 넣은 달별 수입을 지웠습니다'); break;
+    case 'taxRateReset': store.settings.taxRate = {}; save(); toast('경비율을 처음 값으로 되돌렸습니다'); break;
+    case 'taxEvOn': case 'taxEvVat': {
+      var TC = store.settings.taxEv = store.settings.taxEv || { on: true, vat: true }, tt = today(), sd = store.settings.taxSeeded = store.settings.taxSeeded || {};
+      if (act === 'taxEvOn') TC.on = !TC.on; else TC.vat = !TC.vat;
+      var drop = function (e) { if (!e.tax || e.date < tt) return false; var k0 = e.tax.split('-')[0], isVat = (TAX_DEADLINES.filter(function (t) { return t[0] === k0; })[0] || [])[4]; return !TC.on || (isVat && !TC.vat); };
+      var gone = store.settings.events.filter(drop); gone.forEach(function (e) { delete sd[e.tax]; });
+      store.settings.events = store.settings.events.filter(function (e) { return !drop(e); });
+      var addN = TC.on ? taxSeedEvents(true) : 0; save();
+      toast(gone.length ? '세무 일정 ' + gone.length + '건을 일정에서 뺐습니다' : addN ? '세무 일정 ' + addN + '건을 일정에 넣었습니다' : '바꿨습니다'); break; }
     case 'orgCreate': orgRpc('create_org', { p_name: String(ui.orgName || '').trim(), p_my_name: teamMyName() }, function (d) { return '사업단을 만들었습니다. 사업단 코드 ' + (d && d.code || '') + '를 지점장에게 알려 주세요'; }); return;
     case 'orgLink': orgRpc('org_link', { p_code: String(ui.orgCode || '').trim() }, function (d) { return (d && d.name ? d.name + ' 사업단에' : '사업단에') + ' 연결을 신청했습니다. 사업단장이 승인하면 연결됩니다'; }); return;
     case 'orgOk': orgRpc('org_decide', { p_team: id, p_ok: true }, '지점 연결을 승인했습니다'); return;
@@ -8739,7 +8930,8 @@ function howtoModalHtml() {
       '<b>오늘</b>: 오늘 일정·할 일·생일·갱신·제안 숫자와 다가오는 7일 일정.',
       '<b>일정 · 할 일</b>: 달력과 할 일 목록. 반복 일정과 마감일을 정할 수 있습니다.',
       '<b>생일 · 기념일 · 선물</b>: 고객·직원·지인의 생일(양력·음력)과 기념일, 보낸 선물 기록. 다가오는 목록은 오늘·내일·이번 주로 묶여 보이고, 축하를 마치면 "축하 완료"를 눌러 표시합니다(해마다 새로 시작).',
-      '<b>실적 · 수수료</b>: 내가 입력한 계약 실적과 수수료를 모아 봅니다.']), G('work:home', '오늘') + G('work:calendar', '일정')) +
+      '<b>실적 · 수수료</b>: 내가 입력한 계약 실적과 수수료를 모아 봅니다.',
+      '<b>세금</b>: 1년 수입(달마다 직접 넣거나 예상 수수료)으로 종합소득세를 단순경비율·기준경비율·장부 방식별로 어림하고, 이미 뗀 3.3%와 비교해 5월에 더 낼지 돌려받을지 보여 줍니다(참고용). 부가세·종합소득세 신고 기한은 업무 → 일정에 "세무"로 자동으로 들어갑니다.']), G('work:home', '오늘') + G('work:calendar', '일정') + G('work:tax', '세금')) +
     S('고객 메뉴', false, UL([
       '<b>고객목록</b>: 전체 · 가망 · 계약 · 휴면 탭으로 고객을 나눠 봅니다. 가망고객은 첫 상담 → 보장분석 → 제안 진행이 보이고, 제안이 성사되면 계약고객이 됩니다. 위 숫자 칸을 누르면 그 고객만 걸러집니다. 위 한 줄에서 구분 탭과 걸러 보기(필수 보장 부족 = 미가입·최소 기준 미달, 권장만 미달 등)를 함께 고릅니다. 마지막 상담·다음 연락·생일·그 밖의 할 일 칸 제목을 누르면 그 순서로 정렬됩니다. 고객이 많으면 50명씩 보이고 "더보기"로 이어 봅니다. 왼쪽 체크로 여러 명을 골라 구분 바꾸기·번호 복사·삭제를 한 번에 하고, VIP 같은 "표시"를 붙여 거를 수 있습니다. 같은 이름·생년월일 고객은 "중복?"으로 알려 주고 고객 정보에서 하나로 합칠 수 있습니다.',
       '<b>고객관계</b>: 연락할 차례인 고객, 대상 뽑기·단체 안내(조건으로 고른 고객에게 문자), 소개해 준 관계를 봅니다.',
