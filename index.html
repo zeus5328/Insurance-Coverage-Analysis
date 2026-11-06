@@ -1861,6 +1861,7 @@ html.reduce-motion *, html.reduce-motion *::before, html.reduce-motion *::after 
 .ro-val { display: inline-block; padding: 7px 0; font-weight: 600; }
 
 @media (max-width: 760px) { .panel > .row.between:has(#prq) > .row { flex-wrap: nowrap !important; width: 100%; } .panel > .row.between:has(#prq) #prq { flex: 1 1 auto; min-width: 0; width: auto; } }
+.mo-table td { position: relative; } .mo-bar { position: absolute; left: 6px; bottom: 3px; height: 3px; width: calc((100% - 12px) * var(--w, 0) / 100); max-width: calc(100% - 12px); background: var(--accent); opacity: .45; border-radius: 2px; }
 </style>
 </head>
 <body>
@@ -9571,11 +9572,13 @@ function teamLoad(force) {
       mgr ? sb.from('team_stats').select('user_id,data,updated_at').eq('team_id', tid) : Promise.resolve({ data: [] }),
       // 팀 일정·참석 (서버에 표가 없으면 빈 목록으로)
       sb.from('team_events').select('*').eq('team_id', tid).gte('date', isoDate(new Date(Date.now() - 90 * 864e5))).order('date').limit(300).then(function (y) { return y.error ? { data: [] } : y; }, function () { return { data: [] }; }),
-      sb.from('team_event_att').select('event_id,user_id,status').eq('team_id', tid).then(function (y) { return y.error ? { data: [] } : y; }, function () { return { data: [] }; })
+      sb.from('team_event_att').select('event_id,user_id,status').eq('team_id', tid).then(function (y) { return y.error ? { data: [] } : y; }, function () { return { data: [] }; }),
+      // 월별 실적 기록 (서버 7단계, 표가 없으면 빈 목록)
+      mgr ? sb.from('team_stats_monthly').select('user_id,month,name,data').eq('team_id', tid).gte('month', monthsBack(6)[5]).then(function (y) { return y.error ? { data: [] } : y; }, function () { return { data: [] }; }) : Promise.resolve({ data: [] })
     ]).then(function (x) {
       x.forEach(function (y) { if (y && y.error) throw y.error; });
       team.info = x[0].data ? { id: x[0].data.id, name: x[0].data.name, code: x[0].data.code, role: r.data.role } : null;
-      var arr = function (v) { return Array.isArray(v) ? v : []; }; team.members = arr(x[1].data); team.notices = arr(x[2].data); team.stats = arr(x[3].data); team.events = arr(x[4].data); team.att = arr(x[5].data);
+      var arr = function (v) { return Array.isArray(v) ? v : []; }; team.members = arr(x[1].data); team.notices = arr(x[2].data); team.stats = arr(x[3].data); team.events = arr(x[4].data); team.att = arr(x[5].data); team.monthly = arr(x[6] && x[6].data);
     });
   }).then(function () { team.loaded = true; team.loading = false; team.err = ''; team.at = Date.now(); teamStatsSoon(true); render(); },
     function (e) { team.loaded = true; team.loading = false; team.err = teamErr(e); team.at = Date.now(); render(); });
@@ -9717,10 +9720,31 @@ function teamStatsPanel() {
     '<p class="br-tree muted" style="margin:0"><b>지점장</b> ' + esc(boss) + ' → 팀장 ' + members.length + '명</p>' +
     (members.length ? '<div class="tablewrap"><table class="t ctab br-table"><thead><tr><th>팀장</th><th class="r">고객</th><th class="r">이번 달 상담</th><th class="r">제안</th><th class="r">성사</th><th class="r">성사율</th><th class="r">갱신 예정</th><th class="r">기한 지난 할 일</th><th>마지막 반영</th></tr></thead><tbody>' + body + '</tbody></table></div>'
       : '<div class="empty"><strong>아직 들어온 팀장이 없습니다</strong><span>설정 → 계정설정 → 팀의 초대 코드를 알려 주세요.</span></div>') +
-    '<p class="muted" style="margin:0">조직은 사업단장 &gt; 지점장 &gt; 팀장입니다(총무는 실적 표에 넣지 않음). 실적 숫자는 팀장 본인이 "실적 숫자 공유"를 켠 경우에만 보이고, 앱을 쓸 때마다 자동으로 반영됩니다. 고객 이름·연락처·계약 내용은 지점장에게도 보이지 않습니다. 지난달 숫자가 그대로인 사람은 이번 달에 아직 앱을 열지 않은 것입니다(-로 표시).</p></section>';
+    '<p class="muted" style="margin:0">조직은 사업단장 &gt; 지점장 &gt; 팀장입니다(총무는 실적 표에 넣지 않음). 실적 숫자는 팀장 본인이 "실적 숫자 공유"를 켠 경우에만 보이고, 앱을 쓸 때마다 자동으로 반영됩니다. 고객 이름·연락처·계약 내용은 지점장에게도 보이지 않습니다. 지난달 숫자가 그대로인 사람은 이번 달에 아직 앱을 열지 않은 것입니다(-로 표시).</p></section>' +
+    monthlyPanel('지점', (team.monthly || []).map(function (r) { var m = team.members.filter(function (x) { return x.user_id === r.user_id; })[0]; return { key: r.user_id, label: (m && m.name) || r.name || '이름 없음', gone: !m, month: r.month, d: r.data || {} }; }), '팀장');
 }
 // 지점 구성원 직급 (2026-11-07): 지점장(manager) 아래는 모두 팀장(member). 예전의 팀장·FC 나누기(settings.teamRoles)는 쓰지 않는다.
 function teamRoleOf(m) { if (!m) return ''; return m.role === 'manager' ? '지점장' : '팀장'; }
+// ===== 월별 실적 (서버 7단계 team_stats_monthly, 2026-11-07) =====
+function monthsBack(n) { var d = new Date(Date.now() + 9 * 36e5), y = d.getUTCFullYear(), m = d.getUTCMonth(), out = []; for (var i = 0; i < n; i++) { var mm = m - i, yy = y + Math.floor(mm / 12); mm = ((mm % 12) + 12) % 12; out.push(yy + '-' + String(mm + 1).padStart(2, '0')); } return out; }
+// rows: [{key,label,gone,month,d:{notes,props,won,customers}}] — 위: 달별 합계, 아래: 사람(지점)별 성사/제안
+function monthlyPanel(scopeName, rows, whoLabel) {
+  var M = monthsBack(6), byM = {}, who = {}, order = [];
+  rows.forEach(function (r) { if (M.indexOf(r.month) < 0) return; var o = byM[r.month] = byM[r.month] || { n: 0, notes: 0, props: 0, won: 0 }; o.n++; o.notes += num(r.d.notes); o.props += num(r.d.props); o.won += num(r.d.won);
+    if (!who[r.key]) { who[r.key] = { label: r.label, gone: r.gone, m: {} }; order.push(r.key); } who[r.key].m[r.month] = r.d; });
+  if (!rows.length) return '<section class="panel"><h2>월별 추이</h2><p class="muted" style="margin:0">아직 쌓인 달별 기록이 없습니다. 이번 달부터 팀장이 앱을 쓸 때마다 그 달 숫자가 자동으로 남고, 다음 달부터 비교해 볼 수 있습니다.</p></section>';
+  var ml = function (mm) { return Number(mm.slice(5)) + '월'; }, rate = function (o) { return num(o.props) ? Math.round(num(o.won) / num(o.props) * 100) + '%' : '-'; };
+  var top = M.map(function (mm) { var o = byM[mm]; return '<tr><td>' + mm.slice(0, 4) + '.' + mm.slice(5) + (mm === M[0] ? ' <small class="muted">이번 달</small>' : '') + '</td>' + (o ? '<td class="r num">' + o.n + '</td><td class="r num">' + o.notes + '</td><td class="r num">' + o.props + '</td><td class="r num">' + o.won + '</td><td class="r num">' + rate(o) + '</td>' : '<td class="r muted" colspan="5">기록 없음</td>') + '</tr>'; }).join('');
+  order.sort(function (a, b) { return String(who[a].label).localeCompare(String(who[b].label), 'ko'); });
+  var mx = 0; order.forEach(function (k) { M.forEach(function (mm) { var d = who[k].m[mm]; if (d) mx = Math.max(mx, num(d.won)); }); });
+  var per = order.map(function (k) { var w = who[k];
+    return '<tr><td><b>' + esc(w.label) + '</b>' + (w.gone ? ' <small class="muted">(나감)</small>' : '') + '</td>' + M.slice().reverse().map(function (mm) { var d = w.m[mm];
+      return d ? '<td class="r num"><span class="mo-bar" style="--w:' + (mx ? Math.round(num(d.won) / mx * 100) : 0) + '%"></span>' + num(d.won) + '<small class="muted">/' + num(d.props) + '</small></td>' : '<td class="r muted">-</td>'; }).join('') + '</tr>'; }).join('');
+  return '<section class="panel"><h2>월별 추이 <small class="muted">최근 6개월 · ' + scopeName + ' 합계</small></h2>' +
+    '<div class="tablewrap no-fold"><table class="t ctab no-fold"><thead><tr><th>달</th><th class="r">공유 인원</th><th class="r">상담</th><th class="r">제안</th><th class="r">성사</th><th class="r">성사율</th></tr></thead><tbody>' + top + '</tbody></table></div>' +
+    '<h3 class="sub-h">' + whoLabel + '별 성사 <small class="muted">성사/제안</small></h3><div class="tablewrap no-fold"><table class="t ctab mo-table no-fold"><thead><tr><th>' + whoLabel + '</th>' + M.slice().reverse().map(function (mm) { return '<th class="r">' + ml(mm) + '</th>'; }).join('') + '</tr></thead><tbody>' + per + '</tbody></table></div>' +
+    '<p class="muted" style="margin:6px 0 0">달마다 그 달 마지막으로 반영된 숫자입니다. ' + (whoLabel === '팀장' ? '팀장이 지점을 나가도 지난 달 기록은 이 지점에 남습니다("나감"). 공유를 끄면 그 사람의 이번 달 기록만 지워집니다.' : '사업단장에게는 지점 합계만 보입니다.') + ' 24개월까지 보관합니다.</p></section>';
+}
 // ===== 사업단 (사업단장 > 지점장 > 팀장, 2026-11-07, 서버 6단계 orgs_business_units) =====
 // 사업단장: 사업단을 만들고 코드를 지점장에게 준다 → 지점장이 코드로 연결 신청 → 사업단장 승인. 사업단장은 지점별 합계만 본다(org_overview).
 // 사업단 공지는 사업단장만 쓰고, 승인된 지점의 지점장·팀장이 본다. 사업단 없는 지점(지사)은 그대로. 사업단장은 지점에 들어가지 않는다.
@@ -9754,10 +9778,11 @@ function orgLoad(force) {
       return Promise.all([
         safe(sb.from('orgs').select('id,name,code,created_at').eq('id', h.data.org_id).maybeSingle()),
         safe(sb.rpc('org_overview', { p_org: h.data.org_id })),
-        safe(sb.from('org_notices').select('*').eq('org_id', h.data.org_id).order('pin', { ascending: false }).order('date', { ascending: false }).limit(200))
+        safe(sb.from('org_notices').select('*').eq('org_id', h.data.org_id).order('pin', { ascending: false }).order('date', { ascending: false }).limit(200)),
+        safe(sb.rpc('org_monthly', { p_org: h.data.org_id, p_months: 6 }))
       ]).then(function (x) {
         if (x[0].error) throw x[0].error;
-        org.info = x[0].data; org.link = null; org.overview = x[1].data || null; org.notices = Array.isArray(x[2].data) ? x[2].data : [];
+        org.info = x[0].data; org.link = null; org.overview = x[1].data || null; org.notices = Array.isArray(x[2].data) ? x[2].data : []; org.monthly = Array.isArray(x[3].data) ? x[3].data : [];
         if (x[1].error) org.err = orgErr(x[1].error);
       });
     }
@@ -9852,7 +9877,8 @@ function orgStatsPanel() {
     '<p class="br-tree muted" style="margin:0"><b>사업단장</b> ' + esc((org.head && org.head.name) || teamMyName()) + ' → 지점 ' + br.length + '곳 → 팀장 ' + sum.members + '명' + (pend ? ' · 승인 기다리는 지점 ' + pend + '곳 (설정 → 계정설정 → 사업단)' : '') + '</p>' +
     (br.length ? '<div class="tablewrap"><table class="t ctab br-table"><thead><tr><th>지점</th><th class="r">팀장</th><th class="r">공유</th><th class="r">고객</th><th class="r">이번 달 상담</th><th class="r">제안</th><th class="r">성사</th><th class="r">성사율</th><th class="r">갱신 예정</th><th class="r">기한 지난 할 일</th><th>마지막 반영</th></tr></thead><tbody>' + rows + '</tbody></table></div>'
       : '<div class="empty"><strong>아직 연결된 지점이 없습니다</strong><span>설정 → 계정설정 → 사업단의 코드를 지점장에게 알려 주세요.</span></div>') +
-    '<p class="muted" style="margin:0">지점별 숫자는 그 지점 팀장 중 "실적 숫자 공유"를 켠 사람들의 이번 달(' + esc(String(ov.month || '').replace('-', '.')) + ') 합계입니다. 사업단장에게는 팀장 개인 숫자와 고객 이름·연락처·계약 내용이 보이지 않습니다.</p></section>';
+    '<p class="muted" style="margin:0">지점별 숫자는 그 지점 팀장 중 "실적 숫자 공유"를 켠 사람들의 이번 달(' + esc(String(ov.month || '').replace('-', '.')) + ') 합계입니다. 사업단장에게는 팀장 개인 숫자와 고객 이름·연락처·계약 내용이 보이지 않습니다.</p></section>' +
+    monthlyPanel('사업단', (org.monthly || []).map(function (r) { return { key: r.team_id, label: r.name || '지점', month: r.month, d: r }; }), '지점');
 }
 function orgNoticeRead() { var s = store.settings; return s.orgRead = s.orgRead || {}; }
 // 지점 → 공지사항 맨 위 '사업단 공지'
