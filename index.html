@@ -1819,6 +1819,26 @@ html.reduce-motion *, html.reduce-motion *::before, html.reduce-motion *::after 
 @media (max-width: 520px) { .lic-thumb { width: 100%; } .lic-img-side { min-width: 0; } }
 .lic-card .field.span2 { grid-column: span 2; }
 @media (max-width: 520px) { .lic-card .field.span2 { grid-column: auto; } .lic-card .policy-head { grid-template-columns: 1fr; } }
+
+/* 고객목록 표 정리 (2026-11-06): 체크칸은 '여러 명 선택'일 때만, 휴대폰은 이름 아래, 연락 한 칸, 좁은 화면에서 생일·그 밖의 할 일 숨김, 휴대폰 카드는 한 줄에 한 항목 */
+.ctable .cphone { margin-top: 3px; font-size: 12px; color: var(--ink-2); white-space: nowrap; font-weight: 400; }
+.ctable .cphone .tel-txt { margin-right: 4px; }
+.ctable .cphone .btn.sm { padding: 0 6px; margin-left: 2px; font-size: 11.5px; }
+.ctable td.ccon { white-space: nowrap; }
+.ctable td.ccon .nx-when { margin-left: 4px; }
+.bulk-bar.bulk-idle { justify-content: space-between; }
+@media (min-width: 761px) { .clist-table td[data-l="계약"] small { display: block; font-size: 11px; } .clist-table td[data-l="상태"] .pstep { white-space: normal; word-break: keep-all; display: inline-block; max-width: 9.5em; line-height: 1.5; } .clist-table table.t.ctable th, .clist-table table.t.ctable td { padding-left: 10px; padding-right: 10px; } .clist-table table.t.ctable th:first-child, .clist-table table.t.ctable td:first-child { padding-left: 16px; } .clist-table .ctable td.go { width: 18px; } }
+.list-tools .btn.on-sel { border-color: var(--accent); color: var(--accent); }
+@media (min-width: 761px) and (max-width: 1180px) { .clist-table .ctable .col-opt { display: none; } .clist-table table.t.ctable td.cgap { white-space: normal !important; min-width: 6.5em; max-width: 9em; } .clist-table td.cgap .pill { display: inline-block; margin: 1px 4px 1px 0; } .clist-table .cgap .pill + .pill { margin-left: 0; } .clist-table table.t.ctable td.ccon { white-space: normal !important; max-width: 7em; } .clist-table td.ccon .nx-when { display: inline-block; margin: 2px 0 0; white-space: nowrap; } }
+@media (max-width: 760px) {
+  .clist-table table.t.ctable tr.crow { grid-template-columns: 1fr !important; gap: 5px !important; }
+  .clist-table table.t.ctable tr.crow td { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 6px; min-width: 0; white-space: normal; grid-column: auto; }
+  .clist-table table.t.ctable tr.crow td.cname { display: block; }
+  .clist-table table.t.ctable tr.crow td.go { display: none; }
+  .clist-table .ctable td[data-l]::before { flex: 0 0 5.6em; margin-right: 0; }
+  .clist-table .ctable .cphone { margin-top: 4px; font-size: 13px; }
+  .list-tools .btn:not(.primary) { padding-left: 10px; padding-right: 10px; }
+}
 </style>
 </head>
 <body>
@@ -2995,29 +3015,29 @@ function renderListTable() {
     return '<th class="' + (cls || '') + '"' + (tip ? ' title="' + attr(tip) + '"' : '') + '><button class="th-sort' + (on ? ' on' : '') + '" data-act="sort" data-id="' + key + '">' + label + (on ? ' ▾' : '') + '</button></th>';
   };
   ui.csel = ui.csel || {}; Object.keys(ui.csel).forEach(function (k) { if (!custById(k)) delete ui.csel[k]; });
+  var SM = !!ui.selMode; if (!SM) ui.csel = {};
   var selN = Object.keys(ui.csel).length, allSel = rows.length && rows.every(function (r) { return ui.csel[r.c.id]; });
-  var bulk = selN ? '<div class="bulk-bar" role="region" aria-label="고른 고객 한 번에 처리"><b>' + selN + '명 선택</b><span class="bk-grp"><span class="muted">구분</span>' + ['가망', '계약', '휴면'].map(function (k) { return '<button class="btn sm" data-act="cBulkKind" data-id="' + k + '">' + k + '</button>'; }).join('') + '<button class="btn sm" data-act="cBulkKind" data-id="auto" title="계약 여부로 자동">자동</button></span>' +
+  var bulk = SM ? '<div class="bulk-bar' + (selN ? '' : ' bulk-idle') + '" role="region" aria-label="고른 고객 한 번에 처리">' + (selN ? '' : '<span class="muted">아래 표에서 고객을 체크하면 한 번에 처리할 수 있습니다.</span><button class="btn ghost sm" data-act="cSelMode">선택 끝</button></div>') : '';
+  if (SM && selN) bulk = (selN ? '<div class="bulk-bar" role="region" aria-label="고른 고객 한 번에 처리"><b>' + selN + '명 선택</b><span class="bk-grp"><span class="muted">구분</span>' + ['가망', '계약', '휴면'].map(function (k) { return '<button class="btn sm" data-act="cBulkKind" data-id="' + k + '">' + k + '</button>'; }).join('') + '<button class="btn sm" data-act="cBulkKind" data-id="auto" title="계약 여부로 자동">자동</button></span>' +
     '<button class="btn sm" data-act="cBulkMsg">안내 문자</button><button class="btn sm" data-act="cBulkCopy">번호 복사</button>' +
     '<button class="btn sm' + (ui.armed === 'cBulkDone' ? ' danger armed' : '') + '" data-act="cBulkDone" title="고른 고객 모두 오늘 연락했다고 상담 기록에 남깁니다">' + (ui.armed === 'cBulkDone' ? '한 번 더 누르면 기록' : '연락함') + '</button>' +
     '<select class="bk-tag" data-scope="ui" data-k="bkTag" id="ui-bkTag-x" aria-label="표시 붙이기"><option value="">표시 붙이기…</option>' + Object.keys(allTags()).map(function (t) { return '<option value="' + attr(t) + '">' + esc(t) + '</option>'; }).join('') + '</select>' +
-    '<button class="btn sm danger" data-act="cBulkDel">삭제</button><button class="btn ghost sm" data-act="cSelClear">선택 해제</button></div>' : '';
+    '<button class="btn sm danger" data-act="cBulkDel">삭제</button><button class="btn ghost sm" data-act="cSelClear">선택 해제</button><button class="btn ghost sm" data-act="cSelMode">선택 끝</button></div>' : '');
   var pg = pageCut(rows, 'clLim', 50); rows = pg.shown;
-  return bulk + '<div class="clist-table" role="table"><table class="t ctable"><thead><tr><th class="csel"><input type="checkbox" data-act="cSelAll" aria-label="보이는 고객 모두 고르기"' + (allSel ? ' checked' : '') + '></th>' + sortTh('name', '이름') + '<th>나이 · 성별</th><th>휴대폰</th><th class="r">계약</th>' + sortTh('premium', '월보험료', 'r') +
-    sortTh('short', '보장 부족', '', '필수 = 미가입·최소 기준 미달 / 권장 = 최소는 넘지만 권장 미달') + sortTh('last', '마지막 상담') + sortTh('nextc', '다음 연락') + sortTh('bd', '생일') + sortTh('next', '그 밖의 할 일') + '<th>상태</th><th aria-hidden="true"></th></tr></thead><tbody>' +
+  return bulk + '<div class="clist-table" role="table"><table class="t ctable' + (SM ? ' selmode' : '') + '"><thead><tr>' + (SM ? '<th class="csel"><input type="checkbox" data-act="cSelAll" aria-label="보이는 고객 모두 고르기"' + (allSel ? ' checked' : '') + '></th>' : '') + sortTh('name', '이름') + '<th>나이 · 성별</th><th class="r">계약</th>' + sortTh('premium', '월보험료', 'r') +
+    sortTh('short', '보장 부족', '', '필수 = 미가입·최소 기준 미달 / 권장 = 최소는 넘지만 권장 미달') + sortTh('nextc', '연락', '', '마지막 상담과 다음 연락 예정. 누르면 다음 연락이 가까운 순') + sortTh('bd', '생일', 'col-opt') + sortTh('next', '그 밖의 할 일', 'col-opt') + '<th>상태</th><th aria-hidden="true"></th></tr></thead><tbody>' +
     rows.map(function (r) {
       var c = r.c, an = r.an;
-      return '<tr class="crow' + (ui.csel[c.id] ? ' sel' : '') + '" data-act="pick" data-id="' + c.id + '" tabindex="0">' + '<td class="csel"><input type="checkbox" data-act="cSel" data-id="' + c.id + '" aria-label="' + attr(c.name || '고객') + ' 고르기"' + (ui.csel[c.id] ? ' checked' : '') + '></td>' +
-        '<td class="cname"><b>' + esc(c.name || '이름 없음') + '</b>' + tagChips(c) + (custDupOf(c).length ? ' <span class="chip warn" title="같은 이름·생년월일(또는 휴대폰) 고객이 또 있습니다">중복?</span>' : '') + (custKind(c) !== '계약' ? ' <span class="chip ck-' + custKind(c) + '">' + custKind(c) + '</span>' : '') + (c.sample && !/\(예시\)/.test(c.name || '') ? ' <span class="chip">예시</span>' : '') + (!c.consent ? ' <span class="chip warn">동의 확인</span>' : '') + '</td>' +
+      return '<tr class="crow' + (ui.csel[c.id] ? ' sel' : '') + '" data-act="pick" data-id="' + c.id + '" tabindex="0">' + (SM ? '<td class="csel"><input type="checkbox" data-act="cSel" data-id="' + c.id + '" aria-label="' + attr(c.name || '고객') + ' 고르기"' + (ui.csel[c.id] ? ' checked' : '') + '></td>' : '') +
+        '<td class="cname"><b>' + esc(c.name || '이름 없음') + '</b>' + tagChips(c) + (custDupOf(c).length ? ' <span class="chip warn" title="같은 이름·생년월일(또는 휴대폰) 고객이 또 있습니다">중복?</span>' : '') + (custKind(c) !== '계약' ? ' <span class="chip ck-' + custKind(c) + '">' + custKind(c) + '</span>' : '') + (c.sample && !/\(예시\)/.test(c.name || '') ? ' <span class="chip">예시</span>' : '') + (!c.consent ? ' <span class="chip warn">동의 확인</span>' : '') + (c.phone ? '<div class="cphone"><span class="tel-txt">' + esc(c.phone) + '</span>' + telLink(c.phone) + smsLink(c.phone) + '</div>' : '') + '</td>' +
         '<td class="num" data-l="나이">' + (an.age != null ? an.age + '세' : '–') + (c.gender ? ' · ' + esc(c.gender) : '') + '</td>' +
-        '<td class="num ltel" data-l="휴대폰">' + (c.phone ? '<span class="tel-txt">' + esc(c.phone) + '</span>' + telLink(c.phone) + smsLink(c.phone) : '<span class="muted">–</span>') + '</td>' +
         '<td class="r num" data-l="계약">' + polCountTxt(c) + '</td>' +
         '<td class="r num" data-l="월보험료">' + (an.premium ? fmtWon(an.premium) : '–') + '</td>' +
         '<td class="num cgap" data-l="보장 부족">' + (!c.policies.length ? '<span class="muted">–</span>' : (an.counts.must ? '<span class="pill v-must" title="미가입·최소 기준 미달">필수 ' + an.counts.must + '</span>' : '') + (an.counts.rec ? '<span class="pill v-rec" title="최소는 넘지만 권장 미달">권장 ' + an.counts.rec + '</span>' : '') + (an.counts.dup + an.counts.over ? '<span class="pill v-dup" title="중복·과잉">중복 ' + (an.counts.dup + an.counts.over) + '</span>' : '') + (!an.counts.short && !(an.counts.dup + an.counts.over) ? '<span class="muted">없음</span>' : '')) + '</td>' +
         (function () { var ri = relInfo(c), nb = nextBirthday(c), dd = function (n) { return n === 0 ? '오늘' : n > 0 ? 'D-' + n : (-n) + '일 지남'; };
-          return '<td class="num cdt" data-l="마지막 상담">' + (ri.last ? esc(ri.last.slice(5).replace('-', '.')) + ' <small class="muted">' + (ri.since === 0 ? '오늘' : ri.since + '일 전') + '</small>' : '<span class="muted">–</span>') + '</td>' +
-            '<td class="num cdt" data-l="다음 연락">' + (ri.next ? '<span class="nx-when' + (ri.nd < 0 ? ' late' : ri.nd <= 7 ? ' soon' : '') + '">' + dd(ri.nd) + '</span>' : '<span class="muted">–</span>') + '</td>' +
-            '<td class="num cdt" data-l="생일">' + (nb ? esc(nb.date.slice(5).replace('-', '.')) + (nb.days <= 30 ? ' <span class="nx-when' + (nb.days <= 7 ? ' soon' : '') + '">' + dd(nb.days) + '</span>' : '') : '<span class="muted">–</span>') + '</td>'; })() +
-        '<td class="cnext" data-l="그 밖의 할 일">' + custNextHtml(c, true) + '</td>' +
+          return '<td class="num cdt ccon" data-l="연락">' + (ri.last ? '<span title="마지막 상담 ' + attr(ri.last.replace(/-/g, '.')) + '">' + (ri.since === 0 ? '오늘' : ri.since + '일 전') + '</span>' : '<span class="muted">기록 없음</span>') + (ri.next ? ' <span class="nx-when' + (ri.nd < 0 ? ' late' : ri.nd <= 7 ? ' soon' : '') + '" title="다음 연락 ' + attr(ri.next.replace(/-/g, '.')) + '">다음 ' + dd(ri.nd) + '</span>' : '') + '</td>' +
+            '<td class="num cdt col-opt" data-l="생일">' + (nb ? esc(nb.date.slice(5).replace('-', '.')) + (nb.days <= 30 ? ' <span class="nx-when' + (nb.days <= 7 ? ' soon' : '') + '">' + dd(nb.days) + '</span>' : '') : '<span class="muted">–</span>') + '</td>'; })() +
+        '<td class="cnext col-opt" data-l="그 밖의 할 일">' + custNextHtml(c, true) + '</td>' +
         '<td data-l="상태">' + (custKind(c) === '가망' ? prospectHtml(c) : '<span class="st st-' + r.st.key + '">' + r.st.label + '</span>') + '</td><td class="go" aria-hidden="true">›</td></tr>';
     }).join('') + '</tbody></table></div>' + pg.more;
 }
@@ -3173,6 +3193,7 @@ function renderList() {
   return '<section class="list-page">' +
     '<div class="list-head"><h1>고객목록 <span class="muted num">' + store.customers.length + '명</span></h1>' +
     '<div class="list-tools"><input type="search" id="q" placeholder="이름·전화번호 검색" value="' + attr(ui.q) + '" aria-label="고객 이름·전화번호 검색">' +
+      (store.customers.length ? '<button class="btn' + (ui.selMode ? ' on-sel' : '') + '" data-act="cSelMode" aria-pressed="' + !!ui.selMode + '" title="여러 고객을 골라 구분 바꾸기·번호 복사·안내 문자·연락함·표시·삭제를 한 번에 합니다">' + (ui.selMode ? '선택 끝' : '여러 명 선택') + '</button>' : '') +
       '<button class="btn primary" data-act="addCustomer" title="신규 고객 등록">+ 추가</button></div></div>' +
     fbar +
     (tab === '가망' ? '<p class="muted ck-help">아직 유지 중 계약이 없는 고객입니다. 진행 칸은 첫 상담 → 보장분석(계약 입력) → 제안 순서입니다. 제안이 성사되면 계약고객으로 바뀝니다.</p>' : tab === '휴면' ? '<p class="muted ck-help">고객 정보에서 "고객 구분"을 휴면으로 고른 고객입니다. 다시 연락이 닿으면 자동으로 돌리세요.</p>' : '') +
@@ -8000,6 +8021,7 @@ function doAction(el) {
     case 'cSel': { ui.csel = ui.csel || {}; if (ui.csel[id]) delete ui.csel[id]; else ui.csel[id] = true; break; }
     case 'cSelAll': { ui.csel = ui.csel || {}; var vis = listRows().map(function (r) { return r.c.id; }), allOn = vis.length && vis.every(function (x) { return ui.csel[x]; }); vis.forEach(function (x) { if (allOn) delete ui.csel[x]; else ui.csel[x] = true; }); break; }
     case 'cSelClear': ui.csel = {}; break;
+    case 'cSelMode': ui.selMode = !ui.selMode; ui.csel = {}; break;
     case 'copyMsg': copyText(String(ui.tgMsg != null ? ui.tgMsg : ''), '문구를 복사했습니다'); return;
     case 'cBulkMsg': if (Object.keys(ui.csel || {}).length) ui.modal = { kind: 'bulkmsg' }; break;
     case 'cBulkDone': { if (ui.armed !== 'cBulkDone') { ui.armed = 'cBulkDone'; keepArm = true; break; } var bdn = Object.keys(ui.csel || {}).map(custById).filter(Boolean), td9 = today();
