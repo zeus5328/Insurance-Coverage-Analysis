@@ -9081,7 +9081,14 @@ app.addEventListener('change', function (e) {
   if (el.dataset && el.dataset.kind === 'custxlsx') { if (el.files[0]) importCustXlsx(el.files[0]); el.value = ''; return; }
   if (el.dataset && el.dataset.kind === 'staffxlsx') { if (el.files[0]) importStaffXlsx(el.files[0]); el.value = ''; return; }
   if (el.dataset && el.dataset.kind === 'pdf') { if (el.files[0]) readPolicyPdf(el.files[0], el.dataset.pid); el.value = ''; return; }
-  if (el.dataset && el.dataset.scope) setField(el);
+  if (el.dataset && el.dataset.scope) { setField(el); if (/^(INPUT|TEXTAREA)$/.test(el.tagName)) el.defaultValue = el.value; }
+});
+// 사파리: 입력 중 값을 고친 칸(휴대폰 자동 대시 등)은 change가 안 생길 수 있음 → 칸을 떠날 때 바뀌었으면 저장 (2026-11-06)
+app.addEventListener('focusout', function (e) {
+  var el = e.target;
+  if (!el || !el.dataset || !el.dataset.scope || !/^(INPUT|TEXTAREA)$/.test(el.tagName)) return;
+  if (/^(checkbox|radio|file|button|submit)$/.test(el.type) || el.value === el.defaultValue) return;
+  el.defaultValue = el.value; setField(el);
 });
 app.addEventListener('input', function (e) {
   var t = e.target;
